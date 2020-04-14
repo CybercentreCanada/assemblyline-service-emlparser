@@ -13,4 +13,3 @@ This service preforms the following actions:
 - Tags the various email addresses, URIs, domains, IPs, ...
 - Optionally extracts email raw body
 - Optionally return raw output from eml_parser lib
-
