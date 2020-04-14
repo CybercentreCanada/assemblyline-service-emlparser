@@ -76,7 +76,7 @@ class EmlParser(ServiceBase):
 
             # If we've found URIs, add them to a section
             if len(all_uri) > 0:
-                uri_section = ResultSection('Extracted links:', parent=result)
+                uri_section = ResultSection('URIs Found:', parent=result)
                 for uri in all_uri:
                     uri_section.add_line(uri)
                     uri_section.add_tag('network.static.uri', uri.strip())
@@ -101,7 +101,7 @@ class EmlParser(ServiceBase):
                         f.write(base64.b64decode(attachment['raw']))
                         os.close(fd)
                     request.add_extracted(path, attachment['filename'], "Attachment ")
-                ResultSection('Attachments:', body="\n".join([x['filename'] for x in parsed_eml['attachment']]),
+                ResultSection('Extracted Attachments:', body="\n".join([x['filename'] for x in parsed_eml['attachment']]),
                               parent=result)
 
             if request.get_param('save_emlparser_output'):
