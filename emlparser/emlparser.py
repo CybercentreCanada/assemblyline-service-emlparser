@@ -67,12 +67,14 @@ class EmlParser(ServiceBase):
                 kv_section.add_tag("network.email.msg_id",  header['header']['message-id'][0].strip())
 
             # Add Tags for received IPs
-            for ip in header['received_ip']:
-                kv_section.add_tag('network.static.ip', ip.strip())
+            if 'received_ip' in header:
+                for ip in header['received_ip']:
+                    kv_section.add_tag('network.static.ip', ip.strip())
 
             # Add Tags for received Domains
-            for dom in header['received_domain']:
-                kv_section.add_tag('network.static.domain', dom.strip())
+            if 'received_domain' in header:
+                for dom in header['received_domain']:
+                    kv_section.add_tag('network.static.domain', dom.strip())
 
             # If we've found URIs, add them to a section
             if len(all_uri) > 0:
