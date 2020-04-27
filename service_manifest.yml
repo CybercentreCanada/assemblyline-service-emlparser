@@ -27,6 +27,6 @@ submission_params:
     value: false
 
 docker_config:
-  image: cccs/assemblyline-service-emlparser:latest
+  image: ${REGISTRY}cccs/assemblyline-service-emlparser:latest
   cpu_cores: 1
   ram_mb: 256
