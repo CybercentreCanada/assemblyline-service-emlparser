@@ -1,5 +1,5 @@
 name: EmlParser
-version: 1
+version: $SERVICE_TAG
 description: Parse emails using GOVCERT-LU eml_parser library while extracting header information, attachments, URIs...
 
 accepts: document/email
@@ -27,6 +27,6 @@ submission_params:
     value: false
 
 docker_config:
-  image: cccs/assemblyline-service-emlparser:latest
+  image: ${REGISTRY}cccs/assemblyline-service-emlparser:$SERVICE_TAG
   cpu_cores: 1
   ram_mb: 256
