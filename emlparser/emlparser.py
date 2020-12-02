@@ -29,7 +29,8 @@ class EmlParser(ServiceBase):
             return serial
 
     def execute(self, request):
-        parsed_eml = eml_parser.eml_parser.decode_email_b(request.file_contents, include_raw_body=True,
+        parsed_eml = eml_parser.eml_parser.decode_email_b(request.file_contents,
+                                                          include_raw_body=True,
                                                           include_attachment_data=True)
         result = Result()
         header = parsed_eml['header']
@@ -83,7 +84,7 @@ class EmlParser(ServiceBase):
                     uri_section.add_line(uri)
                     uri_section.add_tag('network.static.uri', uri.strip())
                     parsed_url = urlparse(uri)
-                    if re.match(IP_ONLY_REGEX, parsed_url.hostname):
+                    if parsed_url.hostname and re.match(IP_ONLY_REGEX, parsed_url.hostname):
                         uri_section.add_tag('network.static.ip', parsed_url.hostname)
                     else:
                         uri_section.add_tag('network.static.domain', parsed_url.hostname)
