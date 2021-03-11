@@ -123,8 +123,6 @@ class EmlParser(ServiceBase):
                 request.add_supplementary(temp_path, "parsing.json",
                                           "These are the raw results of running GOVCERT-LU's eml_parser")
         else:
-            text_section = ResultSection('EML parsing results')
-            text_section.add_line("Could not parse EML")
-            result.add_section(text_section)
+            self.log.warning("emlParser could not parse EML; no useful information in result's headers")
 
         request.result = result
