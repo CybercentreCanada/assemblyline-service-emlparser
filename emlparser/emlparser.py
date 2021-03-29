@@ -32,14 +32,10 @@ class EmlParser(ServiceBase):
     def execute(self, request):
         parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
 
-        # Validate URLs in sample, strip out [] if found
-        invalid_chars = "[]"
-        content_str = request.file_contents.decode(errors="ignore")
-        for u in eml_parser.regex.url_regex_simple.findall(content_str):
-            if any(c in u for c in invalid_chars):
-                replacement = u.strip(invalid_chars)
-                content_str = content_str.replace(u, replacement, 1)
-        parsed_eml = parser.decode_email_bytes(content_str.encode())
+        content_str = request.file_contents
+        #Replace null bytes (wastes time during slices)
+        content_str = content_str.replace(b'\x00', b'')
+        parsed_eml = parser.decode_email_bytes(content_str)
 
         result = Result()
         header = parsed_eml['header']
