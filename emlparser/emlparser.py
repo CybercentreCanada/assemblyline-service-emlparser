@@ -116,7 +116,7 @@ class EmlParser(ServiceBase):
                                          f"{len(attachments) - attachments.index(attachment)} not added")
                         break
                 ResultSection('Extracted Attachments:', body="\n".join(
-                    [x['filename'] for x in parsed_eml['attachment']]), parent=result)
+                    [x['filename'] for x in attachments]), parent=result)
 
             if request.get_param('save_emlparser_output'):
                 fd, temp_path = tempfile.mkstemp(dir=self.working_directory)
