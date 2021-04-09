@@ -1,18 +1,18 @@
 import base64
 import datetime
-import eml_parser
-import eml_parser.regex
 import json
 import os
 import re
 import tempfile
-
 from tempfile import mkstemp
 from urllib.parse import urlparse
 
+import eml_parser
+import eml_parser.regex
+
 from assemblyline.odm import IP_ONLY_REGEX
 from assemblyline_v4_service.common.base import ServiceBase
-from assemblyline_v4_service.common.result import Result, ResultSection, BODY_FORMAT
+from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection, MaxExtractedExceeded
 
 
 class EmlParser(ServiceBase):
@@ -33,7 +33,7 @@ class EmlParser(ServiceBase):
         parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
 
         content_str = request.file_contents
-        #Replace null bytes (wastes time during slices)
+        # Replace null bytes (wastes time during slices)
         content_str = content_str.replace(b'\x00', b'')
         parsed_eml = parser.decode_email_bytes(content_str)
 
@@ -102,15 +102,21 @@ class EmlParser(ServiceBase):
             kv_section.body = json.dumps(header, default=self.json_serial)
 
             if "attachment" in parsed_eml:
-                for attachment in parsed_eml['attachment']:
+                attachments = parsed_eml['attachment']
+                for attachment in attachments:
                     fd, path = mkstemp()
 
                     with open(path, 'wb') as f:
                         f.write(base64.b64decode(attachment['raw']))
                         os.close(fd)
-                    request.add_extracted(path, attachment['filename'], "Attachment ")
-                ResultSection('Extracted Attachments:', body="\n".join([x['filename'] for x in parsed_eml['attachment']]),
-                              parent=result)
+                    try:
+                        request.add_extracted(path, attachment['filename'], "Attachment ")
+                    except MaxExtractedExceeded:
+                        self.log.warning(f"Extract limit reached on attachments: "
+                                         f"{len(attachments) - attachments.index(attachment)} not added")
+                        break
+                ResultSection('Extracted Attachments:', body="\n".join(
+                    [x['filename'] for x in parsed_eml['attachment']]), parent=result)
 
             if request.get_param('save_emlparser_output'):
                 fd, temp_path = tempfile.mkstemp(dir=self.working_directory)
