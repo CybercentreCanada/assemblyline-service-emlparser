@@ -12,7 +12,8 @@ import eml_parser.regex
 
 from assemblyline.odm import IP_ONLY_REGEX
 from assemblyline_v4_service.common.base import ServiceBase
-from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection, MaxExtractedExceeded
+from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection
+from assemblyline_v4_service.common.task import MaxExtractedExceeded
 
 
 class EmlParser(ServiceBase):
