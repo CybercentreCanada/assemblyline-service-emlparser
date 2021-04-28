@@ -1,19 +1,20 @@
 import base64
 import datetime
+import eml_parser
 import json
 import os
 import re
 import tempfile
-from tempfile import mkstemp
-from urllib.parse import urlparse
-
-import eml_parser
-import eml_parser.regex
 
 from assemblyline.odm import IP_ONLY_REGEX
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
+from compoundfiles import CompoundFileInvalidMagicError
+from ipaddress import IPv4Address, ip_address
+from outlookmsgfile import load as convert_msg_eml
+from tempfile import mkstemp
+from urllib.parse import urlparse
 
 
 class EmlParser(ServiceBase):
@@ -32,12 +33,19 @@ class EmlParser(ServiceBase):
 
     def execute(self, request):
         parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
-
         content_str = request.file_contents
-        # Replace null bytes (wastes time during slices)
-        content_str = content_str.replace(b'\x00', b'')
-        parsed_eml = parser.decode_email_bytes(content_str)
+        try:
+            content_str = convert_msg_eml(request.file_path).as_bytes()
+        except CompoundFileInvalidMagicError:
+            if 'office' in request.file_type:
+                # This Office file shouldn't be processed by an email parser
+                request.result = Result()
+                return
+            else:
+                # This isn't an Office file to be converted (least not with this tool)
+                pass
 
+        parsed_eml = parser.decode_email_bytes(content_str)
         result = Result()
         header = parsed_eml['header']
 
@@ -75,8 +83,8 @@ class EmlParser(ServiceBase):
 
             # Add Tags for received IPs
             if 'received_ip' in header:
-                for ip in header['received_ip']:
-                    kv_section.add_tag('network.static.ip', ip.strip())
+                [kv_section.add_tag('network.static.ip', ip.strip())
+                 for ip in header['received_ip'] if isinstance(ip_address(ip), IPv4Address)]
 
             # Add Tags for received Domains
             if 'received_domain' in header:

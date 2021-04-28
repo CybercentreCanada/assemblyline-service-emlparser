@@ -2,9 +2,11 @@ FROM cccs/assemblyline-v4-service-base:latest AS base
 
 ENV SERVICE_PATH emlparser.emlparser.EmlParser
 
-USER assemblyline
+USER root
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir --user eml_parser && rm -rf ~/.cache/pip
+USER assemblyline
+RUN pip install -U --no-cache-dir --user eml_parser git+https://github.com/JoshData/convert-outlook-msg-file.git && rm -rf ~/.cache/pip
 
 # Clone Extract service code
 WORKDIR /opt/al_service
