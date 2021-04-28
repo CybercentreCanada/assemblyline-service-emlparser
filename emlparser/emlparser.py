@@ -33,16 +33,19 @@ class EmlParser(ServiceBase):
 
     def execute(self, request):
         parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
-
         content_str = request.file_contents
         try:
             content_str = convert_msg_eml(request.file_path).as_bytes()
         except CompoundFileInvalidMagicError:
-            # This isn't an Outlook file to be converted
-            pass
+            if 'office' in request.file_type:
+                # This Office file shouldn't be processed by an email parser
+                request.result = Result()
+                return
+            else:
+                # This isn't an Office file to be converted (least not with this tool)
+                pass
 
         parsed_eml = parser.decode_email_bytes(content_str)
-
         result = Result()
         header = parsed_eml['header']
 
