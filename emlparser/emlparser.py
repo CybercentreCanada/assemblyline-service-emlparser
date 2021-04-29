@@ -12,7 +12,7 @@ from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSec
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
 from compoundfiles import CompoundFileInvalidMagicError
 from ipaddress import IPv4Address, ip_address
-from outlookmsgfile import load as convert_msg_eml
+from emlparser.convert_outlook.outlookmsgfile import load as msg2eml
 from tempfile import mkstemp
 from urllib.parse import urlparse
 
@@ -35,7 +35,7 @@ class EmlParser(ServiceBase):
         parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         content_str = request.file_contents
         try:
-            content_str = convert_msg_eml(request.file_path).as_bytes()
+            content_str = msg2eml(request.file_path).as_bytes()
         except CompoundFileInvalidMagicError:
             if 'office' in request.file_type:
                 # This Office file shouldn't be processed by an email parser
@@ -44,6 +44,11 @@ class EmlParser(ServiceBase):
             else:
                 # This isn't an Office file to be converted (least not with this tool)
                 pass
+        except TypeError:
+            if 'document/office/unknown' == request.file_type:
+                # Composite file but not an email
+                request.result = Result()
+                return
 
         parsed_eml = parser.decode_email_bytes(content_str)
         result = Result()
