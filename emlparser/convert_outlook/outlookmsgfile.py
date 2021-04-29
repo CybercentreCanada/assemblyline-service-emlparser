@@ -40,7 +40,7 @@ def load_message_stream(entry, is_top_level, doc):
     props = None
     try:
         props = parse_properties(entry['__properties_version1.0'], is_top_level, entry, doc)
-    except KeyError:
+    except (KeyError, IndexError):
         raise TypeError
 
     # Construct the MIME message....

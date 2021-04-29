@@ -7,6 +7,7 @@ import re
 import tempfile
 
 from assemblyline.odm import IP_ONLY_REGEX, EMAIL_REGEX
+from assemblyline.common.identify import fileinfo
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
@@ -35,6 +36,12 @@ class EmlParser(ServiceBase):
     def execute(self, request):
         parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         content_str = request.file_contents
+        info = fileinfo(request.file_path)
+        if 'document/office/unknown' == info['type'] and \
+                any(word in info['magic'].lower() for word in ["can't", "cannot"]):
+            # An Office file that can't be converted
+            request.result = Result()
+            return
         try:
             content_str = msg2eml(request.file_path).as_bytes()
         except CompoundFileInvalidMagicError:
