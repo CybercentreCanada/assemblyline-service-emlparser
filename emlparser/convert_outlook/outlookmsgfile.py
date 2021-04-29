@@ -121,15 +121,18 @@ def load_message_stream(entry, is_top_level, doc):
             cte='quoted-printable')
 
         # Decompress the value to Rich Text Format.
-        import compressed_rtf
-        rtf = props['RTF_COMPRESSED']
-        rtf = compressed_rtf.decompress(rtf)
+        try:
+            import compressed_rtf
+            rtf = props['RTF_COMPRESSED']
+            rtf = compressed_rtf.decompress(rtf)
 
-        # Add RTF file as an attachment.
-        msg.add_attachment(
-            rtf,
-            maintype="text", subtype="rtf",
-            filename=fn)
+            # Add RTF file as an attachment.
+            msg.add_attachment(
+                rtf,
+                maintype="text", subtype="rtf",
+                filename=fn)
+        except KeyError:
+            pass
 
     # # Copy over string values of remaining properties as headers
     # # so we don't lose any information.
