@@ -6,13 +6,14 @@ import os
 import re
 import tempfile
 
-from assemblyline.odm import IP_ONLY_REGEX
+from assemblyline.odm import IP_ONLY_REGEX, EMAIL_REGEX
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
+
 from compoundfiles import CompoundFileInvalidMagicError
-from ipaddress import IPv4Address, ip_address
 from emlparser.convert_outlook.outlookmsgfile import load as msg2eml
+from ipaddress import IPv4Address, ip_address
 from tempfile import mkstemp
 from urllib.parse import urlparse
 
@@ -54,7 +55,7 @@ class EmlParser(ServiceBase):
         result = Result()
         header = parsed_eml['header']
 
-        if "from" in header:
+        if "from" in header or 'to' in header:
             all_uri = set()
 
             for body_counter, body in enumerate(parsed_eml['body']):
@@ -71,17 +72,18 @@ class EmlParser(ServiceBase):
             kv_section = ResultSection('Email Headers', body_format=BODY_FORMAT.KEY_VALUE, parent=result)
 
             # Basic tags
-            kv_section.add_tag("network.email.address", header['from'].strip())
-            for to in header['to']:
-                kv_section.add_tag("network.email.address", to)
+            if header.get('from', None):
+                kv_section.add_tag("network.email.address", header['from'].strip())
+            [kv_section.add_tag("network.email.address", to.strip())
+             for to in header['to'] if re.match(EMAIL_REGEX, to.strip())]
+
             kv_section.add_tag("network.email.date", str(header['date']).strip())
             kv_section.add_tag("network.email.subject", header['subject'].strip())
 
             # Add CCs to body and tags
             if 'cc' in header:
-                for to in header['to']:
-                    kv_section.add_tag("network.email.address", to.strip())
-
+                [kv_section.add_tag("network.email.address", cc.strip())
+                 for cc in header['cc'] if re.match(EMAIL_REGEX, cc.strip())]
             # Add Message ID to body and tags
             if 'message-id' in header['header']:
                 kv_section.add_tag("network.email.msg_id",  header['header']['message-id'][0].strip())
