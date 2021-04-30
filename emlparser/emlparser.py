@@ -37,16 +37,21 @@ class EmlParser(ServiceBase):
         parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         content_str = request.file_contents
         info = fileinfo(request.file_path)
+
+        # Eliminate invalid Office candidates
         if 'document/office/unknown' == info['type'] and \
                 any(word in info['magic'].lower() for word in ["can't", "cannot"]):
             # An Office file that can't be converted
             request.result = Result()
             return
+
+        # Attempt conversion of file
         try:
             content_str = msg2eml(request.file_path).as_bytes()
         except CompoundFileInvalidMagicError:
-            if 'office' in request.file_type:
-                # This Office file shouldn't be processed by an email parser
+            if content_str.hex().startswith('E4 52 5C 7B 8C D8 A7 4D AE B1 53 78 D0 29'.replace(" ", "").lower()):
+                # OneNote file containing email content. Extract service should pull these out.
+                self.log.info('OneNote file contains email content. Did Extract pull them out?')
                 request.result = Result()
                 return
             else:
