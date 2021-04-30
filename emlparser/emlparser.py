@@ -6,13 +6,15 @@ import os
 import re
 import tempfile
 
-from assemblyline.odm import IP_ONLY_REGEX
+from assemblyline.odm import IP_ONLY_REGEX, EMAIL_REGEX
+from assemblyline.common.identify import fileinfo
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
+
 from compoundfiles import CompoundFileInvalidMagicError
+from emlparser.convert_outlook.outlookmsgfile import load as msg2eml
 from ipaddress import IPv4Address, ip_address
-from outlookmsgfile import load as convert_msg_eml
 from tempfile import mkstemp
 from urllib.parse import urlparse
 
@@ -34,22 +36,38 @@ class EmlParser(ServiceBase):
     def execute(self, request):
         parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         content_str = request.file_contents
+        info = fileinfo(request.file_path)
+
+        # Eliminate invalid Office candidates
+        if 'document/office/unknown' == info['type'] and \
+                any(word in info['magic'].lower() for word in ["can't", "cannot"]):
+            # An Office file that can't be converted
+            request.result = Result()
+            return
+
+        # Attempt conversion of file
         try:
-            content_str = convert_msg_eml(request.file_path).as_bytes()
+            content_str = msg2eml(request.file_path).as_bytes()
         except CompoundFileInvalidMagicError:
-            if 'office' in request.file_type:
-                # This Office file shouldn't be processed by an email parser
+            if content_str.hex().startswith('E4 52 5C 7B 8C D8 A7 4D AE B1 53 78 D0 29'.replace(" ", "").lower()):
+                # OneNote file containing email content. Extract service should pull these out.
+                self.log.info('OneNote file contains email content. Did Extract pull them out?')
                 request.result = Result()
                 return
             else:
                 # This isn't an Office file to be converted (least not with this tool)
                 pass
+        except TypeError:
+            if 'document/office/unknown' == request.file_type:
+                # Composite file but not an email
+                request.result = Result()
+                return
 
         parsed_eml = parser.decode_email_bytes(content_str)
         result = Result()
         header = parsed_eml['header']
 
-        if "from" in header:
+        if "from" in header or 'to' in header:
             all_uri = set()
 
             for body_counter, body in enumerate(parsed_eml['body']):
@@ -66,17 +84,18 @@ class EmlParser(ServiceBase):
             kv_section = ResultSection('Email Headers', body_format=BODY_FORMAT.KEY_VALUE, parent=result)
 
             # Basic tags
-            kv_section.add_tag("network.email.address", header['from'].strip())
-            for to in header['to']:
-                kv_section.add_tag("network.email.address", to)
+            if header.get('from', None):
+                kv_section.add_tag("network.email.address", header['from'].strip())
+            [kv_section.add_tag("network.email.address", to.strip())
+             for to in header['to'] if re.match(EMAIL_REGEX, to.strip())]
+
             kv_section.add_tag("network.email.date", str(header['date']).strip())
             kv_section.add_tag("network.email.subject", header['subject'].strip())
 
             # Add CCs to body and tags
             if 'cc' in header:
-                for to in header['to']:
-                    kv_section.add_tag("network.email.address", to.strip())
-
+                [kv_section.add_tag("network.email.address", cc.strip())
+                 for cc in header['cc'] if re.match(EMAIL_REGEX, cc.strip())]
             # Add Message ID to body and tags
             if 'message-id' in header['header']:
                 kv_section.add_tag("network.email.msg_id",  header['header']['message-id'][0].strip())
