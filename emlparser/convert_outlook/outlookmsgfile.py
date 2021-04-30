@@ -12,252 +12,20 @@
 # https://msdn.microsoft.com/en-us/library/ee157583(v=exchg.80).aspx
 # https://blogs.msdn.microsoft.com/openspecification/2009/11/06/msg-file-format-part-1/
 
+import compoundfiles
+import email.message
+import email.parser
+import email.policy
 import re
 import os
 import sys
 
-from functools import reduce
-
-import email.message
-import email.parser
-import email.policy
 from email.utils import parsedate_to_datetime, formatdate, formataddr
-
-import compoundfiles
-
-
-# MAIN FUNCTIONS
-
-
-def load(filename_or_stream):
-    with compoundfiles.CompoundFileReader(filename_or_stream) as doc:
-        doc.rtf_attachments = 0
-        return load_message_stream(doc.root, True, doc)
-
-
-def load_message_stream(entry, is_top_level, doc):
-    # Load stream data.
-    props = None
-    try:
-        props = parse_properties(entry['__properties_version1.0'], is_top_level, entry, doc)
-    except (KeyError, IndexError):
-        raise TypeError
-
-    # Construct the MIME message....
-    msg = email.message.EmailMessage()
-
-    # Add the raw headers, if known.
-    if 'TRANSPORT_MESSAGE_HEADERS' in props:
-        # Get the string holding all of the headers.
-        headers = props['TRANSPORT_MESSAGE_HEADERS']
-        if isinstance(headers, bytes):
-            headers = headers.decode("utf-8")
-
-        # Remove content-type header because the body we can get this
-        # way is just the plain-text portion of the email and whatever
-        # Content-Type header was in the original is not valid for
-        # reconstructing it this way.
-        headers = re.sub("Content-Type: .*(\n\s.*)*\n", "", headers, re.I)
-
-        # Parse them.
-        headers = email.parser.HeaderParser(policy=email.policy.default).parsestr(headers)
-
-        # Copy them into the message object.
-        for header, value in headers.items():
-            msg[header] = value
-
-    else:
-        # Construct common headers from metadata.
-
-        if 'MESSAGE_DELIVERY_TIME' in props:
-            msg['Date'] = formatdate(props['MESSAGE_DELIVERY_TIME'].timestamp())
-            del props['MESSAGE_DELIVERY_TIME']
-
-        if 'SENDER_NAME' in props:
-            if 'SENT_REPRESENTING_NAME' in props:
-                if props['SENT_REPRESENTING_NAME']:
-                    if props['SENDER_NAME'] != props['SENT_REPRESENTING_NAME']:
-                        props['SENDER_NAME'] += " (" + props['SENT_REPRESENTING_NAME'] + ")"
-                del props['SENT_REPRESENTING_NAME']
-            if props['SENDER_NAME']:
-                msg['From'] = formataddr((props['SENDER_NAME'], ""))
-            del props['SENDER_NAME']
-
-        if 'DISPLAY_TO' in props:
-            if props['DISPLAY_TO']:
-                msg['To'] = props['DISPLAY_TO']
-            del props['DISPLAY_TO']
-
-        if 'DISPLAY_CC' in props:
-            if props['DISPLAY_CC']:
-                msg['CC'] = props['DISPLAY_CC']
-            del props['DISPLAY_CC']
-
-        if 'DISPLAY_BCC' in props:
-            if props['DISPLAY_BCC']:
-                msg['BCC'] = props['DISPLAY_BCC']
-            del props['DISPLAY_BCC']
-
-        if 'SUBJECT' in props:
-            if props['SUBJECT']:
-                msg['Subject'] = props['SUBJECT']
-            del props['SUBJECT']
-
-    # Add the plain-text body from the BODY field.
-    if 'BODY' in props:
-        body = props['BODY']
-        if isinstance(body, str):
-            msg.set_content(body, cte='quoted-printable')
-        else:
-            msg.set_content(body, maintype="text", subtype="plain", cte='8bit')
-
-    # Plain-text is not availabe. Use the rich text version.
-    else:
-        doc.rtf_attachments += 1
-        fn = "messagebody_{}.rtf".format(doc.rtf_attachments)
-
-        msg.set_content(
-            "<no plain text message body --- see attachment {}>".format(fn),
-            cte='quoted-printable')
-
-        # Decompress the value to Rich Text Format.
-        try:
-            import compressed_rtf
-            rtf = props['RTF_COMPRESSED']
-            rtf = compressed_rtf.decompress(rtf)
-
-            # Add RTF file as an attachment.
-            msg.add_attachment(
-                rtf,
-                maintype="text", subtype="rtf",
-                filename=fn)
-        except KeyError:
-            pass
-
-    # # Copy over string values of remaining properties as headers
-    # # so we don't lose any information.
-    # for k, v in props.items():
-    #   if k == 'RTF_COMPRESSED': continue # not interested, save output
-    #   msg[k] = str(v)
-
-    # Add attachments.
-    for stream in entry:
-        if stream.name.startswith("__attach_version1.0_#"):
-            process_attachment(msg, stream, doc)
-
-    return msg
-
-
-def process_attachment(msg, entry, doc):
-    # Load attachment stream.
-    props = parse_properties(entry['__properties_version1.0'], False, entry, doc)
-
-    # The attachment content...
-    try:
-        blob = props['ATTACH_DATA_BIN']
-
-        # Get the filename and MIME type of the attachment.
-        filename = props.get("ATTACH_LONG_FILENAME") or props.get("ATTACH_FILENAME") or props.get("DISPLAY_NAME")
-        if isinstance(filename, bytes):
-            filename = filename.decode("utf8")
-
-        mime_type = props.get('ATTACH_MIME_TAG', 'application/octet-stream')
-        if isinstance(mime_type, bytes):
-            mime_type = mime_type.decode("utf8")
-
-        filename = os.path.basename(filename)
-
-        # Python 3.6.
-        if isinstance(blob, str):
-            msg.add_attachment(
-                blob,
-                filename=filename)
-        elif isinstance(blob, bytes):
-            msg.add_attachment(
-                blob,
-                maintype=mime_type.split("/", 1)[0], subtype=mime_type.split("/", 1)[-1],
-                filename=filename)
-        else:  # a Message instance
-            msg.add_attachment(
-                blob,
-                filename=filename)
-    except KeyError:
-        pass
-
-
-def parse_properties(properties, is_top_level, container, doc):
-    # Read a properties stream and return a Python dictionary
-    # of the fields and values, using human-readable field names
-    # in the mapping at the top of this module.
-
-    # Load stream content.
-    with doc.open(properties) as stream:
-        stream = stream.read()
-
-    # Skip header.
-    i = (32 if is_top_level else 24)
-
-    # Read 16-byte entries.
-    ret = {}
-    while i < len(stream):
-        # Read the entry.
-        property_type = stream[i+0:i+2]
-        property_tag = stream[i+2:i+4]
-        flags = stream[i+4:i+8]
-        value = stream[i+8:i+16]
-        i += 16
-
-        # Turn the byte strings into numbers and look up the property type.
-        property_type = property_type[0] + (property_type[1] << 8)
-        property_tag = property_tag[0] + (property_tag[1] << 8)
-        if property_tag not in property_tags:
-            continue  # should not happen
-        tag_name, _ = property_tags[property_tag]
-        tag_type = property_types.get(property_type)
-
-        # Fixed Length Properties.
-        if isinstance(tag_type, FixedLengthValueLoader):
-            value = tag_type.load(value)
-
-        # Variable Length Properties.
-        elif isinstance(tag_type, VariableLengthValueLoader):
-            value_length = stream[i+8:i+12]  # not used
-
-            # Look up the stream in the document that holds the value.
-            streamname = "__substg1.0_{0:0{1}X}{2:0{3}X}".format(property_tag, 4, property_type, 4)
-            try:
-                with doc.open(container[streamname]) as innerstream:
-                    value = innerstream.read()
-            except:
-                # Stream isn't present!
-                print("stream missing", streamname, file=sys.stderr)
-                continue
-
-            value = tag_type.load(value)
-
-        elif isinstance(tag_type, EMBEDDED_MESSAGE):
-            # Look up the stream in the document that holds the attachment.
-            streamname = "__substg1.0_{0:0{1}X}{2:0{3}X}".format(property_tag, 4, property_type, 4)
-            try:
-                value = container[streamname]
-            except:
-                # Stream isn't present!
-                print("stream missing", streamname, file=sys.stderr)
-                continue
-            value = tag_type.load(value, doc)
-
-        else:
-            # unrecognized type
-            print("unhandled property type", hex(property_type), file=sys.stderr)
-            continue
-
-        ret[tag_name] = value
-
-    return ret
+from compressed_rtf import decompress
+from functools import reduce
 
 
 # PROPERTY VALUE LOADERS
-
 class FixedLengthValueLoader(object):
     pass
 
@@ -835,21 +603,228 @@ property_tags = {
 }
 
 
-# COMMAND-LINE ENTRY POINT
+# MAIN FUNCTIONS
+def load(filename_or_stream):
+    with compoundfiles.CompoundFileReader(filename_or_stream) as doc:
+        doc.rtf_attachments = 0
+        return load_message_stream(doc.root, True, doc)
 
 
-if __name__ == "__main__":
-    # If no command-line arguments are given, convert the .msg
-    # file on STDIN to .eml format on STDOUT.
-    if len(sys.argv) <= 1:
-        print(load(sys.stdin), file=sys.stdout)
+def load_message_stream(entry, is_top_level, doc):
+    # Load stream data.
+    props = None
+    try:
+        props = parse_properties(entry['__properties_version1.0'], is_top_level, entry, doc)
+    except (KeyError, IndexError):
+        raise TypeError
 
-    # Otherwise, for each file mentioned on the command-line,
-    # convert it and save it to a file with ".eml" appended
-    # to the name.
+    # Construct the MIME message....
+    msg = email.message.EmailMessage()
+
+    # Add the raw headers, if known.
+    if 'TRANSPORT_MESSAGE_HEADERS' in props:
+        # Get the string holding all of the headers.
+        headers = props['TRANSPORT_MESSAGE_HEADERS']
+        if isinstance(headers, bytes):
+            headers = headers.decode("utf-8")
+
+        # Remove content-type header because the body we can get this
+        # way is just the plain-text portion of the email and whatever
+        # Content-Type header was in the original is not valid for
+        # reconstructing it this way.
+        headers = re.sub("Content-Type: .*(\n\s.*)*\n", "", headers, re.I)
+
+        # Parse them.
+        headers = email.parser.HeaderParser(policy=email.policy.default).parsestr(headers)
+
+        # Copy them into the message object.
+        for header, value in headers.items():
+            msg[header] = value
+
     else:
-        for fn in sys.argv[1:]:
-            print(fn + "...")
-            msg = load(fn)
-            with open(fn + ".eml", "wb") as f:
-                f.write(msg.as_bytes())
+        # Construct common headers from metadata.
+
+        if 'MESSAGE_DELIVERY_TIME' in props:
+            msg['Date'] = formatdate(props['MESSAGE_DELIVERY_TIME'].timestamp())
+            del props['MESSAGE_DELIVERY_TIME']
+
+        if 'SENDER_NAME' in props:
+            if 'SENT_REPRESENTING_NAME' in props:
+                if props['SENT_REPRESENTING_NAME']:
+                    if props['SENDER_NAME'] != props['SENT_REPRESENTING_NAME']:
+                        props['SENDER_NAME'] += " (" + props['SENT_REPRESENTING_NAME'] + ")"
+                del props['SENT_REPRESENTING_NAME']
+            if props['SENDER_NAME']:
+                msg['From'] = formataddr((props['SENDER_NAME'], ""))
+            del props['SENDER_NAME']
+
+        if 'DISPLAY_TO' in props:
+            if props['DISPLAY_TO']:
+                msg['To'] = props['DISPLAY_TO']
+            del props['DISPLAY_TO']
+
+        if 'DISPLAY_CC' in props:
+            if props['DISPLAY_CC']:
+                msg['CC'] = props['DISPLAY_CC']
+            del props['DISPLAY_CC']
+
+        if 'DISPLAY_BCC' in props:
+            if props['DISPLAY_BCC']:
+                msg['BCC'] = props['DISPLAY_BCC']
+            del props['DISPLAY_BCC']
+
+        if 'SUBJECT' in props:
+            if props['SUBJECT']:
+                msg['Subject'] = props['SUBJECT']
+            del props['SUBJECT']
+
+    # Add the plain-text body from the BODY field.
+    if 'BODY' in props:
+        body = props['BODY']
+        if isinstance(body, str):
+            msg.set_content(body, cte='quoted-printable')
+        else:
+            msg.set_content(body, maintype="text", subtype="plain", cte='8bit')
+
+    # Plain-text is not availabe. Use the rich text version.
+    else:
+        doc.rtf_attachments += 1
+        fn = "messagebody_{}.rtf".format(doc.rtf_attachments)
+
+        msg.set_content(
+            "<no plain text message body --- see attachment {}>".format(fn),
+            cte='quoted-printable')
+
+        # Decompress the value to Rich Text Format.
+        try:
+            rtf = props['RTF_COMPRESSED']
+            rtf = decompress(rtf)
+
+            # Add RTF file as an attachment.
+            msg.add_attachment(
+                rtf,
+                maintype="text", subtype="rtf",
+                filename=fn)
+        except KeyError:
+            pass
+
+    # # Copy over string values of remaining properties as headers
+    # # so we don't lose any information.
+    # for k, v in props.items():
+    #   if k == 'RTF_COMPRESSED': continue # not interested, save output
+    #   msg[k] = str(v)
+
+    # Add attachments.
+    for stream in entry:
+        if stream.name.startswith("__attach_version1.0_#"):
+            process_attachment(msg, stream, doc)
+
+    return msg
+
+
+def process_attachment(msg, entry, doc):
+    # Load attachment stream.
+    props = parse_properties(entry['__properties_version1.0'], False, entry, doc)
+
+    # The attachment content...
+    try:
+        blob = props['ATTACH_DATA_BIN']
+
+        # Get the filename and MIME type of the attachment.
+        filename = props.get("ATTACH_LONG_FILENAME") or props.get("ATTACH_FILENAME") or props.get("DISPLAY_NAME")
+        if isinstance(filename, bytes):
+            filename = filename.decode("utf8")
+
+        mime_type = props.get('ATTACH_MIME_TAG', 'application/octet-stream')
+        if isinstance(mime_type, bytes):
+            mime_type = mime_type.decode("utf8")
+
+        filename = os.path.basename(filename)
+
+        # Python 3.6.
+        if isinstance(blob, str):
+            msg.add_attachment(
+                blob,
+                filename=filename)
+        elif isinstance(blob, bytes):
+            msg.add_attachment(
+                blob,
+                maintype=mime_type.split("/", 1)[0], subtype=mime_type.split("/", 1)[-1],
+                filename=filename)
+        else:  # a Message instance
+            msg.add_attachment(
+                blob,
+                filename=filename)
+    except KeyError:
+        pass
+
+
+def parse_properties(properties, is_top_level, container, doc):
+    # Read a properties stream and return a Python dictionary
+    # of the fields and values, using human-readable field names
+    # in the mapping at the top of this module.
+
+    # Load stream content.
+    with doc.open(properties) as stream:
+        stream = stream.read()
+
+    # Skip header.
+    i = (32 if is_top_level else 24)
+
+    # Read 16-byte entries.
+    ret = {}
+    while i < len(stream):
+        # Read the entry.
+        property_type = stream[i+0:i+2]
+        property_tag = stream[i+2:i+4]
+        flags = stream[i+4:i+8]
+        value = stream[i+8:i+16]
+        i += 16
+
+        # Turn the byte strings into numbers and look up the property type.
+        property_type = property_type[0] + (property_type[1] << 8)
+        property_tag = property_tag[0] + (property_tag[1] << 8)
+        if property_tag not in property_tags:
+            continue  # should not happen
+        tag_name, _ = property_tags[property_tag]
+        tag_type = property_types.get(property_type)
+
+        # Fixed Length Properties.
+        if isinstance(tag_type, FixedLengthValueLoader):
+            value = tag_type.load(value)
+
+        # Variable Length Properties.
+        elif isinstance(tag_type, VariableLengthValueLoader):
+            value_length = stream[i+8:i+12]  # not used
+
+            # Look up the stream in the document that holds the value.
+            streamname = "__substg1.0_{0:0{1}X}{2:0{3}X}".format(property_tag, 4, property_type, 4)
+            try:
+                with doc.open(container[streamname]) as innerstream:
+                    value = innerstream.read()
+            except:
+                # Stream isn't present!
+                print("stream missing", streamname, file=sys.stderr)
+                continue
+
+            value = tag_type.load(value)
+
+        elif isinstance(tag_type, EMBEDDED_MESSAGE):
+            # Look up the stream in the document that holds the attachment.
+            streamname = "__substg1.0_{0:0{1}X}{2:0{3}X}".format(property_tag, 4, property_type, 4)
+            try:
+                value = container[streamname]
+            except:
+                # Stream isn't present!
+                print("stream missing", streamname, file=sys.stderr)
+                continue
+            value = tag_type.load(value, doc)
+
+        else:
+            # unrecognized type
+            print("unhandled property type", hex(property_type), file=sys.stderr)
+            continue
+
+        ret[tag_name] = value
+
+    return ret
