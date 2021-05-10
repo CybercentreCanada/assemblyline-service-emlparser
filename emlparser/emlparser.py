@@ -12,7 +12,7 @@ from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
 
-from compoundfiles import CompoundFileInvalidMagicError
+from compoundfiles import CompoundFileInvalidMagicError, CompoundFileNoMiniFatError
 from emlparser.convert_outlook.outlookmsgfile import load as msg2eml
 from ipaddress import IPv4Address, ip_address
 from tempfile import mkstemp
@@ -57,6 +57,10 @@ class EmlParser(ServiceBase):
             else:
                 # This isn't an Office file to be converted (least not with this tool)
                 pass
+        except CompoundFileNoMiniFatError:
+            # Has headers but no content
+            request.result = Result()
+            return
         except TypeError:
             if 'document/office/unknown' == request.file_type:
                 # Composite file but not an email
