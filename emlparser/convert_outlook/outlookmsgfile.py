@@ -724,7 +724,11 @@ def load_message_stream(entry, is_top_level, doc):
 
 def process_attachment(msg, entry, doc):
     # Load attachment stream.
-    props = parse_properties(entry['__properties_version1.0'], False, entry, doc)
+    props = None
+    try:
+        props = parse_properties(entry['__properties_version1.0'], False, entry, doc)
+    except KeyError:
+        return
 
     # The attachment content...
     try:
