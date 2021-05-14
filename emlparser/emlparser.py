@@ -50,7 +50,7 @@ class EmlParser(ServiceBase):
             content_str = msg2eml(request.file_path).as_bytes()
         except CompoundFileInvalidMagicError:
             cs_hex = content_str.hex()
-            # Starts with a msg file header or container RootEntry within the file
+            # Starts with a msg file header or contains RootEntry within the file
             if cs_hex.startswith('E4 52 5C 7B 8C D8 A7 4D AE B1 53 78 D0 29'.replace(" ", "").lower()) or \
                     '52 00 6F 00 6F 00 74 00 20 00 45 00 6E 00 74 00 72 00 79'.replace(" ", "").lower() in cs_hex:
                 # OneNote file or extracted stream containing msg file. Extract service should pull these out.
