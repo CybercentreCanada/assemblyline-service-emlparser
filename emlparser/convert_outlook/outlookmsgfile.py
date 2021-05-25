@@ -615,8 +615,8 @@ def load_message_stream(entry, is_top_level, doc):
     props = None
     try:
         props = parse_properties(entry['__properties_version1.0'], is_top_level, entry, doc)
-    except (KeyError, IndexError):
-        raise TypeError
+    except (KeyError, IndexError) as e:
+        raise e
 
     # Construct the MIME message....
     msg = email.message.EmailMessage()
@@ -791,7 +791,7 @@ def parse_properties(properties, is_top_level, container, doc):
         if property_tag not in property_tags:
             continue  # should not happen
         tag_name, _ = property_tags[property_tag]
-        tag_type = property_types.get(property_type)
+        tag_type = property_types.get(property_type, None)
 
         # Fixed Length Properties.
         if isinstance(tag_type, FixedLengthValueLoader):
