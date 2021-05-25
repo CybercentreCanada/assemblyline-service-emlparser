@@ -57,7 +57,7 @@ class EmlParser(ServiceBase):
                 self.log.info('File contains a MSG file. Did Extract pull them out?')
                 request.result = Result()
                 return
-            # Office file passed but not an email
+            # Office file passed but not an email (example: Excel, Word)
             elif 'document/office' in info['type']:
                 request.result = Result()
                 return
@@ -68,6 +68,11 @@ class EmlParser(ServiceBase):
             # Has headers but no content
             request.result = Result()
             return
+        except KeyError:
+            # Office file passed but not an email (example: Visio)
+            if 'document/office/unknown' in info['type']:
+                request.result = Result()
+                return
 
         parsed_eml = parser.decode_email_bytes(content_str)
         result = Result()
