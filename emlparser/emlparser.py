@@ -36,7 +36,6 @@ class EmlParser(ServiceBase):
     def execute(self, request):
         parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         content_str = request.file_contents
-        info = fileinfo(request.file_path)
 
         # Attempt conversion of Outlook file -> eml
         if request.file_type == 'document/office/email':
