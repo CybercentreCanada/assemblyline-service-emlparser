@@ -36,43 +36,10 @@ class EmlParser(ServiceBase):
     def execute(self, request):
         parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         content_str = request.file_contents
-        info = fileinfo(request.file_path)
 
-        # Eliminate invalid Office candidates
-        if 'document/office/unknown' == info['type'] and \
-                any(word in info['magic'].lower() for word in ["can't", "cannot"]):
-            # An Office file that can't be converted
-            request.result = Result()
-            return
-
-        # Attempt conversion of file
-        try:
+        # Attempt conversion of Outlook file -> eml
+        if request.file_type == 'document/office/email':
             content_str = msg2eml(request.file_path).as_bytes()
-        except CompoundFileInvalidMagicError:
-            cs_hex = content_str.hex()
-            # Starts with a msg file header or contains RootEntry within the file
-            if cs_hex.startswith('E4 52 5C 7B 8C D8 A7 4D AE B1 53 78 D0 29'.replace(" ", "").lower()) or \
-                    '52 00 6F 00 6F 00 74 00 20 00 45 00 6E 00 74 00 72 00 79'.replace(" ", "").lower() in cs_hex:
-                # OneNote file or extracted stream containing msg file. Extract service should pull these out.
-                self.log.info('File contains a MSG file. Did Extract pull them out?')
-                request.result = Result()
-                return
-            # Office file passed but not an email (example: Excel, Word)
-            elif 'document/office' in info['type']:
-                request.result = Result()
-                return
-            else:
-                # This isn't an Office file to be converted (least not with this tool)
-                pass
-        except CompoundFileNoMiniFatError:
-            # Has headers but no content
-            request.result = Result()
-            return
-        except KeyError:
-            # Office file passed but not an email (example: Visio)
-            if 'document/office/unknown' in info['type']:
-                request.result = Result()
-                return
 
         parsed_eml = parser.decode_email_bytes(content_str)
         result = Result()
