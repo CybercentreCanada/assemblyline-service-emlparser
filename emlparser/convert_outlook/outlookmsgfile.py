@@ -617,6 +617,12 @@ def load_message_stream(entry, is_top_level, doc):
     # Load stream data.
     props = None
     try:
+        if '__properties_version1.0' not in entry:
+            # Find nested directory within children
+            for child in entry:
+                if child.isdir and '__properties_version1.0' in child:
+                    entry = child
+                    break
         props = parse_properties(entry['__properties_version1.0'], is_top_level, entry, doc)
     except (KeyError, IndexError) as e:
         raise e
