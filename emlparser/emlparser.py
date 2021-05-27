@@ -7,13 +7,13 @@ import re
 import tempfile
 
 from assemblyline.odm import IP_ONLY_REGEX, EMAIL_REGEX
-from assemblyline.common.identify import fileinfo
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
 
-from compoundfiles import CompoundFileInvalidMagicError, CompoundFileNoMiniFatError
+from compoundfiles import CompoundFileInvalidMagicError
 from emlparser.convert_outlook.outlookmsgfile import load as msg2eml
+from mailparser.utils import msgconvert
 from ipaddress import IPv4Address, ip_address
 from tempfile import mkstemp
 from urllib.parse import urlparse
@@ -37,9 +37,16 @@ class EmlParser(ServiceBase):
         parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         content_str = request.file_contents
 
-        # Attempt conversion of Outlook file -> eml
-        if request.file_type == 'document/office/email':
+        # Attempt conversion of potential Outlook file -> eml
+        try:
             content_str = msg2eml(request.file_path).as_bytes()
+        except CompoundFileInvalidMagicError:
+            # Not an Office file to be converted
+            pass
+        except:
+            # Try using mailparser to convert
+            converted_path, _ = msgconvert(request.file_path)
+            content_str = open(converted_path, 'rb').read()
 
         parsed_eml = parser.decode_email_bytes(content_str)
         result = Result()

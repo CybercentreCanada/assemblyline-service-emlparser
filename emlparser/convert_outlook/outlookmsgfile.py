@@ -12,17 +12,18 @@
 # https://msdn.microsoft.com/en-us/library/ee157583(v=exchg.80).aspx
 # https://blogs.msdn.microsoft.com/openspecification/2009/11/06/msg-file-format-part-1/
 
-import compoundfiles
 import email.message
 import email.parser
 import email.policy
-import re
 import os
+import re
 import sys
 
-from email.utils import parsedate_to_datetime, formatdate, formataddr
-from compressed_rtf import decompress
+from email.utils import formataddr, formatdate, parsedate_to_datetime
 from functools import reduce
+
+import compoundfiles
+from compressed_rtf import decompress
 
 
 # PROPERTY VALUE LOADERS
@@ -108,7 +109,10 @@ class UNICODE(VariableLengthValueLoader):
         # value is a bytestring. I haven't seen specified what character encoding
         # is used when the Unicode storage type is not used, so we'll assume it's
         # ASCII or Latin-1 like but we'll use UTF-8 to cover the bases.
-        return value.decode("utf16")
+        try:
+            return value.decode("utf16")
+        except UnicodeDecodeError:
+            return value.decode("latin-1", 'replace')
 
 # TODO: The other variable-length tag types are "CLSID", "OBJECT".
 
@@ -614,6 +618,12 @@ def load_message_stream(entry, is_top_level, doc):
     # Load stream data.
     props = None
     try:
+        if '__properties_version1.0' not in entry:
+            # Find nested directory within children
+            for child in entry:
+                if child.isdir and '__properties_version1.0' in child:
+                    entry = child
+                    break
         props = parse_properties(entry['__properties_version1.0'], is_top_level, entry, doc)
     except (KeyError, IndexError) as e:
         raise e
@@ -743,7 +753,7 @@ def process_attachment(msg, entry, doc):
         if isinstance(mime_type, bytes):
             mime_type = mime_type.decode("utf8")
 
-        filename = os.path.basename(filename)
+        filename = os.path.basename(filename) if filename else '<no_name_attachment>'
 
         # Python 3.6.
         if isinstance(blob, str):
