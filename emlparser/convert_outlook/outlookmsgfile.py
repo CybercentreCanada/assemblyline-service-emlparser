@@ -12,17 +12,19 @@
 # https://msdn.microsoft.com/en-us/library/ee157583(v=exchg.80).aspx
 # https://blogs.msdn.microsoft.com/openspecification/2009/11/06/msg-file-format-part-1/
 
-import compoundfiles
 import email.message
 import email.parser
 import email.policy
-import re
 import os
+import re
 import sys
 
-from email.utils import parsedate_to_datetime, formatdate, formataddr
-from compressed_rtf import decompress
+from builtins import isinstance
+from email.utils import formataddr, formatdate, parsedate_to_datetime
 from functools import reduce
+
+import compoundfiles
+from compressed_rtf import decompress
 
 
 # PROPERTY VALUE LOADERS
@@ -752,7 +754,7 @@ def process_attachment(msg, entry, doc):
         if isinstance(mime_type, bytes):
             mime_type = mime_type.decode("utf8")
 
-        filename = os.path.basename(filename)
+        filename = os.path.basename(filename) if filename else '<no_name_attachment>'
 
         # Python 3.6.
         if isinstance(blob, str):
