@@ -69,14 +69,17 @@ class EmlParser(ServiceBase):
             kv_section = ResultSection('Email Headers', body_format=BODY_FORMAT.KEY_VALUE, parent=result)
 
             # Basic tags
-            if header.get('from', None) and re.match(EMAIL_REGEX, header['from'].strip()):
-                kv_section.add_tag("network.email.address", header['from'].strip())
+            from_addr = header['from'].strip()
+            if header.get('from', None) and re.match(EMAIL_REGEX, from_addr):
+                kv_section.add_tag("network.email.address", from_addr)
             [kv_section.add_tag("network.email.address", to.strip())
              for to in header['to'] if re.match(EMAIL_REGEX, to.strip())]
 
             kv_section.add_tag("network.email.date", str(header['date']).strip())
-            if header['subject'].strip():
-                kv_section.add_tag("network.email.subject", header['subject'].strip())
+
+            subject = header['subject'].strip()
+            if subject:
+                kv_section.add_tag("network.email.subject", subject)
 
             # Add CCs to body and tags
             if 'cc' in header:
