@@ -1,6 +1,7 @@
 import base64
 import datetime
 import eml_parser
+import email
 import json
 import os
 import re
@@ -11,6 +12,7 @@ from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
 
+from bs4 import BeautifulSoup
 from compoundfiles import CompoundFileInvalidMagicError
 from emlparser.convert_outlook.outlookmsgfile import load as msg2eml
 from mailparser.utils import msgconvert
@@ -47,6 +49,22 @@ class EmlParser(ServiceBase):
             # Try using mailparser to convert
             converted_path, _ = msgconvert(request.file_path)
             content_str = open(converted_path, 'rb').read()
+
+        # Assume this is an email saved in HTML format
+        if request.file_type == 'code/html':
+            # Parse according to how Microsoft exports MSG -> HTML
+            if b'Microsoft' in content_str:
+                a = BeautifulSoup(content_str, 'lxml')
+                paragraphs = a.body.find_all('p')
+                html_email = email.message_from_bytes(content_str)
+                for p in paragraphs:
+                    if any(valid_header in p.text for valid_header in ['To', 'Cc', 'Sent', 'From', 'Subject']):
+                        h_key, h_value = p.text.replace('\xa0', '').replace('\r\n', ' ').split(':', 1)
+                        html_email[h_key] = h_value
+                        # Subject line indicates the end of the email header, beginning of body
+                        if 'Subject' in p.text:
+                            break
+                content_str = html_email.as_bytes()
 
         parsed_eml = parser.decode_email_bytes(content_str)
         result = Result()

@@ -2,7 +2,7 @@ name: EmlParser
 version: $SERVICE_TAG
 description: Parse emails using GOVCERT-LU eml_parser library while extracting header information, attachments, URIs...
 
-accepts: document/email|document/office/email
+accepts: document/email|document/office/email|code/html
 rejects: empty|metadata/.*
 
 stage: CORE
