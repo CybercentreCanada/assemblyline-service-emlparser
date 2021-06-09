@@ -55,8 +55,9 @@ class EmlParser(ServiceBase):
             parsed_html = BeautifulSoup(content_str, 'lxml')
             html_email = email.message_from_bytes(content_str)
             valid_headers = ['To:', 'Cc:', 'Sent:', 'From:', 'Subject:']
-            if not any(header in parsed_html.body.text for header in valid_headers):
+            if not parsed_html or not any(header in parsed_html.body.text for header in valid_headers):
                 # We can assume this is just an HTML doc, one of which we're not meant to process
+                # Or this is a file that identified as 'code/html' but isn't really HTML
                 request.result = Result()
                 return
 
