@@ -53,14 +53,15 @@ class EmlParser(ServiceBase):
         # Assume this is an email saved in HTML format
         if request.file_type == 'code/html':
             parsed_html = BeautifulSoup(content_str, 'lxml')
-            html_email = email.message_from_bytes(content_str)
             valid_headers = ['To:', 'Cc:', 'Sent:', 'From:', 'Subject:']
+
             if not parsed_html or not any(header in parsed_html.body.text for header in valid_headers):
                 # We can assume this is just an HTML doc, one of which we're not meant to process
                 # Or this is a file that identified as 'code/html' but isn't really HTML
                 request.result = Result()
                 return
 
+            html_email = email.message_from_bytes(content_str)
             paragraphs = parsed_html.body.find_all('p')
             # Parse according to how Microsoft exports MSG -> HTML
             if b'Microsoft' in content_str:
