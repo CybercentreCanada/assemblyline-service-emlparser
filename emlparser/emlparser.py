@@ -57,13 +57,41 @@ class EmlParser(ServiceBase):
                 a = BeautifulSoup(content_str, 'lxml')
                 paragraphs = a.body.find_all('p')
                 html_email = email.message_from_bytes(content_str)
-                for p in paragraphs:
-                    if any(valid_header in p.text for valid_header in ['To', 'Cc', 'Sent', 'From', 'Subject']):
-                        h_key, h_value = p.text.replace('\xa0', '').replace('\r\n', ' ').split(':', 1)
-                        html_email[h_key] = h_value
-                        # Subject line indicates the end of the email header, beginning of body
-                        if 'Subject' in p.text:
-                            break
+                valid_headers = ['To:', 'Cc:', 'Sent:', 'From:', 'Subject:']
+                # Likely an email that was exported with original email headers
+                if any(header in paragraphs[0] for header in valid_headers):
+                    for p in paragraphs:
+                        if any(valid_header in p.text for valid_header in valid_headers):
+                            h_key, h_value = p.text.replace('\xa0', '').replace('\r\n', ' ').split(':', 1)
+                            html_email[h_key] = h_value
+                            # Subject line indicates the end of the email header, beginning of body
+                            if 'Subject' in p.text:
+                                break
+                # Assuming this an email thread missing top-level header info, aggregate headers from previous messages
+                else:
+                    header_agg = {
+                        "From": [],
+                        "To": [],
+                        "Cc": [],
+                        "Sent": [],
+                    }
+                    subject = None
+
+                    for div in a.find_all('div'):
+                        # Looking for line breaks that are rendered in HTML
+                        if "border-top:solid" in div.attrs.get('style', ""):
+                            # Usually expected headers are within the div
+                            for h in div.text.split('\n'):
+                                if any(header in h for header in valid_headers):
+                                    h_key, h_value = h.split(':', 1)
+                                    if h_key == "Subject":
+                                        subject = h_value
+                                    else:
+                                        header_agg[h_key].append(h_value)
+                    # Assign aggregated info to email object
+                    html_email['Subject'] = subject
+                    for key, value in header_agg.items():
+                        html_email[key] = '; '.join(value)
                 content_str = html_email.as_bytes()
 
         parsed_eml = parser.decode_email_bytes(content_str)
