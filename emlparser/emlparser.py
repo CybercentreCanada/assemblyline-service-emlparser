@@ -53,7 +53,7 @@ class EmlParser(ServiceBase):
         # Assume this is an email saved in HTML format
         if request.file_type == 'code/html':
             parsed_html = BeautifulSoup(content_str, 'lxml')
-            valid_headers = ['To:', 'Cc:', 'Sent:', 'From:', 'Subject:']
+            valid_headers = ['To:', 'Cc:', 'Sent:', 'From:', 'Subject:', "Reply-To:"]
 
             if not parsed_html.body or not any(header in parsed_html.body.text for header in valid_headers):
                 # We can assume this is just an HTML doc (or lacking body), one of which we can't process
@@ -61,9 +61,15 @@ class EmlParser(ServiceBase):
                 return
 
             html_email = email.message_from_bytes(content_str)
-            paragraphs = parsed_html.body.find_all('p')
-            # Parse according to how Microsoft exports MSG -> HTML
-            if b'Microsoft' in content_str:
+            generator_metadata_content = ''
+            for meta in parsed_html.find_all('meta'):
+                if meta.attrs.get('name', None) == 'Generator':
+                    generator_metadata_content = meta.attrs.get('content', '')
+                    break
+
+            # Process HTML emails generated from Outlook
+            if generator_metadata_content == "Microsoft Word 15":
+                paragraphs = parsed_html.body.find_all('p')
                 # Likely an email that was exported with original email headers
                 if any(header in paragraphs[0] for header in valid_headers):
                     for p in paragraphs:
@@ -73,32 +79,41 @@ class EmlParser(ServiceBase):
                             # Subject line indicates the end of the email header, beginning of body
                             if 'Subject' in p.text:
                                 break
-                # Assuming this an email thread missing top-level header info, aggregate headers from previous messages
-                else:
-                    header_agg = {
-                        "From": [],
-                        "To": [],
-                        "Cc": [],
-                        "Sent": [],
-                    }
-                    subject = None
+            # Process HTML emails from MS Exchange Server or missing top-level headers (aggregate headers)
+            elif generator_metadata_content == "Microsoft Word 15 (filtered medium)" or \
+                    generator_metadata_content == "Microsoft Exchange Server":
+                header_agg = {
+                    "From": [],
+                    "To": [],
+                    "Cc": [],
+                    "Sent": [],
+                    "Reply-To": []
+                }
+                subject = None
+                for div in parsed_html.find_all('div'):
+                    # Header information within divs
+                    if any(header in div.text for header in valid_headers):
+                        # Usually expect headers to be \n separated in text output
+                        for h in div.text.split('\n'):
+                            if any(header in h for header in valid_headers):
+                                h_key, h_value = h.split(':', 1)
 
-                    for div in parsed_html.find_all('div'):
-                        # Looking for line breaks that are rendered in HTML
-                        if "border-top:solid" in div.attrs.get('style', ""):
-                            # Usually expected headers are within the div
-                            for h in div.text.split('\n'):
-                                if any(header in h for header in valid_headers):
-                                    h_key, h_value = h.split(':', 1)
-                                    if h_key == "Subject":
-                                        subject = h_value
-                                    else:
-                                        header_agg[h_key].append(h_value)
-                    # Assign aggregated info to email object
-                    html_email['Subject'] = subject
-                    for key, value in header_agg.items():
-                        html_email[key] = '; '.join(value)
-                content_str = html_email.as_bytes()
+                                # Implying some malformed message got mixed with the headers of another message
+                                if h_key not in valid_headers:
+                                    for header in valid_headers:
+                                        if header in h:
+                                            h_key = header[:-1]
+
+                                # Use the latest message's subject (this maintains FW, RE, etc.)
+                                if h_key == "Subject" and not subject:
+                                    subject = h_value
+                                elif h_key != "Subject":
+                                    header_agg[h_key].append(h_value)
+                # Assign aggregated info to email object
+                html_email['Subject'] = subject
+                for key, value in header_agg.items():
+                    html_email[key] = '; '.join(value)
+            content_str = html_email.as_bytes()
 
         parsed_eml = parser.decode_email_bytes(content_str)
         result = Result()
