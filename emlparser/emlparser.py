@@ -146,8 +146,11 @@ class EmlParser(ServiceBase):
 
         if "from" in header or 'to' in header:
             all_uri = set()
-
+            body_words = set()
             for body_counter, body in enumerate(parsed_eml['body']):
+                body_text = BeautifulSoup(body['content'].text)
+                body_words.update(body_text.split())
+                body_words.update(re.split(r'\W+', body_text))
                 if request.get_param('extract_body_text'):
                     fd, path = mkstemp()
                     with open(path, 'w') as f:
@@ -157,6 +160,8 @@ class EmlParser(ServiceBase):
                 if "uri" in body:
                     for uri in body['uri']:
                         all_uri.add(uri)
+            # Words in the email body, used by extract to guess passwords
+            request.temp_submission_data['email_body'] = list(body_words)
 
             kv_section = ResultSection('Email Headers', body_format=BODY_FORMAT.KEY_VALUE, parent=result)
 
