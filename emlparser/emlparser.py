@@ -155,7 +155,7 @@ class EmlParser(ServiceBase):
             all_uri = set()
             body_words = set()
             for body_counter, body in enumerate(parsed_eml['body']):
-                body_text = BeautifulSoup(body['content'].text)
+                body_text = BeautifulSoup(body['content']).text
                 body_words.update(body_text.split())
                 body_words.update(re.split(r'\W+', body_text))
                 if request.get_param('extract_body_text'):
