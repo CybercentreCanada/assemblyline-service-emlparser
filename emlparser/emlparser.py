@@ -34,6 +34,7 @@ class EmlParser(ServiceBase):
         if isinstance(obj, datetime):
             serial = obj.isoformat()
             return serial
+        return obj
 
     def execute(self, request):
         parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
@@ -211,11 +212,14 @@ class EmlParser(ServiceBase):
             header.pop('received', None)
             header.update(extra_header)
 
+            # Convert to common format
+            header['date'] = [self.json_serial(header['date'])]
+
             # Replace with aggregated date(s) if any available
             if header_agg['Date']:
                 # Replace
-                if (isinstance(header['date'], list) and 'Thu, 01 Jan 1970 00:00:00 +0000' in header['date']) or \
-                        (isinstance(header['date'], datetime) and header['date'] == datetime.utcfromtimestamp(0)):
+                if any(default_date in header['date']
+                        for default_date in ['1970-01-01T00:00:00', 'Thu, 01 Jan 1970 00:00:00 +0000']):
                     header['date'] = list(header_agg['Date'])
                 # Append
                 else:
