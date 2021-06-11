@@ -145,10 +145,8 @@ class EmlParser(ServiceBase):
             content_str = html_email.as_bytes()
 
         # Verify this is truly an eml file before attempting parsing.
-        # Assumption: contents should be able to decode to UTF-8
-        try:
-            content_str.decode()
-        except UnicodeDecodeError:
+        # Assumption: Contents should contain no null bytes
+        if b'\x00' in content_str:
             request.result = Result()
             return
 
