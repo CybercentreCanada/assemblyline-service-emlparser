@@ -146,9 +146,7 @@ class EmlParser(ServiceBase):
 
         # Verify this is truly an eml file before attempting parsing.
         # Assumption: Contents should contain no null bytes
-        if b'\x00' in content_str:
-            request.result = Result()
-            return
+        content_str = content_str.replace(b'\x00', b'')
 
         parsed_eml = parser.decode_email_bytes(content_str)
         result = Result()
