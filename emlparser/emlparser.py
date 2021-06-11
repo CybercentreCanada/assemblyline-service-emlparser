@@ -1,5 +1,4 @@
 import base64
-import datetime
 import eml_parser
 import email
 import json
@@ -14,6 +13,7 @@ from assemblyline_v4_service.common.task import MaxExtractedExceeded
 
 from bs4 import BeautifulSoup
 from compoundfiles import CompoundFileInvalidMagicError
+from datetime import datetime
 from emlparser.convert_outlook.outlookmsgfile import load as msg2eml
 from mailparser.utils import msgconvert
 from ipaddress import IPv4Address, ip_address
@@ -31,7 +31,7 @@ class EmlParser(ServiceBase):
 
     @staticmethod
     def json_serial(obj):
-        if isinstance(obj, datetime.datetime):
+        if isinstance(obj, datetime):
             serial = obj.isoformat()
             return serial
 
@@ -211,7 +211,8 @@ class EmlParser(ServiceBase):
             # Replace with aggregated date(s) if any available
             if header_agg['Date']:
                 # Replace
-                if 'Thu, 01 Jan 1970 00:00:00 +0000' in header['date']:
+                if (isinstance(header['date'], list) and 'Thu, 01 Jan 1970 00:00:00 +0000' in header['date']) or \
+                        (isinstance(header['date'], datetime) and header['date'] == datetime.utcfromtimestamp(0)):
                     header['date'] = list(header_agg['Date'])
                 # Append
                 else:
