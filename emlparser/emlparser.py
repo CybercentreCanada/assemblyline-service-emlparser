@@ -1,5 +1,4 @@
 import base64
-import datetime
 import eml_parser
 import email
 import json
@@ -14,6 +13,7 @@ from assemblyline_v4_service.common.task import MaxExtractedExceeded
 
 from bs4 import BeautifulSoup
 from compoundfiles import CompoundFileInvalidMagicError
+from datetime import datetime
 from emlparser.convert_outlook.outlookmsgfile import load as msg2eml
 from mailparser.utils import msgconvert
 from ipaddress import IPv4Address, ip_address
@@ -31,9 +31,10 @@ class EmlParser(ServiceBase):
 
     @staticmethod
     def json_serial(obj):
-        if isinstance(obj, datetime.datetime):
+        if isinstance(obj, datetime):
             serial = obj.isoformat()
             return serial
+        return obj
 
     def execute(self, request):
         parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
@@ -61,12 +62,15 @@ class EmlParser(ServiceBase):
         # Assume this is an email saved in HTML format
         if request.file_type == 'code/html':
             parsed_html = BeautifulSoup(content_str, 'lxml')
-            valid_headers = ['To:', 'Cc:', 'Sent:', 'From:', 'Subject:', "Reply-To:", "Date:"]
+            valid_headers = ['To:', 'Cc:', 'Sent:', 'From:', 'Subject:', "Reply-To:"]
 
             if not parsed_html.body or not any(header in parsed_html.body.text for header in valid_headers):
                 # We can assume this is just an HTML doc (or lacking body), one of which we can't process
                 request.result = Result()
                 return
+
+            # Can't trust 'Date' to determine the difference between HTML docs vs HTML emails
+            valid_headers.append('Date:')
 
             html_email = email.message_from_bytes(content_str)
             generator_metadata_content = ''
@@ -139,6 +143,9 @@ class EmlParser(ServiceBase):
                 for key, value in header_agg.items():
                     html_email[key] = '; '.join(value)
             content_str = html_email.as_bytes()
+
+        # Replace presence of null bytes (if any) to shorten processing time of potential invalid submissions
+        content_str = content_str.replace(b'\x00', b'')
 
         parsed_eml = parser.decode_email_bytes(content_str)
         result = Result()
@@ -213,10 +220,14 @@ class EmlParser(ServiceBase):
             header.pop('received', None)
             header.update(extra_header)
 
+            # Convert to common format
+            header['date'] = [self.json_serial(header['date'])]
+
             # Replace with aggregated date(s) if any available
             if header_agg['Date']:
                 # Replace
-                if 'Thu, 01 Jan 1970 00:00:00 +0000' in header['date']:
+                if any(default_date in header['date']
+                        for default_date in ['1970-01-01T00:00:00', 'Thu, 01 Jan 1970 00:00:00 +0000']):
                     header['date'] = list(header_agg['Date'])
                 # Append
                 else:
