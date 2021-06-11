@@ -61,12 +61,15 @@ class EmlParser(ServiceBase):
         # Assume this is an email saved in HTML format
         if request.file_type == 'code/html':
             parsed_html = BeautifulSoup(content_str, 'lxml')
-            valid_headers = ['To:', 'Cc:', 'Sent:', 'From:', 'Subject:', "Reply-To:", "Date:"]
+            valid_headers = ['To:', 'Cc:', 'Sent:', 'From:', 'Subject:', "Reply-To:"]
 
             if not parsed_html.body or not any(header in parsed_html.body.text for header in valid_headers):
                 # We can assume this is just an HTML doc (or lacking body), one of which we can't process
                 request.result = Result()
                 return
+
+            # Can't trust 'Date' to determine the difference between HTML docs vs HTML emails
+            valid_headers.append('Date:')
 
             html_email = email.message_from_bytes(content_str)
             generator_metadata_content = ''
