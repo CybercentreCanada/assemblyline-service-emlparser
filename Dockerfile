@@ -4,10 +4,12 @@ ENV SERVICE_PATH emlparser.emlparser.EmlParser
 
 USER root
 RUN echo 'deb http://deb.debian.org/debian stretch-backports main' >> /etc/apt/sources.list
-RUN apt-get update && apt-get install -y libemail-outlook-message-perl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libemail-outlook-message-perl git && rm -rf /var/lib/apt/lists/*
 
 USER assemblyline
-RUN pip install -U --no-cache-dir --user eml_parser compoundfiles compressed-rtf mail-parser bs4 lxml && rm -rf ~/.cache/pip
+
+# Temporary workaround until PR is merged: https://github.com/GOVCERT-LU/eml_parser/pull/59
+RUN pip install -U --no-cache-dir --user compoundfiles compressed-rtf mail-parser bs4 lxml git+https://github.com/cccs-rs/eml_parser.git && rm -rf ~/.cache/pip
 
 # Clone Extract service code
 WORKDIR /opt/al_service
