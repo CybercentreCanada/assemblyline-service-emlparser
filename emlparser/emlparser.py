@@ -144,8 +144,7 @@ class EmlParser(ServiceBase):
                     html_email[key] = '; '.join(value)
             content_str = html_email.as_bytes()
 
-        # Verify this is truly an eml file before attempting parsing.
-        # Assumption: Contents should contain no null bytes
+        # Replace presence of null bytes (if any) to shorten processing time of potential invalid submissions
         content_str = content_str.replace(b'\x00', b'')
 
         parsed_eml = parser.decode_email_bytes(content_str)
