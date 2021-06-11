@@ -144,6 +144,14 @@ class EmlParser(ServiceBase):
                     html_email[key] = '; '.join(value)
             content_str = html_email.as_bytes()
 
+        # Verify this is truly an eml file before attempting parsing.
+        # Assumption: contents should be able to decode to UTF-8
+        try:
+            content_str.decode()
+        except UnicodeDecodeError:
+            request.result = Result()
+            return
+
         parsed_eml = parser.decode_email_bytes(content_str)
         result = Result()
         header = parsed_eml['header']
