@@ -34,7 +34,14 @@ class EmlParser(ServiceBase):
         if isinstance(obj, datetime):
             serial = obj.isoformat()
             return serial
-        return obj
+        elif isinstance(obj, bytes):
+            try:
+                text = obj.decode('ascii')
+                return text
+            except UnicodeDecodeError:
+                b64 = base64.b64encode(obj)
+                return b64
+        return repr(obj)
 
     def execute(self, request):
         parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
@@ -255,10 +262,14 @@ class EmlParser(ServiceBase):
 
             if request.get_param('save_emlparser_output'):
                 fd, temp_path = tempfile.mkstemp(dir=self.working_directory)
+                attachments = parsed_eml['attachment']
+                # Remove raw attachments, all attachments up to MaxExtractedExceeded already extracted
+                for attachment in attachments:
+                    _ = attachment.pop('raw', None)
                 with os.fdopen(fd, "w") as myfile:
                     myfile.write(json.dumps(parsed_eml, default=self.json_serial))
                 request.add_supplementary(temp_path, "parsing.json",
-                                          "These are the raw results of running GOVCERT-LU's eml_parser")
+                                        "These are the raw results of running GOVCERT-LU's eml_parser")
         else:
             self.log.warning("emlParser could not parse EML; no useful information in result's headers")
 
