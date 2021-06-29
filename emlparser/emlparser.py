@@ -262,7 +262,7 @@ class EmlParser(ServiceBase):
 
             if request.get_param('save_emlparser_output'):
                 fd, temp_path = tempfile.mkstemp(dir=self.working_directory)
-                attachments = parsed_eml['attachment']
+                attachments = parsed_eml.get('attachment', [])
                 # Remove raw attachments, all attachments up to MaxExtractedExceeded already extracted
                 for attachment in attachments:
                     _ = attachment.pop('raw', None)
