@@ -16,6 +16,8 @@ enabled: true
 is_external: false
 licence_count: 0
 
+uses_temp_submission_data: true
+
 submission_params:
   - default: false
     name: extract_body_text
