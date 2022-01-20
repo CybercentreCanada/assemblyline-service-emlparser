@@ -53,7 +53,7 @@ class EmlParser(ServiceBase):
         except CompoundFileInvalidMagicError:
             # Not an Office file to be converted
             pass
-        except:
+        except Exception:
             # Try using mailparser to convert
             converted_path, _ = msgconvert(request.file_path)
             content_str = open(converted_path, 'rb').read()
@@ -202,8 +202,13 @@ class EmlParser(ServiceBase):
 
             # Add Tags for received IPs
             if 'received_ip' in header:
-                [kv_section.add_tag('network.static.ip', ip.strip())
-                 for ip in header['received_ip'] if isinstance(ip_address(ip), IPv4Address)]
+                for ip in header['received_ip']:
+                    ip = ip.strip()
+                    try:
+                        if isinstance(ip_address(ip), IPv4Address):
+                            kv_section.add_tag('network.static.ip', ip)
+                    except ValueError:
+                        pass
 
             # Add Tags for received Domains
             if 'received_domain' in header:
@@ -269,7 +274,7 @@ class EmlParser(ServiceBase):
                 with os.fdopen(fd, "w") as myfile:
                     myfile.write(json.dumps(parsed_eml, default=self.json_serial))
                 request.add_supplementary(temp_path, "parsing.json",
-                                        "These are the raw results of running GOVCERT-LU's eml_parser")
+                                          "These are the raw results of running GOVCERT-LU's eml_parser")
         else:
             self.log.warning("emlParser could not parse EML; no useful information in result's headers")
 
