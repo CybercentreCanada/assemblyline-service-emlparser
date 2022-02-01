@@ -247,7 +247,8 @@ class EmlParser(ServiceBase):
                 (kv_section.add_tag("network.email.date", str(date).strip()) for date in header_agg['Date'])
 
             # Remove filter out useless headers from results
-            [header.pop(h) for h in self.header_filter]
+            self.log.debug(header.keys())
+            [header.pop(h) for h in self.header_filter if h in header.keys()]
             kv_section.body = json.dumps(header, default=self.json_serial)
 
             if "attachment" in parsed_eml:
