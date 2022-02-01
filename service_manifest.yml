@@ -18,6 +18,9 @@ licence_count: 0
 
 uses_temp_submission_data: true
 
+config:
+  header_filter: []
+
 submission_params:
   - default: false
     name: extract_body_text

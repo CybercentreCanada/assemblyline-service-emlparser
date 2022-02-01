@@ -24,10 +24,10 @@ from urllib.parse import urlparse
 class EmlParser(ServiceBase):
     def __init__(self, config=None):
         super(EmlParser, self).__init__(config)
+        self.header_filter = config.get('header_filter', [])
 
     def start(self):
-        self.log.info(
-            f"start() from {self.service_attributes.name} service called")
+        self.log.info(f"start() from {self.service_attributes.name} service called")
 
     @staticmethod
     def json_serial(obj):
@@ -246,6 +246,8 @@ class EmlParser(ServiceBase):
                     header['date'] += list(header_agg['Date'])
                 (kv_section.add_tag("network.email.date", str(date).strip()) for date in header_agg['Date'])
 
+            # Remove filter out useless headers from results
+            [header.pop(h) for h in self.header_filter]
             kv_section.body = json.dumps(header, default=self.json_serial)
 
             if "attachment" in parsed_eml:
