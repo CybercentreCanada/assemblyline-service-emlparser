@@ -24,7 +24,9 @@ from urllib.parse import urlparse
 class EmlParser(ServiceBase):
     def __init__(self, config=None):
         super(EmlParser, self).__init__(config)
-        self.header_filter = config.get('header_filter', [])
+
+        #eml_parser headers are typically lowercased
+        self.header_filter = [filter.lower() for filter in config.get('header_filter', [])]
 
     def start(self):
         self.log.info(f"start() from {self.service_attributes.name} service called")
@@ -246,7 +248,7 @@ class EmlParser(ServiceBase):
                     header['date'] += list(header_agg['Date'])
                 (kv_section.add_tag("network.email.date", str(date).strip()) for date in header_agg['Date'])
 
-            # Remove filter out useless headers from results
+            # Filter out useless headers from results
             self.log.debug(header.keys())
             [header.pop(h) for h in self.header_filter if h in header.keys()]
             kv_section.body = json.dumps(header, default=self.json_serial)
