@@ -25,7 +25,7 @@ class EmlParser(ServiceBase):
     def __init__(self, config=None):
         super(EmlParser, self).__init__(config)
 
-        #eml_parser headers are typically lowercased
+        # eml_parser headers are typically lowercased
         self.header_filter = [filter.lower() for filter in config.get('header_filter', [])]
 
     def start(self):
@@ -251,7 +251,7 @@ class EmlParser(ServiceBase):
             # Filter out useless headers from results
             self.log.debug(header.keys())
             [header.pop(h) for h in self.header_filter if h in header.keys()]
-            kv_section.body = json.dumps(header, default=self.json_serial)
+            kv_section.set_body(json.dumps(header, default=self.json_serial))
 
             if "attachment" in parsed_eml:
                 attachments = parsed_eml['attachment']
