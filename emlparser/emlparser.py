@@ -12,7 +12,6 @@ from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSec
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
 
 from bs4 import BeautifulSoup
-from compoundfiles import CompoundFileInvalidMagicError
 from datetime import datetime
 from emlparser.convert_outlook.outlookmsgfile import load as msg2eml
 from mailparser.utils import msgconvert
@@ -50,15 +49,13 @@ class EmlParser(ServiceBase):
         content_str = request.file_contents
 
         # Attempt conversion of potential Outlook file -> eml
-        try:
-            content_str = msg2eml(request.file_path).as_bytes()
-        except CompoundFileInvalidMagicError:
-            # Not an Office file to be converted
-            pass
-        except Exception:
-            # Try using mailparser to convert
-            converted_path, _ = msgconvert(request.file_path)
-            content_str = open(converted_path, 'rb').read()
+        if request.file_type == 'document/office/email':
+            try:
+                content_str = msg2eml(request.file_path).as_bytes()
+            except Exception:
+                # Try using mailparser to convert
+                converted_path, _ = msgconvert(request.file_path)
+                content_str = open(converted_path, 'rb').read()
 
         header_agg = {
             "From": set(),
@@ -152,9 +149,6 @@ class EmlParser(ServiceBase):
                 for key, value in header_agg.items():
                     html_email[key] = '; '.join(value)
             content_str = html_email.as_bytes()
-
-        # Replace presence of null bytes (if any) to shorten processing time of potential invalid submissions
-        content_str = content_str.replace(b'\x00', b'')
 
         parsed_eml = parser.decode_email_bytes(content_str)
         result = Result()
