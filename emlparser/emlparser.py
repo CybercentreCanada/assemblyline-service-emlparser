@@ -19,6 +19,35 @@ from mailparser.utils import msgconvert
 
 from emlparser.convert_outlook.outlookmsgfile import load as msg2eml
 
+# Arabic, Chinese Simplified, Chinese Traditional, English, French, German, Italian, Portuguese, Russian, Spanish
+PASSWORD_WORDS = [
+    "كلمه السر",
+    "密码",
+    "密碼",
+    "password",
+    "mot de passe",
+    "Passwort",
+    "parola d'ordine",
+    "senha",
+    "пароль",
+    "contraseña",
+]
+PASSWORD_REGEXES = [re.compile(fr".*{p}:(.+)", re.I) for p in PASSWORD_WORDS]
+
+
+def extract_passwords(text):
+    passwords = set()
+    passwords.update(text.split())
+    passwords.update(re.split(r"\W+", text))
+    for r in PASSWORD_REGEXES:
+        for line in text.split():
+            passwords.update(re.split(r, line))
+        for line in text.split("\n"):
+            passwords.update(re.split(r, line))
+    for p in list(passwords):
+        passwords.update([p.strip(), p.strip().strip('"'), p.strip().strip("'")])
+    return passwords
+
 
 class EmlParser(ServiceBase):
     def __init__(self, config=None):
@@ -155,11 +184,10 @@ class EmlParser(ServiceBase):
 
         if "from" in header or "to" in header:
             all_uri = set()
-            body_words = set()
+            body_words = set(extract_passwords(header["subject"]))
             for body_counter, body in enumerate(parsed_eml["body"]):
                 body_text = BeautifulSoup(body["content"]).text
-                body_words.update(body_text.split())
-                body_words.update(re.split(r"\W+", body_text))
+                body_words.update(extract_passwords(body_text))
                 if request.get_param("extract_body_text"):
                     fd, path = mkstemp()
                     with open(path, "w") as f:
