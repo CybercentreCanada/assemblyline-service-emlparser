@@ -94,3 +94,8 @@ class TestUnittests:
         wanted_password = ["Kahj#@!!45"]
         res = emlparser.emlparser.extract_passwords(text)
         assert all([password in res for password in wanted_password])
+
+        text = "password: AB5675.\n"
+        wanted_password = ["AB5675"]
+        res = emlparser.emlparser.extract_passwords(text)
+        assert all([password in res for password in wanted_password])
