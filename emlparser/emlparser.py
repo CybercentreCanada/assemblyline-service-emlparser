@@ -162,7 +162,7 @@ class EmlParser(ServiceBase):
                                 header_name = header_offset_map[sorted_keys[i]]
                                 offset = len(f"{header_name}: ") + sorted_keys[i]
                                 value = (
-                                    div.text[offset : sorted_keys[i + 1]]
+                                    div.text[offset: sorted_keys[i + 1]]
                                     if i < len(header_offset_map) - 1
                                     else div.text[offset:]
                                 )
@@ -282,6 +282,7 @@ class EmlParser(ServiceBase):
             [header.pop(h) for h in self.header_filter if h in header.keys()]
             kv_section.set_body(json.dumps(header, default=self.json_serial))
 
+            attachments_added = []
             if "attachment" in parsed_eml:
                 attachments = parsed_eml["attachment"]
                 for attachment in attachments:
@@ -291,15 +292,17 @@ class EmlParser(ServiceBase):
                         f.write(base64.b64decode(attachment["raw"]))
                         os.close(fd)
                     try:
-                        request.add_extracted(path, attachment["filename"], "Attachment ")
+                        if request.add_extracted(path, attachment["filename"], "Attachment ",
+                                                 safelist_interface=self.api_interface):
+                            attachments_added.append(attachment["filename"])
                     except MaxExtractedExceeded:
                         self.log.warning(
                             f"Extract limit reached on attachments: "
-                            f"{len(attachments) - attachments.index(attachment)} not added"
+                            f"{len(attachment) - len(attachments_added)} not added"
                         )
                         break
                 ResultSection(
-                    "Extracted Attachments:", body="\n".join([x["filename"] for x in attachments]), parent=result
+                    "Extracted Attachments:", body="\n".join([x for x in attachments_added]), parent=result
                 )
 
             if request.get_param("save_emlparser_output"):
