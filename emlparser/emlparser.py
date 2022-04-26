@@ -292,8 +292,9 @@ class EmlParser(ServiceBase):
                         f.write(base64.b64decode(attachment["raw"]))
                         os.close(fd)
                     try:
-                        if request.add_extracted(path, attachment["filename"], "Attachment ",
-                                                 safelist_interface=self.api_interface):
+                        if request.add_extracted(
+                            path, attachment["filename"], "Attachment ", safelist_interface=self.api_interface
+                        ):
                             attachments_added.append(attachment["filename"])
                     except MaxExtractedExceeded:
                         self.log.warning(
@@ -301,9 +302,7 @@ class EmlParser(ServiceBase):
                             f"{len(attachment) - len(attachments_added)} not added"
                         )
                         break
-                ResultSection(
-                    "Extracted Attachments:", body="\n".join([x for x in attachments_added]), parent=result
-                )
+                ResultSection("Extracted Attachments:", body="\n".join([x for x in attachments_added]), parent=result)
 
             if request.get_param("save_emlparser_output"):
                 fd, temp_path = tempfile.mkstemp(dir=self.working_directory)
