@@ -2,19 +2,20 @@ import os
 import shutil
 
 import pytest
-from assemblyline.common.identify import fileinfo
+from assemblyline.common import forge
 from assemblyline.odm.messages.task import Task as ServiceTask
 from assemblyline_v4_service.common import helper
 from assemblyline_v4_service.common.request import ServiceRequest
 from assemblyline_v4_service.common.task import Task
 
 import emlparser.emlparser
+identify = forge.get_identify(use_cache=False)
 
 
 @pytest.fixture()
 def sample(request):
     sample_path = os.path.join("tests", "samples", request.param)
-    sha256_of_file = fileinfo(sample_path)["sha256"]
+    sha256_of_file = identify.fileinfo(sample_path)["sha256"]
     shutil.copy(sample_path, os.path.join("/tmp", sha256_of_file))
     yield sha256_of_file
     os.remove(os.path.join("/tmp", sha256_of_file))
@@ -33,7 +34,7 @@ def create_service_task(sample):
                 "extract_body_text": False,
                 "save_emlparser_output": False,
             },
-            "fileinfo": dict((k, v) for k, v in fileinfo(f"/tmp/{sample}").items() if k in fileinfo_keys),
+            "fileinfo": dict((k, v) for k, v in identify.fileinfo(f"/tmp/{sample}").items() if k in fileinfo_keys),
             "filename": sample,
             "min_classification": "TLP:WHITE",
             "max_files": 501,
