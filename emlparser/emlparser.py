@@ -51,7 +51,7 @@ def extract_passwords(text):
 
 class EmlParser(ServiceBase):
     def __init__(self, config=None):
-        super(EmlParser, self).__init__(config)
+        super().__init__(config)
 
         # eml_parser headers are typically lowercased
         self.header_filter = [filter.lower() for filter in config.get("header_filter", [])]
@@ -84,7 +84,8 @@ class EmlParser(ServiceBase):
             except Exception:
                 # Try using mailparser to convert
                 converted_path, _ = msgconvert(request.file_path)
-                content_str = open(converted_path, "rb").read()
+                with open(converted_path, "rb") as f:
+                    content_str = f.read()
 
         header_agg = {"From": set(), "To": set(), "Cc": set(), "Sent": set(), "Reply-To": set(), "Date": set()}
         # Assume this is an email saved in HTML format
@@ -162,7 +163,7 @@ class EmlParser(ServiceBase):
                                 header_name = header_offset_map[sorted_keys[i]]
                                 offset = len(f"{header_name}: ") + sorted_keys[i]
                                 value = (
-                                    div.text[offset: sorted_keys[i + 1]]
+                                    div.text[offset : sorted_keys[i + 1]]
                                     if i < len(header_offset_map) - 1
                                     else div.text[offset:]
                                 )
@@ -298,7 +299,7 @@ class EmlParser(ServiceBase):
                             attachments_added.append(attachment["filename"])
                     except MaxExtractedExceeded:
                         self.log.warning(
-                            f"Extract limit reached on attachments: "
+                            "Extract limit reached on attachments: "
                             f"{len(attachment) - len(attachments_added)} not added"
                         )
                         break

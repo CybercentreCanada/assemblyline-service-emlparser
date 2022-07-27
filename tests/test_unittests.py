@@ -43,79 +43,79 @@ class TestUnittests:
             "Kahj#@!!45",
         ]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = "Password:1jdhQ-9!h$\n"
         wanted_password = ["1jdhQ-9!h$"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = 'password: "Kahj#@!!45"\n'
         wanted_password = ["Kahj#@!!45"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = 'password:"Kahj#@!!45"\n'
         wanted_password = ["Kahj#@!!45"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = "Password: '1jdhQ-9!h$'\n"
         wanted_password = ["1jdhQ-9!h$"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = "Password:'1jdhQ-9!h$'\n"
         wanted_password = ["1jdhQ-9!h$"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = "mot de passe:Kahj#@!!45\n"
         wanted_password = ["Kahj#@!!45"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = 'mot de passe: "Kahj#@!!45"\n'
         wanted_password = ["Kahj#@!!45"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = 'mot de passe:"Kahj#@!!45"\n'
         wanted_password = ["Kahj#@!!45"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = "mot de passe: 'Kahj#@!!45'\n"
         wanted_password = ["Kahj#@!!45"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = "mot de passe:'Kahj#@!!45'\n"
         wanted_password = ["Kahj#@!!45"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = "password: AB5675.\n"
         wanted_password = ["AB5675"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = "password: the password\n"
         wanted_password = ["the password"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = 'password: "the password"\n'
         wanted_password = ["the password"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = "mot de passe: mon secret\n"
         wanted_password = ["mon secret"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
 
         text = 'mot de passe: "mon secret"\n'
         wanted_password = ["mon secret"]
         res = emlparser.emlparser.extract_passwords(text)
-        assert all([password in res for password in wanted_password])
+        assert all(password in res for password in wanted_password)
