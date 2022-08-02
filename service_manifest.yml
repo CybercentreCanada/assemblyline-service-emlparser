@@ -31,6 +31,13 @@ submission_params:
     type: bool
     value: false
 
+heuristics:
+  - heur_id: 1
+    name: Hidden image tag
+    score: 100
+    filetype: "code/html"
+    description: Image tag found with zeroed width/height.
+
 docker_config:
   image: ${REGISTRY}cccs/assemblyline-service-emlparser:$SERVICE_TAG
   cpu_cores: 1
