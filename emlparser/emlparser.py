@@ -51,7 +51,7 @@ def extract_passwords(text):
 
 class EmlParser(ServiceBase):
     def __init__(self, config=None):
-        super(EmlParser, self).__init__(config)
+        super().__init__(config)
 
         # eml_parser headers are typically lowercased
         self.header_filter = [filter.lower() for filter in config.get("header_filter", [])]
@@ -84,9 +84,11 @@ class EmlParser(ServiceBase):
             except Exception:
                 # Try using mailparser to convert
                 converted_path, _ = msgconvert(request.file_path)
-                content_str = open(converted_path, "rb").read()
+                with open(converted_path, "rb") as f:
+                    content_str = f.read()
 
         header_agg = {"From": set(), "To": set(), "Cc": set(), "Sent": set(), "Reply-To": set(), "Date": set()}
+        obscured_img_tags = []
         # Assume this is an email saved in HTML format
         if request.file_type == "code/html":
             parsed_html = BeautifulSoup(content_str, "lxml")
@@ -171,6 +173,11 @@ class EmlParser(ServiceBase):
                                     subject = value
                                 else:
                                     header_agg[header_name].add(value)
+                # Inspect all images
+                for img in parsed_html.find_all("img"):
+                    # Raise a heuristic if it seems like the tag is being obscured
+                    if img.attrs.get('width') == 0 or img.attrs.get('height') == 0:
+                        obscured_img_tags.append(img.attrs)
 
                 # Assign aggregated info to email object
                 html_email["Subject"] = subject
@@ -298,7 +305,7 @@ class EmlParser(ServiceBase):
                             attachments_added.append(attachment["filename"])
                     except MaxExtractedExceeded:
                         self.log.warning(
-                            f"Extract limit reached on attachments: "
+                            "Extract limit reached on attachments: "
                             f"{len(attachment) - len(attachments_added)} not added"
                         )
                         break
@@ -315,6 +322,10 @@ class EmlParser(ServiceBase):
                 request.add_supplementary(
                     temp_path, "parsing.json", "These are the raw results of running GOVCERT-LU's eml_parser"
                 )
+
+            if obscured_img_tags:
+                ResultSection("Hidden IMG Tags found", body=json.dumps(obscured_img_tags),
+                              body_format=BODY_FORMAT.JSON, heuristic=1, parent=result)
         else:
             self.log.warning("emlParser could not parse EML; no useful information in result's headers")
 
