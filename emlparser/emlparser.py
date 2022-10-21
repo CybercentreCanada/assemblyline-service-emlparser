@@ -26,7 +26,7 @@ PASSWORD_WORDS = [
     "密碼",
     "password",
     "mot de passe",
-    "Passwort",
+    "passwort",
     "parola d'ordine",
     "senha",
     "пароль",
