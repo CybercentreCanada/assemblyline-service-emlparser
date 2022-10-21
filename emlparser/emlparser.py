@@ -42,10 +42,10 @@ def extract_passwords(text):
     passwords.update(re.split(r"\W+", text))
     for i, r in enumerate(PASSWORD_REGEXES):
         for line in text_split:
-            if PASSWORD_WORDS[i] in line:
+            if PASSWORD_WORDS[i] in line.lower():
                 passwords.update(re.split(r, line))
         for line in text_split_n:
-            if PASSWORD_WORDS[i] in line:
+            if PASSWORD_WORDS[i] in line.lower():
                 passwords.update(re.split(r, line))
     for p in list(passwords):
         passwords.update([p.strip(), p.strip().strip('"'), p.strip().strip("'")])
