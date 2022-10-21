@@ -26,7 +26,7 @@ PASSWORD_WORDS = [
     "密碼",
     "password",
     "mot de passe",
-    "Passwort",
+    "passwort",
     "parola d'ordine",
     "senha",
     "пароль",
@@ -37,13 +37,16 @@ PASSWORD_REGEXES = [re.compile(fr".*{p}:(.+)", re.I) for p in PASSWORD_WORDS]
 
 def extract_passwords(text):
     passwords = set()
-    passwords.update(text.split())
+    text_split, text_split_n = set(text.split()), set(text.split('\n'))
+    passwords.update(text_split)
     passwords.update(re.split(r"\W+", text))
-    for r in PASSWORD_REGEXES:
-        for line in text.split():
-            passwords.update(re.split(r, line))
-        for line in text.split("\n"):
-            passwords.update(re.split(r, line))
+    for i, r in enumerate(PASSWORD_REGEXES):
+        for line in text_split:
+            if PASSWORD_WORDS[i] in line.lower():
+                passwords.update(re.split(r, line))
+        for line in text_split_n:
+            if PASSWORD_WORDS[i] in line.lower():
+                passwords.update(re.split(r, line))
     for p in list(passwords):
         passwords.update([p.strip(), p.strip().strip('"'), p.strip().strip("'")])
     return passwords
