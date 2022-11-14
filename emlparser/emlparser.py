@@ -46,7 +46,7 @@ class EmlParser(ServiceBase):
         return repr(obj)
 
     def execute(self, request):
-        parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
+        parser = eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         content_str = request.file_contents
 
         # Attempt conversion of potential Outlook file -> eml
