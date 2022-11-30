@@ -10,7 +10,7 @@ from tempfile import mkstemp
 from urllib.parse import urlparse
 
 import eml_parser
-from assemblyline.odm import EMAIL_REGEX, IP_ONLY_REGEX
+from assemblyline.odm import EMAIL_REGEX, IP_ONLY_REGEX, FULL_URI
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
@@ -227,6 +227,11 @@ class EmlParser(ServiceBase):
             if len(all_uri) > 0:
                 uri_section = ResultSection("URIs Found:", parent=result)
                 for uri in all_uri:
+                    for invalid_uri_char in ['"', "'", '<', '>']:
+                        for u in uri.split(invalid_uri_char):
+                            if re.match(FULL_URI, u):
+                                uri = u
+                                break
                     uri_section.add_line(uri)
                     uri_section.add_tag("network.static.uri", uri.strip())
                     parsed_url = urlparse(uri)
