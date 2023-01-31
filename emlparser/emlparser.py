@@ -161,7 +161,7 @@ class EmlParser(ServiceBase):
         result = Result()
         header = parsed_eml["header"]
 
-        if "from" in header or "to" in header:
+        if "from" in header or "to" in header or parsed_eml.get('attachments'):
             all_uri = set()
             body_words = set(extract_passwords(header["subject"]))
             for body_counter, body in enumerate(parsed_eml["body"]):
