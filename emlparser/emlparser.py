@@ -10,43 +10,15 @@ from tempfile import mkstemp
 from urllib.parse import urlparse
 
 import eml_parser
-from assemblyline.odm import EMAIL_REGEX, IP_ONLY_REGEX
+from assemblyline.odm import EMAIL_REGEX, IP_ONLY_REGEX, FULL_URI
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
+from assemblyline_v4_service.common.utils import extract_passwords
 from bs4 import BeautifulSoup
 from mailparser.utils import msgconvert
 
 from emlparser.convert_outlook.outlookmsgfile import load as msg2eml
-
-# Arabic, Chinese Simplified, Chinese Traditional, English, French, German, Italian, Portuguese, Russian, Spanish
-PASSWORD_WORDS = [
-    "كلمه السر",
-    "密码",
-    "密碼",
-    "password",
-    "mot de passe",
-    "Passwort",
-    "parola d'ordine",
-    "senha",
-    "пароль",
-    "contraseña",
-]
-PASSWORD_REGEXES = [re.compile(fr".*{p}:(.+)", re.I) for p in PASSWORD_WORDS]
-
-
-def extract_passwords(text):
-    passwords = set()
-    passwords.update(text.split())
-    passwords.update(re.split(r"\W+", text))
-    for r in PASSWORD_REGEXES:
-        for line in text.split():
-            passwords.update(re.split(r, line))
-        for line in text.split("\n"):
-            passwords.update(re.split(r, line))
-    for p in list(passwords):
-        passwords.update([p.strip(), p.strip().strip('"'), p.strip().strip("'")])
-    return passwords
 
 
 class EmlParser(ServiceBase):
@@ -74,7 +46,7 @@ class EmlParser(ServiceBase):
         return repr(obj)
 
     def execute(self, request):
-        parser = eml_parser.eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
+        parser = eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         content_str = request.file_contents
 
         # Attempt conversion of potential Outlook file -> eml
@@ -189,7 +161,7 @@ class EmlParser(ServiceBase):
         result = Result()
         header = parsed_eml["header"]
 
-        if "from" in header or "to" in header:
+        if "from" in header or "to" in header or parsed_eml.get('attachments'):
             all_uri = set()
             body_words = set(extract_passwords(header["subject"]))
             for body_counter, body in enumerate(parsed_eml["body"]):
@@ -255,6 +227,11 @@ class EmlParser(ServiceBase):
             if len(all_uri) > 0:
                 uri_section = ResultSection("URIs Found:", parent=result)
                 for uri in all_uri:
+                    for invalid_uri_char in ['"', "'", '<', '>']:
+                        for u in uri.split(invalid_uri_char):
+                            if re.match(FULL_URI, u):
+                                uri = u
+                                break
                     uri_section.add_line(uri)
                     uri_section.add_tag("network.static.uri", uri.strip())
                     parsed_url = urlparse(uri)
