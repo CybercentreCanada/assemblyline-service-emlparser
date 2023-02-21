@@ -122,6 +122,11 @@ class EmlParser(ServiceBase):
                                         subject = h_value
                                     elif h_key != "Subject":
                                         header_agg[h_key].add(h_value)
+                        # Does this div contain another div that actually have the headers?
+                        elif any(header in content.text for header in valid_headers for content in div.contents
+                                 if content.name == 'div'):
+                            # If so, move onto the div that actually contains what we want
+                            continue
 
                         # Document was probably not well formatted, so we'll use the headers as delimiters
                         else:
