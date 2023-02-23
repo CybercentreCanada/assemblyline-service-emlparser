@@ -162,7 +162,16 @@ class EmlParser(ServiceBase):
                     html_email[key] = "; ".join(value)
             content_str = html_email.as_bytes()
 
-        parsed_eml = parser.decode_email_bytes(content_str)
+        try:
+            parsed_eml = parser.decode_email_bytes(content_str)
+        except Exception as e:
+            if request.file_type == "code/html":
+                # Conversion of HTML → EML failed, likely because of malformed content
+                request.result = Result()
+                return
+            else:
+                raise e
+
         result = Result()
         header = parsed_eml["header"]
 
