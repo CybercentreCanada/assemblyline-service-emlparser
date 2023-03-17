@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 
 import eml_parser
 import extract_msg
-from assemblyline.odm import EMAIL_REGEX, IP_ONLY_REGEX, FULL_URI
+from assemblyline.odm import EMAIL_REGEX, IP_ONLY_REGEX, FULL_URI, IP_REGEX
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection, ResultKeyValueSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
@@ -51,10 +51,28 @@ class EmlParser(ServiceBase):
 
         if request.file_type == "document/office/email":
             msg = extract_msg.openMsg(content_str)
+            kv_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
 
-            headers = dict(filter(
-                lambda kv: kv[0] not in self.header_filter and kv[1] not in [None, ""],
-                msg.headerDict.items()))
+            headers = {}
+            for k, v in msg.header.items():
+                if k in self.header_filter or v is None or v == "":
+                    continue
+                # Some headers are repeating, like 'Received'
+                if k in headers:
+                    headers[k] = "\n".join([headers[k], v])
+                else:
+                    headers[k] = v
+                if k == "Received":
+                    for m in eml_parser.regexes.recv_dom_regex.findall(v):
+                        # eml_parser is better at it than our DOMAIN_REGEX
+                        try:
+                            _ = ip_address(m)
+                        except ValueError:
+                            kv_section.add_tag("network.static.domain", m)
+                    for m in re.findall(IP_REGEX, v):
+                        kv_section.add_tag("network.static.ip", m)
+                    for m in re.findall(EMAIL_REGEX, v):
+                        kv_section.add_tag("network.static.address", m)
 
             # Patch in the subject for the ResultSection, because it sometimes appear in the headers, or not.
             if "Subject" not in headers and hasattr(msg, "subject"):
@@ -64,23 +82,22 @@ class EmlParser(ServiceBase):
             if "Date" in headers:
                 headers.pop("date", None)
 
-            kv_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result,
-                                       body=json.dumps(headers, default=self.json_serial))
+            kv_section.set_body(json.dumps(headers, default=self.json_serial))
 
             # Try to tag interesting fields
-            def tag_field(tag, msg_name, header_name):
-                if msg_name and hasattr(msg, msg_name) and getattr(msg, msg_name):
-                    kv_section.add_tag(tag, getattr(msg, msg_name))
-                elif header_name and header_name in headers and headers[header_name]:
+            def tag_field(tag, header_name, msg_name):
+                if header_name and header_name in headers and headers[header_name]:
                     kv_section.add_tag(tag, headers[header_name])
+                elif msg_name and hasattr(msg, msg_name) and getattr(msg, msg_name):
+                    kv_section.add_tag(tag, getattr(msg, msg_name))
 
-            tag_field("network.email.address", "sender", "From")
-            tag_field("network.email.address", None, "Reply-To")
+            tag_field("network.email.address", "From", "sender")
+            tag_field("network.email.address", "Reply-To", None)
             for recipient in msg.recipients:
                 kv_section.add_tag("network.email.address", recipient.email)
-            tag_field("network.email.date", "date", "Date")
-            tag_field("network.email.subject", "subject", "Subject")
-            tag_field("network.email.msg_id", None, "Message-Id")
+            tag_field("network.email.date", "Date", "date")
+            tag_field("network.email.subject", "Subject", "subject")
+            tag_field("network.email.msg_id", "Message-Id", "messageId")
 
             if "X-MS-Exchange-Processed-By-BccFoldering" in headers:
                 ip = headers["X-MS-Exchange-Processed-By-BccFoldering"].strip()
@@ -106,6 +123,12 @@ class EmlParser(ServiceBase):
             if attachments_added:
                 ResultSection("Extracted Attachments:", parent=request.result,
                               body="\n".join([x for x in attachments_added]))
+
+                # Only extract passwords if there is an attachment
+                body_words = set(extract_passwords(headers["Subject"]))
+                body_words.update(extract_passwords(msg.body))
+                # Words in the email body, used by extract to guess passwords
+                request.temp_submission_data["email_body"] = list(body_words)
 
             # Specialized AppointmentMeeting fields
             if getattr(msg, "reminderFileParameter", None) is not None:
