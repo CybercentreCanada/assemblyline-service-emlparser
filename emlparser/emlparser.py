@@ -159,13 +159,18 @@ class EmlParser(ServiceBase):
                 request.temp_submission_data["email_body"] = list(body_words)
 
             # Specialized AppointmentMeeting fields
-            if getattr(msg, "reminderFileParameter", None) is not None:
+            if msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON)):
+                plrfp = msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
                 heur_section = ResultKeyValueSection("CVE-2023-23397", parent=attributes_section)
                 heur_section.add_tag('attribution.exploit', "CVE-2023-23397")
-                heur_section.set_item("reminderFileParameter", msg.reminderFileParameter)
-                if getattr(msg, "reminderOverride", False):
+                heur_section.set_item("PidLidReminderFileParameter", plrfp)
+                if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)):
+                    heur_section.set_item(
+                        "PidLidReminderOverride",
+                        msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON))
+                    )
                     heur_section.set_heuristic(2)
-                file_location = msg.reminderFileParameter.split("\\")
+                file_location = plrfp.split("\\")
                 if len(file_location) >= 3:
                     try:
                         if isinstance(ip_address(file_location[2]), IPv4Address):
