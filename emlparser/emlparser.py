@@ -97,7 +97,10 @@ class EmlParser(ServiceBase):
                     or attribute.lower() in headers_key_lowercase
                 ):
                     continue
-                value = getattr(msg, attribute)
+                try:
+                    value = getattr(msg, attribute)
+                except Exception:
+                    continue
                 if callable(value):
                     continue
                 if value is None or value == "":
