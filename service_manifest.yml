@@ -38,6 +38,12 @@ heuristics:
     filetype: "code/html"
     description: Image tag found with zeroed width/height.
 
+  - heur_id: 2
+    name: CVE detected
+    score: 1000
+    filetype: ".*"
+    description: A CVE was detected.
+
 docker_config:
   image: ${REGISTRY}cccs/assemblyline-service-emlparser:$SERVICE_TAG
   cpu_cores: 1

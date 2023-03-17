@@ -10,15 +10,13 @@ from tempfile import mkstemp
 from urllib.parse import urlparse
 
 import eml_parser
+import extract_msg
 from assemblyline.odm import EMAIL_REGEX, IP_ONLY_REGEX, FULL_URI
 from assemblyline_v4_service.common.base import ServiceBase
-from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection
+from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection, ResultKeyValueSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
 from assemblyline_v4_service.common.utils import extract_passwords
 from bs4 import BeautifulSoup
-from mailparser.utils import msgconvert
-
-from emlparser.convert_outlook.outlookmsgfile import load as msg2eml
 
 
 class EmlParser(ServiceBase):
@@ -46,29 +44,83 @@ class EmlParser(ServiceBase):
         return repr(obj)
 
     def execute(self, request):
-        parser = eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
+        request.result = Result()
         content_str = request.file_contents
-
-        # Attempt conversion of potential Outlook file -> eml
-        if request.file_type == "document/office/email":
-            try:
-                content_str = msg2eml(request.file_path).as_bytes()
-            except Exception:
-                # Try using mailparser to convert
-                converted_path, _ = msgconvert(request.file_path)
-                with open(converted_path, "rb") as f:
-                    content_str = f.read()
-
         header_agg = {"From": set(), "To": set(), "Cc": set(), "Sent": set(), "Reply-To": set(), "Date": set()}
         obscured_img_tags = []
-        # Assume this is an email saved in HTML format
-        if request.file_type == "code/html":
+
+        if request.file_type == "document/office/email":
+            msg = extract_msg.openMsg(content_str)
+
+            headers = dict(filter(
+                lambda kv: kv[0] not in self.header_filter and kv[1] not in [None, ""],
+                msg.headerDict.items()))
+
+            # Patch in the subject for the ResultSection, because it sometimes appear in the headers, or not.
+            if "Subject" not in headers and hasattr(msg, "subject"):
+                headers["Subject"] = msg.subject
+
+            kv_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result,
+                                       body=json.dumps(headers, default=self.json_serial))
+
+            # Try to tag interesting fields
+            def tag_field(tag, msg_name, header_name):
+                if msg_name and hasattr(msg, msg_name) and getattr(msg, msg_name):
+                    kv_section.add_tag(tag, getattr(msg, msg_name))
+                elif header_name and header_name in headers and headers[header_name]:
+                    kv_section.add_tag(tag, headers[header_name])
+
+            tag_field("network.email.address", "sender", "From")
+            tag_field("network.email.address", None, "Reply-To")
+            for recipient in msg.recipients:
+                kv_section.add_tag("network.email.address", recipient.email)
+            tag_field("network.email.date", "date", "Date")
+            tag_field("network.email.subject", "subject", "Subject")
+            tag_field("network.email.msg_id", None, "Message-Id")
+
+            if "X-MS-Exchange-Processed-By-BccFoldering" in headers:
+                ip = headers["X-MS-Exchange-Processed-By-BccFoldering"].strip()
+                try:
+                    if isinstance(ip_address(ip), IPv4Address):
+                        kv_section.add_tag("network.static.ip", ip)
+                except ValueError:
+                    pass
+
+            attachments_added = []
+            for attachment in msg.attachments:
+                attachment_path = attachment.save(customPath=self.working_directory, extractEmbedded=True)
+                try:
+                    if request.add_extracted(attachment_path, os.path.basename(attachment_path),
+                                             "Attachment", safelist_interface=self.api_interface):
+                        attachments_added.append(os.path.basename(attachment_path))
+                except MaxExtractedExceeded:
+                    self.log.warning(
+                        "Extract limit reached on attachments: "
+                        f"{len(msg.attachments) - len(attachments_added)} not added"
+                    )
+                    break
+            if attachments_added:
+                ResultSection("Extracted Attachments:", parent=request.result,
+                              body="\n".join([x for x in attachments_added]))
+
+            # Specialized AppointmentMeeting fields
+            if getattr(msg, "reminderFileParameter", None) is not None:
+                heur_section = ResultKeyValueSection("CVE-2023-23397", parent=request.result)
+                heur_section.add_tag('attribution.exploit', "CVE-2023-23397")
+                heur_section.set_heuristic(2)
+                heur_section.set_item("reminderFileParameter", msg.reminderFileParameter)
+                file_location = msg.reminderFileParameter.split("\\")
+                if len(file_location) >= 3:
+                    if isinstance(ip_address(file_location[2]), IPv4Address):
+                        heur_section.add_tag("network.static.ip", file_location[2])
+            return
+        elif request.file_type == "code/html":
+            # Assume this is an email saved in HTML format
             parsed_html = BeautifulSoup(content_str, "lxml")
             valid_headers = ["To:", "Cc:", "Sent:", "From:", "Subject:", "Reply-To:"]
 
             if not parsed_html.body or not any(header in parsed_html.body.text for header in valid_headers):
                 # We can assume this is just an HTML doc (or lacking body), one of which we can't process
-                request.result = Result()
                 return
 
             # Can't trust 'Date' to determine the difference between HTML docs vs HTML emails
@@ -162,17 +214,16 @@ class EmlParser(ServiceBase):
                     html_email[key] = "; ".join(value)
             content_str = html_email.as_bytes()
 
+        parser = eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         try:
             parsed_eml = parser.decode_email_bytes(content_str)
         except Exception as e:
             if request.file_type == "code/html":
                 # Conversion of HTML → EML failed, likely because of malformed content
-                request.result = Result()
                 return
             else:
                 raise e
 
-        result = Result()
         header = parsed_eml["header"]
 
         if "from" in header or "to" in header or parsed_eml.get('attachments'):
@@ -193,7 +244,7 @@ class EmlParser(ServiceBase):
             # Words in the email body, used by extract to guess passwords
             request.temp_submission_data["email_body"] = list(body_words)
 
-            kv_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=result)
+            kv_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
 
             # Basic tags
             from_addr = header["from"].strip() if header.get("from", None) else None
@@ -239,7 +290,7 @@ class EmlParser(ServiceBase):
 
             # If we've found URIs, add them to a section
             if len(all_uri) > 0:
-                uri_section = ResultSection("URIs Found:", parent=result)
+                uri_section = ResultSection("URIs Found:", parent=request.result)
                 for uri in all_uri:
                     for invalid_uri_char in ['"', "'", '<', '>']:
                         for u in uri.split(invalid_uri_char):
@@ -300,7 +351,8 @@ class EmlParser(ServiceBase):
                             f"{len(attachment) - len(attachments_added)} not added"
                         )
                         break
-                ResultSection("Extracted Attachments:", body="\n".join([x for x in attachments_added]), parent=result)
+                ResultSection("Extracted Attachments:", body="\n".join(
+                    [x for x in attachments_added]), parent=request.result)
 
             if request.get_param("save_emlparser_output"):
                 fd, temp_path = tempfile.mkstemp(dir=self.working_directory)
@@ -316,8 +368,6 @@ class EmlParser(ServiceBase):
 
             if obscured_img_tags:
                 ResultSection("Hidden IMG Tags found", body=json.dumps(obscured_img_tags),
-                              body_format=BODY_FORMAT.JSON, heuristic=1, parent=result)
+                              body_format=BODY_FORMAT.JSON, heuristic=1, parent=request.result)
         else:
             self.log.warning("emlParser could not parse EML; no useful information in result's headers")
-
-        request.result = result
