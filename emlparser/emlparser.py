@@ -51,9 +51,10 @@ class EmlParser(ServiceBase):
 
         if request.file_type == "document/office/email":
             msg = extract_msg.openMsg(content_str)
-            kv_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
+            headers_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
 
             headers = {}
+            headers_key_lowercase = []
             for k, v in msg.header.items():
                 if k in self.header_filter or v is None or v == "":
                     continue
@@ -62,39 +63,58 @@ class EmlParser(ServiceBase):
                     headers[k] = "\n".join([headers[k], v])
                 else:
                     headers[k] = v
+                    headers_key_lowercase.append(k.lower())
                 if k == "Received":
                     for m in eml_parser.regexes.recv_dom_regex.findall(v):
                         # eml_parser is better at it than our DOMAIN_REGEX
                         try:
                             _ = ip_address(m)
                         except ValueError:
-                            kv_section.add_tag("network.static.domain", m)
+                            headers_section.add_tag("network.static.domain", m)
                     for m in re.findall(IP_REGEX, v):
-                        kv_section.add_tag("network.static.ip", m)
+                        headers_section.add_tag("network.static.ip", m)
                     for m in re.findall(EMAIL_REGEX, v):
-                        kv_section.add_tag("network.static.address", m)
-
-            # Patch in the subject for the ResultSection, because it sometimes appear in the headers, or not.
-            if "Subject" not in headers and hasattr(msg, "subject"):
-                headers["Subject"] = msg.subject
+                        headers_section.add_tag("network.static.address", m)
 
             # Sometimes we have both "Date" and "date"
             if "Date" in headers:
                 headers.pop("date", None)
 
-            kv_section.set_body(json.dumps(headers, default=self.json_serial))
+            headers_section.set_body(json.dumps(headers, default=self.json_serial))
+
+            attributes_to_skip = [
+                "attachments", "body", "recipients", "props", "treePath", "deencapsulatedRtf", "htmlBodyPrepared",
+                "htmlInjectableHeader", "htmlBody", "compressedRtf", "rtfEncapInjectableHeader", "rtfBody",
+                "rtfPlainInjectableHeader", "path", "named", "namedProperties", "headerFormatProperties",
+                "headerDict", "header"
+            ]
+            attributes_section = ResultKeyValueSection("Email Attributes", parent=request.result)
+            # Patch in all potentially interesting attributes that we don't already have
+            for attribute in dir(msg):
+                if (
+                    attribute.startswith("_")
+                    or attribute in attributes_to_skip
+                    or attribute.lower() in headers_key_lowercase
+                ):
+                    continue
+                value = getattr(msg, attribute)
+                if callable(value):
+                    continue
+                if value is None or value == "":
+                    continue
+                attributes_section.set_item(attribute, self.json_serial(value))
 
             # Try to tag interesting fields
             def tag_field(tag, header_name, msg_name):
                 if header_name and header_name in headers and headers[header_name]:
-                    kv_section.add_tag(tag, headers[header_name])
+                    headers_section.add_tag(tag, headers[header_name])
                 elif msg_name and hasattr(msg, msg_name) and getattr(msg, msg_name):
-                    kv_section.add_tag(tag, getattr(msg, msg_name))
+                    attributes_section.add_tag(tag, getattr(msg, msg_name))
 
             tag_field("network.email.address", "From", "sender")
             tag_field("network.email.address", "Reply-To", None)
             for recipient in msg.recipients:
-                kv_section.add_tag("network.email.address", recipient.email)
+                attributes_section.add_tag("network.email.address", recipient.email)
             tag_field("network.email.date", "Date", "date")
             tag_field("network.email.subject", "Subject", "subject")
             tag_field("network.email.msg_id", "Message-Id", "messageId")
@@ -103,7 +123,7 @@ class EmlParser(ServiceBase):
                 ip = headers["X-MS-Exchange-Processed-By-BccFoldering"].strip()
                 try:
                     if isinstance(ip_address(ip), IPv4Address):
-                        kv_section.add_tag("network.static.ip", ip)
+                        headers_section.add_tag("network.static.ip", ip)
                 except ValueError:
                     pass
 
@@ -132,7 +152,7 @@ class EmlParser(ServiceBase):
 
             # Specialized AppointmentMeeting fields
             if getattr(msg, "reminderFileParameter", None) is not None:
-                heur_section = ResultKeyValueSection("CVE-2023-23397", parent=request.result)
+                heur_section = ResultKeyValueSection("CVE-2023-23397", parent=attributes_section)
                 heur_section.add_tag('attribution.exploit', "CVE-2023-23397")
                 heur_section.set_heuristic(2)
                 heur_section.set_item("reminderFileParameter", msg.reminderFileParameter)
