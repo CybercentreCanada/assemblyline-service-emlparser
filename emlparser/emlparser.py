@@ -50,7 +50,10 @@ class EmlParser(ServiceBase):
         obscured_img_tags = []
 
         if request.file_type == "document/office/email":
-            msg = extract_msg.openMsg(content_str)
+            try:
+                msg = extract_msg.openMsg(content_str)
+            except extract_msg.exceptions.InvalidFileFormatError:
+                return
             headers_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
 
             headers = {}
@@ -148,17 +151,20 @@ class EmlParser(ServiceBase):
                               body="\n".join([x for x in attachments_added]))
 
                 # Only extract passwords if there is an attachment
-                body_words = set(extract_passwords(headers["Subject"]))
-                body_words.update(extract_passwords(msg.body))
-                # Words in the email body, used by extract to guess passwords
+                body_words = set()
+                if headers["Subject"]:
+                    body_words.update(extract_passwords(headers["Subject"]))
+                if msg.body:
+                    body_words.update(extract_passwords(msg.body))
                 request.temp_submission_data["email_body"] = list(body_words)
 
             # Specialized AppointmentMeeting fields
             if getattr(msg, "reminderFileParameter", None) is not None:
                 heur_section = ResultKeyValueSection("CVE-2023-23397", parent=attributes_section)
                 heur_section.add_tag('attribution.exploit', "CVE-2023-23397")
-                heur_section.set_heuristic(2)
                 heur_section.set_item("reminderFileParameter", msg.reminderFileParameter)
+                if getattr(msg, "reminderOverride", False):
+                    heur_section.set_heuristic(2)
                 file_location = msg.reminderFileParameter.split("\\")
                 if len(file_location) >= 3:
                     try:
