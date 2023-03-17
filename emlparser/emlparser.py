@@ -60,6 +60,10 @@ class EmlParser(ServiceBase):
             if "Subject" not in headers and hasattr(msg, "subject"):
                 headers["Subject"] = msg.subject
 
+            # Sometimes we have both "Date" and "date"
+            if "Date" in headers:
+                headers.pop("date", None)
+
             kv_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result,
                                        body=json.dumps(headers, default=self.json_serial))
 
