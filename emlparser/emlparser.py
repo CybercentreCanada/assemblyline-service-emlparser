@@ -111,8 +111,11 @@ class EmlParser(ServiceBase):
                 heur_section.set_item("reminderFileParameter", msg.reminderFileParameter)
                 file_location = msg.reminderFileParameter.split("\\")
                 if len(file_location) >= 3:
-                    if isinstance(ip_address(file_location[2]), IPv4Address):
-                        heur_section.add_tag("network.static.ip", file_location[2])
+                    try:
+                        if isinstance(ip_address(file_location[2]), IPv4Address):
+                            heur_section.add_tag("network.static.ip", file_location[2])
+                    except ValueError:
+                        pass
             return
         elif request.file_type == "code/html":
             # Assume this is an email saved in HTML format
