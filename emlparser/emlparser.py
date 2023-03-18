@@ -4,6 +4,7 @@ import json
 import os
 import re
 import tempfile
+import uuid
 from datetime import datetime
 from ipaddress import IPv4Address, ip_address
 from tempfile import mkstemp
@@ -135,11 +136,14 @@ class EmlParser(ServiceBase):
 
             attachments_added = []
             for attachment in msg.attachments:
-                attachment_path = attachment.save(customPath=self.working_directory, extractEmbedded=True)
+                customFilename = str(uuid.uuid4())
+                attachment.save(customPath=self.working_directory, customFilename=customFilename, extractEmbedded=True)
+                attachment_path = os.path.join(self.working_directory, customFilename)
+
                 try:
-                    if request.add_extracted(attachment_path, os.path.basename(attachment_path),
+                    if request.add_extracted(attachment_path, attachment.getFilename(),
                                              "Attachment", safelist_interface=self.api_interface):
-                        attachments_added.append(os.path.basename(attachment_path))
+                        attachments_added.append(attachment.getFilename())
                 except MaxExtractedExceeded:
                     self.log.warning(
                         "Extract limit reached on attachments: "
@@ -160,7 +164,7 @@ class EmlParser(ServiceBase):
                     body_words.update(extract_passwords(msg.body))
                 request.temp_submission_data["email_body"] = list(body_words)
 
-            # Specialized AppointmentMeeting fields
+            # Specialized fields
             if msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON)):
                 plrfp = msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
                 heur_section = ResultKeyValueSection("CVE-2023-23397", parent=attributes_section)
