@@ -137,13 +137,19 @@ class EmlParser(ServiceBase):
             attachments_added = []
             for attachment in msg.attachments:
                 customFilename = str(uuid.uuid4())
-                attachment.save(customPath=self.working_directory, customFilename=customFilename, extractEmbedded=True)
-                attachment_path = os.path.join(self.working_directory, customFilename)
+                ret_value = attachment.save(customPath=self.working_directory,
+                                            customFilename=customFilename, extractEmbedded=True)
+                if isinstance(attachment, extract_msg.signed_attachment.SignedAttachment):
+                    attachment_name = os.path.basename(ret_value)
+                    attachment_path = ret_value
+                else:
+                    attachment_name = attachment.getFilename()
+                    attachment_path = os.path.join(self.working_directory, customFilename)
 
                 try:
-                    if request.add_extracted(attachment_path, attachment.getFilename(),
+                    if request.add_extracted(attachment_path, attachment_name,
                                              "Attachment", safelist_interface=self.api_interface):
-                        attachments_added.append(attachment.getFilename())
+                        attachments_added.append(attachment_name)
                 except MaxExtractedExceeded:
                     self.log.warning(
                         "Extract limit reached on attachments: "
