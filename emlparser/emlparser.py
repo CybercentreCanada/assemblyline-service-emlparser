@@ -152,8 +152,10 @@ class EmlParser(ServiceBase):
 
                 # Only extract passwords if there is an attachment
                 body_words = set()
-                if headers["Subject"]:
+                if "Subject" in headers and headers["Subject"]:
                     body_words.update(extract_passwords(headers["Subject"]))
+                elif hasattr(msg, "subject") and msg.subject:
+                    body_words.update(extract_passwords(msg.subject))
                 if msg.body:
                     body_words.update(extract_passwords(msg.body))
                 request.temp_submission_data["email_body"] = list(body_words)
