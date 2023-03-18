@@ -41,7 +41,7 @@ class EmlParser(ServiceBase):
                 return text
             except UnicodeDecodeError:
                 b64 = base64.b64encode(obj)
-                return b64
+                return repr(b64)
         return repr(obj)
 
     def execute(self, request):
