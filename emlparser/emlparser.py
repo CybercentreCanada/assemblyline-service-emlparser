@@ -166,12 +166,13 @@ class EmlParser(ServiceBase):
                 heur_section = ResultKeyValueSection("CVE-2023-23397", parent=attributes_section)
                 heur_section.add_tag('attribution.exploit', "CVE-2023-23397")
                 heur_section.set_item("PidLidReminderFileParameter", plrfp)
-                if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)):
+                if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)) is not None:
                     heur_section.set_item(
                         "PidLidReminderOverride",
                         msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON))
                     )
-                    heur_section.set_heuristic(2)
+                    if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)):
+                        heur_section.set_heuristic(2)
                 file_location = plrfp.split("\\")
                 if len(file_location) >= 3:
                     try:
