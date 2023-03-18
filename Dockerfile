@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y libemail-outlook-message-perl && rm -rf
 
 USER assemblyline
 
-RUN pip install -U --no-cache-dir --user compoundfiles compressed-rtf mail-parser bs4 lxml eml-parser && rm -rf ~/.cache/pip
+RUN pip install -U --no-cache-dir --user compoundfiles compressed-rtf extract-msg bs4 lxml eml-parser && rm -rf ~/.cache/pip
 
 # Clone Extract service code
 WORKDIR /opt/al_service
