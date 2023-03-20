@@ -175,6 +175,7 @@ class EmlParser(ServiceBase):
                 plrfp = msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
                 heur_section = ResultKeyValueSection("CVE-2023-23397", parent=attributes_section)
                 heur_section.add_tag('attribution.exploit', "CVE-2023-23397")
+                heur_section.add_tag("network.static.unc_path", plrfp)
                 heur_section.set_item("PidLidReminderFileParameter", plrfp)
                 if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)) is not None:
                     heur_section.set_item(
