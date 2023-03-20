@@ -171,7 +171,10 @@ class EmlParser(ServiceBase):
                 request.temp_submission_data["email_body"] = list(body_words)
 
             # Specialized fields
-            if msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON)):
+            if (
+                msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
+                and msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON)).startswith("\\")
+            ):
                 plrfp = msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
                 heur_section = ResultKeyValueSection("CVE-2023-23397", parent=attributes_section)
                 heur_section.add_tag('attribution.exploit', "CVE-2023-23397")
