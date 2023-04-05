@@ -60,7 +60,7 @@ class EmlParser(ServiceBase):
             headers = {}
             headers_key_lowercase = []
             for k, v in msg.header.items():
-                if k in self.header_filter or v is None or v == "":
+                if k.lower() in self.header_filter or v is None or v == "":
                     continue
                 # Some headers are repeating, like 'Received'
                 if k in headers:
@@ -173,7 +173,7 @@ class EmlParser(ServiceBase):
             # Specialized fields
             if (
                 msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
-                and msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON)).startswith("\\")
+                and msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON)).startswith("\\\\")
             ):
                 plrfp = msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
                 heur_section = ResultKeyValueSection("CVE-2023-23397", parent=attributes_section)
