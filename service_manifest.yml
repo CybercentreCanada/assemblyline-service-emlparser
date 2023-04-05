@@ -47,4 +47,5 @@ heuristics:
 docker_config:
   image: ${REGISTRY}cccs/assemblyline-service-emlparser:$SERVICE_TAG
   cpu_cores: 1
-  ram_mb: 256
+  ram_mb_min: 256
+  ram_mb: 2048
