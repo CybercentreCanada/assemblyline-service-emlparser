@@ -15,9 +15,13 @@ import extract_msg
 from assemblyline.odm import EMAIL_REGEX, IP_ONLY_REGEX, FULL_URI, IP_REGEX
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection, ResultKeyValueSection
+from assemblyline_v4_service.common.request import ServiceRequest
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
 from assemblyline_v4_service.common.utils import extract_passwords
 from bs4 import BeautifulSoup
+
+from mailparser.utils import msgconvert
+from emlparser.outlookmsgfile import load as msg2eml
 
 
 class EmlParser(ServiceBase):
@@ -26,9 +30,6 @@ class EmlParser(ServiceBase):
 
         # eml_parser headers are typically lowercased
         self.header_filter = [filter.lower() for filter in config.get("header_filter", [])]
-
-    def start(self):
-        self.log.info(f"start() from {self.service_attributes.name} service called")
 
     @staticmethod
     def json_serial(obj):
@@ -44,257 +45,292 @@ class EmlParser(ServiceBase):
                 return repr(b64)
         return repr(obj)
 
-    def execute(self, request):
+    def execute(self, request: ServiceRequest) -> None:
         request.result = Result()
-        content_str = request.file_contents
-        header_agg = {"From": set(), "To": set(), "Cc": set(), "Sent": set(), "Reply-To": set(), "Date": set()}
-        obscured_img_tags = []
-
         if request.file_type == "document/office/email":
+            self.handle_outlook(request)
+        elif request.file_type == "code/html":
+            self.handle_html(request)
+        elif request.file_type == "document/email":
+            self.handle_eml(request, request.file_contents)
+
+    def handle_outlook(self, request: ServiceRequest) -> None:
+        try:
+            msg = extract_msg.openMsg(request.file_path)
+        except (
+            NotImplementedError,
+            extract_msg.exceptions.InvalidFileFormatError,
+            extract_msg.exceptions.StandardViolationError,
+            extract_msg.exceptions.UnrecognizedMSGTypeError,
+        ) as e1:
+            # If we can't use extract-msg, rely on converting to eml
+            self.log.warning(e1, exc_info=True)
             try:
-                msg = extract_msg.openMsg(content_str)
-            except extract_msg.exceptions.InvalidFileFormatError:
-                return
-            headers_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
+                content_str = msg2eml(request.file_path).as_bytes()
+            except Exception as e2:
+                self.log.warning(e2, exc_info=True)
+                # Try using mailparser to convert
+                converted_path, _ = msgconvert(request.file_path)
+                with open(converted_path, "rb") as f:
+                    content_str = f.read()
+            self.handle_eml(request, content_str)
+            return
+        headers_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
 
-            headers = {}
-            headers_key_lowercase = []
-            for k, v in msg.header.items():
-                if k.lower() in self.header_filter or v is None or v == "":
-                    continue
-                # Some headers are repeating, like 'Received'
-                if k in headers:
-                    headers[k] = "\n".join([headers[k], v])
-                else:
-                    headers[k] = v
-                    headers_key_lowercase.append(k.lower())
-                if k == "Received":
-                    for m in eml_parser.regexes.recv_dom_regex.findall(v):
-                        # eml_parser is better at it than our DOMAIN_REGEX
-                        try:
-                            _ = ip_address(m)
-                        except ValueError:
-                            headers_section.add_tag("network.static.domain", m)
-                    for m in re.findall(IP_REGEX, v):
-                        headers_section.add_tag("network.static.ip", m)
-                    for m in re.findall(EMAIL_REGEX, v):
-                        headers_section.add_tag("network.static.address", m)
+        headers = {}
+        headers_key_lowercase = []
+        for k, v in msg.header.items():
+            if k.lower() in self.header_filter or v is None or v == "":
+                continue
+            # Some headers are repeating, like 'Received'
+            if k in headers:
+                headers[k] = "\n".join([headers[k], v])
+            else:
+                headers[k] = v
+                headers_key_lowercase.append(k.lower())
+            if k == "Received":
+                for m in eml_parser.regexes.recv_dom_regex.findall(v):
+                    # eml_parser is better at it than our DOMAIN_REGEX
+                    try:
+                        _ = ip_address(m)
+                    except ValueError:
+                        headers_section.add_tag("network.static.domain", m)
+                for m in re.findall(IP_REGEX, v):
+                    headers_section.add_tag("network.static.ip", m)
+                for m in re.findall(EMAIL_REGEX, v):
+                    headers_section.add_tag("network.static.address", m)
 
-            # Sometimes we have both "Date" and "date"
-            if "Date" in headers:
-                headers.pop("date", None)
+        # Sometimes we have both "Date" and "date"
+        if "Date" in headers:
+            headers.pop("date", None)
 
-            headers_section.set_body(json.dumps(headers, default=self.json_serial))
+        headers_section.set_body(json.dumps(headers, default=self.json_serial))
 
-            attributes_to_skip = [
-                "attachments", "body", "recipients", "props", "treePath", "deencapsulatedRtf", "htmlBodyPrepared",
-                "htmlInjectableHeader", "htmlBody", "compressedRtf", "rtfEncapInjectableHeader", "rtfBody",
-                "rtfPlainInjectableHeader", "path", "named", "namedProperties", "headerFormatProperties",
-                "headerDict", "header"
-            ]
-            attributes_section = ResultKeyValueSection("Email Attributes", parent=request.result)
-            # Patch in all potentially interesting attributes that we don't already have
-            for attribute in dir(msg):
-                if (
-                    attribute.startswith("_")
-                    or attribute in attributes_to_skip
-                    or attribute.lower() in headers_key_lowercase
-                ):
-                    continue
+        attributes_to_skip = [
+            "attachments", "body", "recipients", "props", "treePath", "deencapsulatedRtf", "htmlBodyPrepared",
+            "htmlInjectableHeader", "htmlBody", "compressedRtf", "rtfEncapInjectableHeader", "rtfBody",
+            "rtfPlainInjectableHeader", "path", "named", "namedProperties", "headerFormatProperties",
+            "headerDict", "header"
+        ]
+        attributes_section = ResultKeyValueSection("Email Attributes", parent=request.result)
+        # Patch in all potentially interesting attributes that we don't already have
+        for attribute in dir(msg):
+            if (
+                attribute.startswith("_")
+                or attribute in attributes_to_skip
+                or attribute.lower() in headers_key_lowercase
+            ):
+                continue
+            try:
+                value = getattr(msg, attribute)
+            except Exception:
+                continue
+            if callable(value):
+                continue
+            if value is None or value == "":
+                continue
+            attributes_section.set_item(attribute, self.json_serial(value))
+
+        # Try to tag interesting fields
+        def tag_field(tag, header_name, msg_name):
+            if header_name and header_name in headers and headers[header_name]:
+                headers_section.add_tag(tag, headers[header_name])
+            elif msg_name and hasattr(msg, msg_name) and getattr(msg, msg_name):
+                attributes_section.add_tag(tag, getattr(msg, msg_name))
+
+        tag_field("network.email.address", "From", "sender")
+        tag_field("network.email.address", "Reply-To", None)
+        for recipient in msg.recipients:
+            attributes_section.add_tag("network.email.address", recipient.email)
+        tag_field("network.email.date", "Date", "date")
+        tag_field("network.email.subject", "Subject", "subject")
+        tag_field("network.email.msg_id", "Message-Id", "messageId")
+
+        if "X-MS-Exchange-Processed-By-BccFoldering" in headers:
+            ip = headers["X-MS-Exchange-Processed-By-BccFoldering"].strip()
+            try:
+                if isinstance(ip_address(ip), IPv4Address):
+                    headers_section.add_tag("network.static.ip", ip)
+            except ValueError:
+                pass
+
+        attachments_added = []
+        for attachment in msg.attachments:
+            customFilename = str(uuid.uuid4())
+            ret_value = attachment.save(customPath=self.working_directory,
+                                        customFilename=customFilename, extractEmbedded=True)
+            if isinstance(attachment, extract_msg.signed_attachment.SignedAttachment):
+                attachment_name = os.path.basename(ret_value)
+                attachment_path = ret_value
+            else:
+                attachment_name = attachment.getFilename()
+                attachment_path = os.path.join(self.working_directory, customFilename)
+
+            try:
+                if request.add_extracted(attachment_path, attachment_name,
+                                         "Attachment", safelist_interface=self.api_interface):
+                    attachments_added.append(attachment_name)
+            except MaxExtractedExceeded:
+                self.log.warning(
+                    "Extract limit reached on attachments: "
+                    f"{len(msg.attachments) - len(attachments_added)} not added"
+                )
+                break
+        if attachments_added:
+            ResultSection("Extracted Attachments:", parent=request.result,
+                          body="\n".join([x for x in attachments_added]))
+
+            # Only extract passwords if there is an attachment
+            body_words = set()
+            if "Subject" in headers and headers["Subject"]:
+                body_words.update(extract_passwords(headers["Subject"]))
+            elif hasattr(msg, "subject") and msg.subject:
+                body_words.update(extract_passwords(msg.subject))
+            if msg.body:
+                body_words.update(extract_passwords(msg.body))
+                request.temp_submission_data["email_body"] = sorted(list(body_words))
+
+        # Specialized fields
+        if (
+            msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
+            and msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON)).startswith("\\\\")
+        ):
+            plrfp = msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
+            heur_section = ResultKeyValueSection("CVE-2023-23397", parent=attributes_section)
+            heur_section.add_tag('attribution.exploit', "CVE-2023-23397")
+            heur_section.add_tag("network.static.unc_path", plrfp)
+            heur_section.set_item("PidLidReminderFileParameter", plrfp)
+            if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)) is not None:
+                heur_section.set_item(
+                    "PidLidReminderOverride",
+                    msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON))
+                )
+                if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)):
+                    heur_section.set_heuristic(2)
+            file_location = plrfp.split("\\")
+            if len(file_location) >= 3:
                 try:
-                    value = getattr(msg, attribute)
-                except Exception:
-                    continue
-                if callable(value):
-                    continue
-                if value is None or value == "":
-                    continue
-                attributes_section.set_item(attribute, self.json_serial(value))
-
-            # Try to tag interesting fields
-            def tag_field(tag, header_name, msg_name):
-                if header_name and header_name in headers and headers[header_name]:
-                    headers_section.add_tag(tag, headers[header_name])
-                elif msg_name and hasattr(msg, msg_name) and getattr(msg, msg_name):
-                    attributes_section.add_tag(tag, getattr(msg, msg_name))
-
-            tag_field("network.email.address", "From", "sender")
-            tag_field("network.email.address", "Reply-To", None)
-            for recipient in msg.recipients:
-                attributes_section.add_tag("network.email.address", recipient.email)
-            tag_field("network.email.date", "Date", "date")
-            tag_field("network.email.subject", "Subject", "subject")
-            tag_field("network.email.msg_id", "Message-Id", "messageId")
-
-            if "X-MS-Exchange-Processed-By-BccFoldering" in headers:
-                ip = headers["X-MS-Exchange-Processed-By-BccFoldering"].strip()
-                try:
-                    if isinstance(ip_address(ip), IPv4Address):
-                        headers_section.add_tag("network.static.ip", ip)
+                    if isinstance(ip_address(file_location[2]), IPv4Address):
+                        heur_section.add_tag("network.static.ip", file_location[2])
                 except ValueError:
                     pass
 
-            attachments_added = []
-            for attachment in msg.attachments:
-                customFilename = str(uuid.uuid4())
-                ret_value = attachment.save(customPath=self.working_directory,
-                                            customFilename=customFilename, extractEmbedded=True)
-                if isinstance(attachment, extract_msg.signed_attachment.SignedAttachment):
-                    attachment_name = os.path.basename(ret_value)
-                    attachment_path = ret_value
-                else:
-                    attachment_name = attachment.getFilename()
-                    attachment_path = os.path.join(self.working_directory, customFilename)
-
-                try:
-                    if request.add_extracted(attachment_path, attachment_name,
-                                             "Attachment", safelist_interface=self.api_interface):
-                        attachments_added.append(attachment_name)
-                except MaxExtractedExceeded:
-                    self.log.warning(
-                        "Extract limit reached on attachments: "
-                        f"{len(msg.attachments) - len(attachments_added)} not added"
-                    )
-                    break
-            if attachments_added:
-                ResultSection("Extracted Attachments:", parent=request.result,
-                              body="\n".join([x for x in attachments_added]))
-
-                # Only extract passwords if there is an attachment
-                body_words = set()
-                if "Subject" in headers and headers["Subject"]:
-                    body_words.update(extract_passwords(headers["Subject"]))
-                elif hasattr(msg, "subject") and msg.subject:
-                    body_words.update(extract_passwords(msg.subject))
-                if msg.body:
-                    body_words.update(extract_passwords(msg.body))
-                request.temp_submission_data["email_body"] = list(body_words)
-
-            # Specialized fields
-            if (
-                msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
-                and msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON)).startswith("\\\\")
-            ):
-                plrfp = msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
-                heur_section = ResultKeyValueSection("CVE-2023-23397", parent=attributes_section)
-                heur_section.add_tag('attribution.exploit', "CVE-2023-23397")
-                heur_section.add_tag("network.static.unc_path", plrfp)
-                heur_section.set_item("PidLidReminderFileParameter", plrfp)
-                if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)) is not None:
-                    heur_section.set_item(
-                        "PidLidReminderOverride",
-                        msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON))
-                    )
-                    if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)):
-                        heur_section.set_heuristic(2)
-                file_location = plrfp.split("\\")
-                if len(file_location) >= 3:
-                    try:
-                        if isinstance(ip_address(file_location[2]), IPv4Address):
-                            heur_section.add_tag("network.static.ip", file_location[2])
-                    except ValueError:
-                        pass
-            return
-        elif request.file_type == "code/html":
-            # Assume this is an email saved in HTML format
+    def handle_html(self, request: ServiceRequest) -> None:
+        # Assume this is an email saved in HTML format
+        content_str = request.file_contents
+        try:
             parsed_html = BeautifulSoup(content_str, "lxml")
-            valid_headers = ["To:", "Cc:", "Sent:", "From:", "Subject:", "Reply-To:"]
+        except Exception:
+            # This is not even a valid HTML, not worth trying to parse it.
+            return
 
-            if not parsed_html.body or not any(header in parsed_html.body.text for header in valid_headers):
-                # We can assume this is just an HTML doc (or lacking body), one of which we can't process
-                return
+        valid_headers = ["To:", "Cc:", "Sent:", "From:", "Subject:", "Reply-To:"]
 
-            # Can't trust 'Date' to determine the difference between HTML docs vs HTML emails
-            valid_headers.append("Date:")
+        if not parsed_html.body or not any(header in parsed_html.body.text for header in valid_headers):
+            # We can assume this is just an HTML doc (or lacking body), one of which we can't process
+            return
 
-            html_email = email.message_from_bytes(content_str)
-            generator_metadata_content = ""
-            for meta in parsed_html.find_all("meta"):
-                if meta.attrs.get("name", None) == "Generator":
-                    generator_metadata_content = meta.attrs.get("content", "")
-                    break
+        # Can't trust 'Date' to determine the difference between HTML docs vs HTML emails
+        valid_headers.append("Date:")
 
-            # Process HTML emails generated from Outlook
-            if generator_metadata_content == "Microsoft Word 15":
-                paragraphs = parsed_html.body.find_all("p")
-                # Likely an email that was exported with original email headers
-                if any(header in paragraphs[0] for header in valid_headers):
-                    for p in paragraphs:
-                        if any(valid_header in p.text for valid_header in valid_headers):
-                            h_key, h_value = p.text.replace("\xa0", "").replace("\r\n", " ").split(":", 1)
-                            html_email[h_key] = h_value
-                            # Subject line indicates the end of the email header, beginning of body
-                            if "Subject" in p.text:
-                                break
-            # Process HTML emails from MS Exchange Server or missing top-level headers (aggregate headers)
-            elif (
-                generator_metadata_content == "Microsoft Word 15 (filtered medium)"
-                or generator_metadata_content == "Microsoft Exchange Server"
-                or generator_metadata_content == ""
-            ):
-                subject = None
-                for div in parsed_html.find_all("div"):
-                    # Header information within divs
-                    if any(header in div.text for header in valid_headers) and "WordSection1" not in div.attrs.get(
-                        "class", []
-                    ):
-                        # Usually expect headers to be \n separated in text output but check first
-                        if "\n" in div.text:
-                            for h in div.text.split("\n"):
-                                if any(header in h for header in valid_headers):
-                                    h_key, h_value = h.split(":", 1)
+        html_email = email.message_from_bytes(content_str)
+        generator_metadata_content = ""
+        for meta in parsed_html.find_all("meta"):
+            if meta.attrs.get("name", None) == "Generator":
+                generator_metadata_content = meta.attrs.get("content", "")
+                break
 
-                                    # Implying some malformed message got mixed with the headers of another message
-                                    if h_key not in valid_headers:
-                                        for header in valid_headers:
-                                            if header in h:
-                                                h_key = header[:-1]
+        header_agg = {"From": set(), "To": set(), "Cc": set(), "Sent": set(), "Reply-To": set(), "Date": set()}
 
-                                    # Use the latest message's subject (this maintains FW, RE, etc.)
-                                    if h_key == "Subject" and not subject:
-                                        subject = h_value
-                                    elif h_key != "Subject":
-                                        header_agg[h_key].add(h_value)
-                        # Does this div contain another div that actually have the headers?
-                        elif any(header in content.text for header in valid_headers for content in div.contents
-                                 if content.name == 'div'):
-                            # If so, move onto the div that actually contains what we want
-                            continue
+        # Process HTML emails generated from Outlook
+        if generator_metadata_content == "Microsoft Word 15":
+            paragraphs = parsed_html.body.find_all("p")
+            # Likely an email that was exported with original email headers
+            if any(header in paragraphs[0] for header in valid_headers):
+                for p in paragraphs:
+                    if any(valid_header in p.text for valid_header in valid_headers):
+                        h_key, h_value = p.text.replace("\xa0", "").replace("\r\n", " ").split(":", 1)
+                        html_email[h_key] = h_value
+                        # Subject line indicates the end of the email header, beginning of body
+                        if "Subject" in p.text:
+                            break
+        # Process HTML emails from MS Exchange Server or missing top-level headers (aggregate headers)
+        elif (
+            generator_metadata_content == "Microsoft Word 15 (filtered medium)"
+            or generator_metadata_content == "Microsoft Exchange Server"
+            or generator_metadata_content == ""
+        ):
+            subject = None
+            for div in parsed_html.find_all("div"):
+                # Header information within divs
+                if any(header in div.text for header in valid_headers) and "WordSection1" not in div.attrs.get(
+                    "class", []
+                ):
+                    # Usually expect headers to be \n separated in text output but check first
+                    if "\n" in div.text:
+                        for h in div.text.split("\n"):
+                            if any(header in h for header in valid_headers):
+                                h_key, h_value = h.split(":", 1)
 
-                        # Document was probably not well formatted, so we'll use the headers as delimiters
-                        else:
-                            header_offset_map = {}
-                            # Determine the position of each header
-                            for header in list(header_agg.keys()) + ["Subject"]:
-                                if header in div.text:
-                                    header_offset_map[div.text.index(header)] = header
-                            # Use the positions and length of header name to determine an offset
-                            for i in range(len(header_offset_map)):
-                                sorted_keys = sorted(header_offset_map.keys())
-                                header_name = header_offset_map[sorted_keys[i]]
-                                offset = len(f"{header_name}: ") + sorted_keys[i]
-                                value = (
-                                    div.text[offset: sorted_keys[i + 1]]
-                                    if i < len(header_offset_map) - 1
-                                    else div.text[offset:]
-                                )
+                                # Implying some malformed message got mixed with the headers of another message
+                                if h_key not in valid_headers:
+                                    for header in valid_headers:
+                                        if header in h:
+                                            h_key = header[:-1]
 
-                                if header_name == "Subject":
-                                    subject = value
-                                else:
-                                    header_agg[header_name].add(value)
-                # Inspect all images
-                for img in parsed_html.find_all("img"):
-                    # Raise a heuristic if it seems like the tag is being obscured
-                    if img.attrs.get('width') == 0 or img.attrs.get('height') == 0:
-                        obscured_img_tags.append(img.attrs)
+                                # Use the latest message's subject (this maintains FW, RE, etc.)
+                                if h_key == "Subject" and not subject:
+                                    subject = h_value
+                                elif h_key != "Subject":
+                                    header_agg[h_key].add(h_value)
+                    # Does this div contain another div that actually have the headers?
+                    elif any(header in content.text for header in valid_headers for content in div.contents
+                             if content.name == 'div'):
+                        # If so, move onto the div that actually contains what we want
+                        continue
 
-                # Assign aggregated info to email object
-                html_email["Subject"] = subject
-                for key, value in header_agg.items():
-                    html_email[key] = "; ".join(value)
-            content_str = html_email.as_bytes()
+                    # Document was probably not well formatted, so we'll use the headers as delimiters
+                    else:
+                        header_offset_map = {}
+                        # Determine the position of each header
+                        for header in list(header_agg.keys()) + ["Subject"]:
+                            if header in div.text:
+                                header_offset_map[div.text.index(header)] = header
+                        # Use the positions and length of header name to determine an offset
+                        for i in range(len(header_offset_map)):
+                            sorted_keys = sorted(header_offset_map.keys())
+                            header_name = header_offset_map[sorted_keys[i]]
+                            offset = len(f"{header_name}: ") + sorted_keys[i]
+                            value = (
+                                div.text[offset: sorted_keys[i + 1]]
+                                if i < len(header_offset_map) - 1
+                                else div.text[offset:]
+                            )
 
+                            if header_name == "Subject":
+                                subject = value
+                            else:
+                                header_agg[header_name].add(value)
+
+            obscured_img_tags = []
+            # Inspect all images
+            for img in parsed_html.find_all("img"):
+                # Raise a heuristic if it seems like the tag is being obscured
+                if img.attrs.get('width') == 0 or img.attrs.get('height') == 0:
+                    obscured_img_tags.append(img.attrs)
+            if obscured_img_tags:
+                ResultSection("Hidden IMG Tags found", body=json.dumps(obscured_img_tags),
+                              body_format=BODY_FORMAT.JSON, heuristic=1, parent=request.result)
+
+            # Assign aggregated info to email object
+            html_email["Subject"] = subject
+            for key, value in header_agg.items():
+                html_email[key] = "; ".join(value)
+        content_str = html_email.as_bytes()
+
+        self.handle_eml(request, content_str, header_agg)
+
+    def handle_eml(self, request: ServiceRequest, content_str, header_agg={}) -> None:
         parser = eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         try:
             parsed_eml = parser.decode_email_bytes(content_str)
@@ -323,7 +359,7 @@ class EmlParser(ServiceBase):
                     for uri in body["uri"]:
                         all_uri.add(uri)
             # Words in the email body, used by extract to guess passwords
-            request.temp_submission_data["email_body"] = list(body_words)
+            request.temp_submission_data["email_body"] = sorted(list(body_words))
 
             kv_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
 
@@ -395,7 +431,7 @@ class EmlParser(ServiceBase):
             header["date"] = [self.json_serial(header["date"])]
 
             # Replace with aggregated date(s) if any available
-            if header_agg["Date"]:
+            if header_agg.get("Date"):
                 # Replace
                 if any(
                     default_date in header["date"]
@@ -447,8 +483,5 @@ class EmlParser(ServiceBase):
                     temp_path, "parsing.json", "These are the raw results of running GOVCERT-LU's eml_parser"
                 )
 
-            if obscured_img_tags:
-                ResultSection("Hidden IMG Tags found", body=json.dumps(obscured_img_tags),
-                              body_format=BODY_FORMAT.JSON, heuristic=1, parent=request.result)
         else:
             self.log.warning("emlParser could not parse EML; no useful information in result's headers")
