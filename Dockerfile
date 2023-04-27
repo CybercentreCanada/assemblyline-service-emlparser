@@ -7,7 +7,7 @@ ENV SERVICE_PATH emlparser.emlparser.EmlParser
 USER root
 
 # Install apt dependencies
-RUN echo 'deb http://deb.debian.org/debian stretch-backports main' >> /etc/apt/sources.list
+RUN echo 'deb http://deb.debian.org/debian buster-backports main' >> /etc/apt/sources.list
 COPY pkglist.txt pkglist.txt
 RUN apt-get update && grep -vE '^#' pkglist.txt | xargs apt-get install -y && rm -rf /var/lib/apt/lists/*
 
