@@ -3,13 +3,20 @@ FROM cccs/assemblyline-v4-service-base:$branch AS base
 
 ENV SERVICE_PATH emlparser.emlparser.EmlParser
 
+# Switch to root user
 USER root
-RUN echo 'deb http://deb.debian.org/debian stretch-backports main' >> /etc/apt/sources.list
-RUN apt-get update && apt-get install -y libemail-outlook-message-perl && rm -rf /var/lib/apt/lists/*
 
+# Install apt dependencies
+RUN echo 'deb http://deb.debian.org/debian stretch-backports main' >> /etc/apt/sources.list
+COPY pkglist.txt pkglist.txt
+RUN apt-get update && grep -vE '^#' pkglist.txt | xargs apt-get install -y && rm -rf /var/lib/apt/lists/*
+
+# Switch to assemblyline user
 USER assemblyline
 
-RUN pip install -U --no-cache-dir --user compoundfiles compressed-rtf extract-msg bs4 lxml eml-parser && rm -rf ~/.cache/pip
+# Install python dependencies
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir --user --requirement requirements.txt && rm -rf ~/.cache/pip
 
 # Clone Extract service code
 WORKDIR /opt/al_service
