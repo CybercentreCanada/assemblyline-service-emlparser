@@ -110,8 +110,8 @@ class EmlParser(ServiceBase):
             "attachments", "body", "recipients", "props", "treePath", "deencapsulatedRtf", "htmlBodyPrepared",
             "htmlInjectableHeader", "htmlBody", "compressedRtf", "rtfEncapInjectableHeader", "rtfBody",
             "rtfPlainInjectableHeader", "path", "named", "namedProperties", "headerFormatProperties",
-            "headerDict", "header", "kwargs", "appointmentTimeZoneDefinitionStartDisplay", "sideEffects"
-            "appointmentTimeZoneDefinitionEndDisplay", "cleanGlobalObjectID", "errorBehavior", "globalObjectID"
+            "headerDict", "header", "kwargs", "appointmentTimeZoneDefinitionStartDisplay", "sideEffects",
+            "appointmentTimeZoneDefinitionEndDisplay", "cleanGlobalObjectID", "errorBehavior", "globalObjectID",
         ]
         attributes_section = ResultKeyValueSection("Email Attributes", parent=request.result)
         # Patch in all potentially interesting attributes that we don't already have
@@ -272,7 +272,7 @@ class EmlParser(ServiceBase):
                     "class", []
                 ):
                     # Usually expect headers to be \n separated in text output but check first
-                    if "\n" in div.text:
+                    if "\n" in div.text.strip():
                         for h in div.text.split("\n"):
                             if any(header in h for header in valid_headers):
                                 h_key, h_value = h.split(":", 1)
@@ -397,6 +397,7 @@ class EmlParser(ServiceBase):
 
             # Add Tags for received IPs
             if "received_ip" in header:
+                header["received_ip"] = sorted(header["received_ip"])
                 for ip in header["received_ip"]:
                     ip = ip.strip()
                     try:
@@ -407,13 +408,14 @@ class EmlParser(ServiceBase):
 
             # Add Tags for received Domains
             if "received_domain" in header:
+                header["received_domain"] = sorted(header["received_domain"])
                 for dom in header["received_domain"]:
                     kv_section.add_tag("network.static.domain", dom.strip())
 
             # If we've found URIs, add them to a section
             if len(all_uri) > 0:
                 uri_section = ResultSection("URIs Found:", parent=request.result)
-                for uri in all_uri:
+                for uri in sorted(all_uri):
                     for invalid_uri_char in ['"', "'", '<', '>']:
                         for u in uri.split(invalid_uri_char):
                             if re.match(FULL_URI, u):
@@ -451,7 +453,7 @@ class EmlParser(ServiceBase):
             # Filter out useless headers from results
             self.log.debug(header.keys())
             [header.pop(h) for h in self.header_filter if h in header.keys()]
-            kv_section.set_body(json.dumps(header, default=self.json_serial))
+            kv_section.set_body(json.dumps(header, default=self.json_serial, sort_keys=True))
 
             attachments_added = []
             if "attachment" in parsed_eml:
