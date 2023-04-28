@@ -56,7 +56,7 @@ class EmlParser(ServiceBase):
 
     def handle_outlook(self, request: ServiceRequest) -> None:
         try:
-            msg = extract_msg.openMsg(request.file_path)
+            msg = extract_msg.openMsg(request.file_path)  # errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL)
         except (
             NotImplementedError,
             extract_msg.exceptions.InvalidFileFormatError,
@@ -110,7 +110,8 @@ class EmlParser(ServiceBase):
             "attachments", "body", "recipients", "props", "treePath", "deencapsulatedRtf", "htmlBodyPrepared",
             "htmlInjectableHeader", "htmlBody", "compressedRtf", "rtfEncapInjectableHeader", "rtfBody",
             "rtfPlainInjectableHeader", "path", "named", "namedProperties", "headerFormatProperties",
-            "headerDict", "header"
+            "headerDict", "header", "kwargs", "appointmentTimeZoneDefinitionStartDisplay", "sideEffects"
+            "appointmentTimeZoneDefinitionEndDisplay", "cleanGlobalObjectID", "errorBehavior", "globalObjectID"
         ]
         attributes_section = ResultKeyValueSection("Email Attributes", parent=request.result)
         # Patch in all potentially interesting attributes that we don't already have
@@ -157,8 +158,12 @@ class EmlParser(ServiceBase):
         attachments_added = []
         for attachment in msg.attachments:
             customFilename = str(uuid.uuid4())
-            ret_value = attachment.save(customPath=self.working_directory,
-                                        customFilename=customFilename, extractEmbedded=True)
+            try:
+                ret_value = attachment.save(customPath=self.working_directory,
+                                            customFilename=customFilename, extractEmbedded=True)
+            except Exception:
+                continue
+
             if isinstance(attachment, extract_msg.signed_attachment.SignedAttachment):
                 attachment_name = os.path.basename(ret_value)
                 attachment_path = ret_value
