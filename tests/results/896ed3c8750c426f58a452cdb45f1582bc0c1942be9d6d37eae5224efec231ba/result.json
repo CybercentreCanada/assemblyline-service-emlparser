@@ -5,7 +5,7 @@
     "sections": [
       {
         "auto_collapse": false,
-        "body": "{\"content-transfer-encoding\": [\"quoted-printable\"], \"content-type\": [\"text/plain; charset=\\\"utf-8\\\"\"], \"date\": [\"1970-01-01T00:00:00+00:00\"], \"mime-version\": [\"1.0\"], \"subject\": [\"TWC - Master Tasks\"], \"to\": []}",
+        "body": "{\"date\": [\"1970-01-01T00:00:00+00:00\"], \"from\": [\"Sender McSender <sender@gmail.com>\"], \"sent\": [\"Thu Jul 29 23:17:37 2010\"], \"subject\": [\"Subject\"], \"to\": [\"\\\"Receiver McReceiver\\\"\"]}",
         "body_format": "KEY_VALUE",
         "classification": "TLP:C",
         "depth": 0,
@@ -13,11 +13,14 @@
         "tags": {
           "network": {
             "email": {
+              "address": [
+                "sender@gmail.com"
+              ],
               "date": [
                 "1970-01-01 00:00:00+00:00"
               ],
               "subject": [
-                "TWC - Master Tasks"
+                "Subject"
               ]
             }
           }
@@ -34,6 +37,13 @@
   "results": {
     "heuristics": [],
     "tags": {
+      "network.email.address": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "sender@gmail.com"
+        }
+      ],
       "network.email.date": [
         {
           "heur_id": null,
@@ -45,17 +55,42 @@
         {
           "heur_id": null,
           "signatures": [],
-          "value": "TWC - Master Tasks"
+          "value": "Subject"
         }
       ]
     },
     "temp_submission_data": {
       "email_body": [
         "",
-        "-",
-        "Master",
-        "TWC",
-        "Tasks"
+        "17",
+        "2010Subject",
+        "2010Subject:",
+        "23",
+        "23:17:37",
+        "29",
+        "37",
+        "<sender@gmail.com>",
+        "From",
+        "From:",
+        "Hi",
+        "Hi.",
+        "Jul",
+        "McReceiver",
+        "McSender",
+        "Receiver",
+        "Sender",
+        "Sent",
+        "Sent:",
+        "Signature",
+        "Subject",
+        "Thank",
+        "Thu",
+        "To",
+        "To:",
+        "com",
+        "gmail",
+        "sender",
+        "you"
       ]
     }
   }
