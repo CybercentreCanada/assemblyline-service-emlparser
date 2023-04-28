@@ -1,0 +1,62 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 0,
+    "sections": [
+      {
+        "auto_collapse": false,
+        "body": "{\"subject\": [\"TWC - Master Tasks\"], \"to\": [], \"date\": [\"1970-01-01T00:00:00+00:00\"], \"content-type\": [\"text/plain; charset=\\\"utf-8\\\"\"], \"mime-version\": [\"1.0\"], \"content-transfer-encoding\": [\"quoted-printable\"]}",
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "tags": {
+          "network": {
+            "email": {
+              "date": [
+                "1970-01-01 00:00:00+00:00"
+              ],
+              "subject": [
+                "TWC - Master Tasks"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Headers",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [],
+    "tags": {
+      "network.email.date": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "1970-01-01 00:00:00+00:00"
+        }
+      ],
+      "network.email.subject": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "TWC - Master Tasks"
+        }
+      ]
+    },
+    "temp_submission_data": {
+      "email_body": [
+        "",
+        "-",
+        "Master",
+        "TWC",
+        "Tasks"
+      ]
+    }
+  }
+}

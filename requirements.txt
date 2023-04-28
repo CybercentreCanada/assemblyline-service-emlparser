@@ -1,0 +1,7 @@
+compoundfiles
+compressed-rtf
+extract-msg==0.40.0
+mail-parser
+bs4
+lxml
+eml-parser
