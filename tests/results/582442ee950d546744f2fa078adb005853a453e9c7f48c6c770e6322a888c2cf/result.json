@@ -1,0 +1,219 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 1000,
+    "sections": [
+      {
+        "auto_collapse": false,
+        "body": "{\"Received\": \"from Posta4.stm.com.tr (10.0.0.214) by Posta4.stm.com.tr\\r\\n (10.0.0.214) with Microsoft SMTP Server (version=TLS1_2,\\r\\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.15 via Mailbox\\r\\n Transport; Thu, 29 Dec 2022 15:39:41 +0300\\nfrom Posta3.stm.com.tr (10.0.0.213) by Posta4.stm.com.tr\\r\\n (10.0.0.214) with Microsoft SMTP Server (version=TLS1_2,\\r\\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.15; Thu, 29 Dec\\r\\n 2022 15:39:41 +0300\\nfrom mail.stm.com.tr (172.16.0.21) by Posta3.stm.com.tr (10.0.0.213)\\r\\n with Microsoft SMTP Server id 15.2.1118.15 via Frontend Transport; Thu, 29\\r\\n Dec 2022 15:39:41 +0300\\nfrom web.wizzsolutions.com (web.wizzsolutions.com [176.9.30.52])\\r\\n\\tby Forcepoint Email with ESMTPS id 0EC44A71823E5EBB7145\\r\\n\\tfor <kmurat.bicer@stm.com.tr>; Thu, 29 Dec 2022 15:39:38 +0300 (+03)\\nfrom [113.160.234.229] (helo=[127.0.0.1])\\r\\n\\tby web.wizzsolutions.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)\\r\\n\\t(Exim 4.89_1)\\r\\n\\t(envelope-from <jayan@wizzsolutions.com>)\\r\\n\\tid 1pAsBw-0001r6-8A\\r\\n\\tfor kmurat.bicer@stm.com.tr; Thu, 29 Dec 2022 07:39:33 -0500\", \"Content-Type\": \"application/ms-tnef; name=\\\"docx.docx\\\"\", \"Content-Transfer-Encoding\": \"base64\", \"Content-Disposition\": \"attachment; filename=\\\"docx.docx\\\"\", \"From\": \"<jayan@wizzsolutions.com>\", \"To\": \"<kmurat.bicer@stm.com.tr>\", \"Subject\": \"Ticaret\", \"Message-ID\": \"<3d78e766-9997-d488-3119-7637113cd8db@wizzsolutions.com>\", \"Date\": \"Thu, 29 Dec 2022 12:35:51 +0000\", \"MIME-Version\": \"1.0\", \"Return-Path\": \"jayan@wizzsolutions.com\", \"X-MS-Exchange-Organization-Network-Message-Id\": \"f1b6be2f-e5fd-43b2-196f-08dae999c19d\", \"X-MS-Exchange-Organization-AuthSource\": \"Posta3.stm.com.tr\", \"X-MS-Exchange-Organization-AuthAs\": \"Anonymous\", \"X-MS-Exchange-Transport-EndToEndLatency\": \"00:00:00.1231828\", \"X-MS-Exchange-Processed-By-BccFoldering\": \"15.02.1118.015\"}",
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "tags": {
+          "network": {
+            "email": {
+              "address": [
+                "<jayan@wizzsolutions.com>"
+              ],
+              "date": [
+                "Thu, 29 Dec 2022 12:35:51 +0000"
+              ],
+              "subject": [
+                "Ticaret"
+              ]
+            },
+            "static": {
+              "domain": [
+                "Posta4.stm.com.tr",
+                "Posta3.stm.com.tr",
+                "mail.stm.com.tr",
+                "web.wizzsolutions.com"
+              ],
+              "ip": [
+                "10.0.0.214",
+                "10.0.0.213",
+                "172.16.0.21",
+                "176.9.30.52",
+                "113.160.234.229",
+                "127.0.0.1"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Headers",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "{\"areStringsUnicode\": \"True\", \"attachmentErrorBehavior\": \"<AttachErrorBehavior.THROW: 0>\", \"attachmentsDelayed\": \"False\", \"attachmentsReady\": \"True\", \"classType\": \"'IPM.Task'\", \"classified\": \"False\", \"crlf\": \"'\\\\n'\", \"defaultFolderName\": \"'2022-12-29_1235 Ticaret'\", \"filename\": \"'/tmp/582442ee950d546744f2fa078adb005853a453e9c7f48c6c770e6322a888c2cf'\", \"importance\": \"<Importance.MEDIUM: 1>\", \"isRead\": \"True\", \"isSent\": \"True\", \"messageId\": \"'<3d78e766-9997-d488-3119-7637113cd8db@wizzsolutions.com>'\", \"parsedDate\": \"(2022, 12, 29, 12, 35, 51, 0, 1, -1)\", \"percentComplete\": \"0.0\", \"prefixLen\": \"0\", \"prefixList\": \"[]\", \"priority\": \"<Priority.NORMAL: 0>\", \"receivedTime\": \"2022-12-29T12:39:41.555386+00:00\", \"recipientSeparator\": \"';'\", \"sender\": \"'<jayan@wizzsolutions.com>'\", \"sensitivity\": \"<Sensitivity.NORMAL: 0>\", \"sideEffects\": \"{<SideEffect.OPEN_FOR_CTX_MENU: 256>, <SideEffect.COERCE_TO_INDEX: 16>}\", \"stringEncoding\": \"'utf-16-le'\", \"taskAcceptanceState\": \"<TaskAcceptance.NOT_ASSIGNED: 0>\", \"taskAccepted\": \"False\", \"taskActualEffort\": \"0\", \"taskComplete\": \"False\", \"taskDeadOccurrence\": \"False\", \"taskEstimatedEffort\": \"0\", \"taskFCreator\": \"False\", \"taskFRecurring\": \"False\", \"taskMode\": \"<TaskMode.UNASSIGNED: 0>\", \"taskNoCompute\": \"False\", \"taskOrdinal\": \"4294966296\", \"taskOwner\": \"'csumbas@yahoo.tr'\", \"taskOwnership\": \"<TaskOwnership.NOT_ASSIGNED: 0>\", \"taskResetReminder\": \"False\", \"taskState\": \"<TaskState.NOT_ASSIGNED: 1>\", \"taskStatus\": \"<TaskStatus.NOT_STARTED: 0>\", \"taskStatusOnComplete\": \"False\", \"taskUpdates\": \"False\", \"taskVersion\": \"2\", \"teamTask\": \"False\"}",
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "tags": {
+          "network": {
+            "email": {
+              "msg_id": [
+                "<3d78e766-9997-d488-3119-7637113cd8db@wizzsolutions.com>"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Attributes",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "{\"PidLidReminderFileParameter\": \"\\\\\\\\113.160.234.229\\\\istanbul\", \"PidLidReminderOverride\": true}",
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 1,
+        "heuristic": {
+          "attack_ids": [],
+          "frequency": 1,
+          "heur_id": 2,
+          "score": 1000,
+          "score_map": {},
+          "signatures": {}
+        },
+        "tags": {
+          "attribution": {
+            "exploit": [
+              "CVE-2023-23397"
+            ]
+          },
+          "network": {
+            "static": {
+              "ip": [
+                "113.160.234.229"
+              ],
+              "unc_path": [
+                "\\\\113.160.234.229\\istanbul"
+              ]
+            }
+          }
+        },
+        "title_text": "CVE-2023-23397",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [
+      {
+        "attack_ids": [],
+        "heur_id": 2,
+        "signatures": []
+      }
+    ],
+    "tags": {
+      "attribution.exploit": [
+        {
+          "heur_id": 2,
+          "signatures": [],
+          "value": "CVE-2023-23397"
+        }
+      ],
+      "network.email.address": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "<jayan@wizzsolutions.com>"
+        }
+      ],
+      "network.email.date": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "Thu, 29 Dec 2022 12:35:51 +0000"
+        }
+      ],
+      "network.email.msg_id": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "<3d78e766-9997-d488-3119-7637113cd8db@wizzsolutions.com>"
+        }
+      ],
+      "network.email.subject": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "Ticaret"
+        }
+      ],
+      "network.static.domain": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "Posta3.stm.com.tr"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "Posta4.stm.com.tr"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "mail.stm.com.tr"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "web.wizzsolutions.com"
+        }
+      ],
+      "network.static.ip": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "10.0.0.213"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "10.0.0.214"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "113.160.234.229"
+        },
+        {
+          "heur_id": 2,
+          "signatures": [],
+          "value": "113.160.234.229"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "127.0.0.1"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "172.16.0.21"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "176.9.30.52"
+        }
+      ],
+      "network.static.unc_path": [
+        {
+          "heur_id": 2,
+          "signatures": [],
+          "value": "\\\\113.160.234.229\\istanbul"
+        }
+      ]
+    },
+    "temp_submission_data": {}
+  }
+}
