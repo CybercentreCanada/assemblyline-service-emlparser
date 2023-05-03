@@ -191,9 +191,15 @@ class EmlParser(ServiceBase):
                 body_words.update(extract_passwords(headers["Subject"]))
             elif hasattr(msg, "subject") and msg.subject:
                 body_words.update(extract_passwords(msg.subject))
-            if msg.body:
-                body_words.update(extract_passwords(msg.body))
-                request.temp_submission_data["email_body"] = sorted(list(body_words))
+
+            try:
+                if msg.body:
+                    body_words.update(extract_passwords(msg.body))
+                    request.temp_submission_data["email_body"] = sorted(list(body_words))
+            except UnicodeDecodeError:
+                # Couldn't decode the body correctly. We could get the bytes manually and decode what we can.
+                # For the moment, just return what we have, and the user will see if the attachment won't be extracted.
+                pass
 
         # Specialized fields
         if (
