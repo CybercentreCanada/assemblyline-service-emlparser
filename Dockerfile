@@ -18,7 +18,7 @@ USER assemblyline
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir --user --requirement requirements.txt && rm -rf ~/.cache/pip
 
-# Clone Extract service code
+# Clone Emlparser service code
 WORKDIR /opt/al_service
 COPY . .
 
