@@ -18,7 +18,6 @@ import email.policy
 import os
 import re
 import sys
-
 from email.utils import formataddr, formatdate, parsedate_to_datetime
 from functools import reduce
 
