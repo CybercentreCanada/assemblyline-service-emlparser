@@ -12,16 +12,15 @@ from urllib.parse import urlparse
 
 import eml_parser
 import extract_msg
-from assemblyline.odm import EMAIL_REGEX, IP_ONLY_REGEX, FULL_URI, IP_REGEX
+from assemblyline.odm import EMAIL_REGEX, FULL_URI, IP_ONLY_REGEX, IP_REGEX
+from assemblyline_service_utilities.common.utils import extract_passwords
 from assemblyline_v4_service.common.base import ServiceBase
-from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultSection, ResultKeyValueSection
 from assemblyline_v4_service.common.request import ServiceRequest
+from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultKeyValueSection, ResultSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
-from assemblyline_v4_service.common.utils import extract_passwords
 from bs4 import BeautifulSoup
-
-from mailparser.utils import msgconvert
 from emlparser.outlookmsgfile import load as msg2eml
+from mailparser.utils import msgconvert
 
 
 class EmlParser(ServiceBase):

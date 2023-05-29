@@ -1,14 +1,13 @@
 import os
 import shutil
 
+import emlparser.emlparser
 import pytest
 from assemblyline.common import forge
 from assemblyline.odm.messages.task import Task as ServiceTask
 from assemblyline_v4_service.common import helper
 from assemblyline_v4_service.common.request import ServiceRequest
 from assemblyline_v4_service.common.task import Task
-
-import emlparser.emlparser
 
 identify = forge.get_identify(use_cache=False)
 
