@@ -82,3 +82,7 @@ venv.bak/
 
 # Cython debug symbols
 cython_debug/
+
+# CaRTed Samples/Runs
+*.cart
+*.cart_emlparser

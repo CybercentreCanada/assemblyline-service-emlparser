@@ -5,4 +5,3 @@ mail-parser
 bs4
 lxml
 eml-parser
-assemblyline-service-utilities
