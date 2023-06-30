@@ -4,6 +4,7 @@ import json
 import os
 import re
 import tempfile
+import traceback
 import uuid
 from datetime import datetime
 from ipaddress import IPv4Address, ip_address
@@ -19,8 +20,9 @@ from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultKey
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
 from assemblyline_v4_service.common.utils import extract_passwords
 from bs4 import BeautifulSoup
-from emlparser.outlookmsgfile import load as msg2eml
 from mailparser.utils import msgconvert
+
+from emlparser.outlookmsgfile import load as msg2eml
 
 
 class EmlParser(ServiceBase):
@@ -61,6 +63,7 @@ class EmlParser(ServiceBase):
             extract_msg.exceptions.InvalidFileFormatError,
             extract_msg.exceptions.StandardViolationError,
             extract_msg.exceptions.UnrecognizedMSGTypeError,
+            extract_msg.exceptions.UnknownCodepageError,
         ) as e1:
             # If we can't use extract-msg, rely on converting to eml
             self.log.warning(e1, exc_info=True)
@@ -106,11 +109,32 @@ class EmlParser(ServiceBase):
         headers_section.set_body(json.dumps(headers, default=self.json_serial))
 
         attributes_to_skip = [
-            "attachments", "body", "recipients", "props", "treePath", "deencapsulatedRtf", "htmlBodyPrepared",
-            "htmlInjectableHeader", "htmlBody", "compressedRtf", "rtfEncapInjectableHeader", "rtfBody",
-            "rtfPlainInjectableHeader", "path", "named", "namedProperties", "headerFormatProperties",
-            "headerDict", "header", "kwargs", "appointmentTimeZoneDefinitionStartDisplay", "sideEffects",
-            "appointmentTimeZoneDefinitionEndDisplay", "cleanGlobalObjectID", "errorBehavior", "globalObjectID",
+            "attachments",
+            "body",
+            "recipients",
+            "props",
+            "treePath",
+            "deencapsulatedRtf",
+            "htmlBodyPrepared",
+            "htmlInjectableHeader",
+            "htmlBody",
+            "compressedRtf",
+            "rtfEncapInjectableHeader",
+            "rtfBody",
+            "rtfPlainInjectableHeader",
+            "path",
+            "named",
+            "namedProperties",
+            "headerFormatProperties",
+            "headerDict",
+            "header",
+            "kwargs",
+            "appointmentTimeZoneDefinitionStartDisplay",
+            "sideEffects",
+            "appointmentTimeZoneDefinitionEndDisplay",
+            "cleanGlobalObjectID",
+            "errorBehavior",
+            "globalObjectID",
         ]
         attributes_section = ResultKeyValueSection("Email Attributes", parent=request.result)
         # Patch in all potentially interesting attributes that we don't already have
@@ -158,8 +182,9 @@ class EmlParser(ServiceBase):
         for attachment in msg.attachments:
             customFilename = str(uuid.uuid4())
             try:
-                ret_value = attachment.save(customPath=self.working_directory,
-                                            customFilename=customFilename, extractEmbedded=True)
+                ret_value = attachment.save(
+                    customPath=self.working_directory, customFilename=customFilename, extractEmbedded=True
+                )
             except Exception:
                 continue
 
@@ -171,8 +196,9 @@ class EmlParser(ServiceBase):
                 attachment_path = os.path.join(self.working_directory, customFilename)
 
             try:
-                if request.add_extracted(attachment_path, attachment_name,
-                                         "Attachment", safelist_interface=self.api_interface):
+                if request.add_extracted(
+                    attachment_path, attachment_name, "Attachment", safelist_interface=self.api_interface
+                ):
                     attachments_added.append(attachment_name)
             except MaxExtractedExceeded:
                 self.log.warning(
@@ -181,8 +207,9 @@ class EmlParser(ServiceBase):
                 )
                 break
         if attachments_added:
-            ResultSection("Extracted Attachments:", parent=request.result,
-                          body="\n".join([x for x in attachments_added]))
+            ResultSection(
+                "Extracted Attachments:", parent=request.result, body="\n".join([x for x in attachments_added])
+            )
 
             # Only extract passwords if there is an attachment
             body_words = set()
@@ -201,19 +228,17 @@ class EmlParser(ServiceBase):
                 pass
 
         # Specialized fields
-        if (
-            msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
-            and msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON)).startswith("\\\\")
-        ):
+        if msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON)) and msg.namedProperties.get(
+            ("851F", extract_msg.constants.PSETID_COMMON)
+        ).startswith("\\\\"):
             plrfp = msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
             heur_section = ResultKeyValueSection("CVE-2023-23397", parent=attributes_section)
-            heur_section.add_tag('attribution.exploit', "CVE-2023-23397")
+            heur_section.add_tag("attribution.exploit", "CVE-2023-23397")
             heur_section.add_tag("network.static.unc_path", plrfp)
             heur_section.set_item("PidLidReminderFileParameter", plrfp)
             if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)) is not None:
                 heur_section.set_item(
-                    "PidLidReminderOverride",
-                    msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON))
+                    "PidLidReminderOverride", msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON))
                 )
                 if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)):
                     heur_section.set_heuristic(2)
@@ -294,8 +319,12 @@ class EmlParser(ServiceBase):
                                 elif h_key != "Subject":
                                     header_agg[h_key].add(h_value)
                     # Does this div contain another div that actually have the headers?
-                    elif any(header in content.text for header in valid_headers for content in div.contents
-                             if content.name == 'div'):
+                    elif any(
+                        header in content.text
+                        for header in valid_headers
+                        for content in div.contents
+                        if content.name == "div"
+                    ):
                         # If so, move onto the div that actually contains what we want
                         continue
 
@@ -312,7 +341,7 @@ class EmlParser(ServiceBase):
                             header_name = header_offset_map[sorted_keys[i]]
                             offset = len(f"{header_name}: ") + sorted_keys[i]
                             value = (
-                                div.text[offset: sorted_keys[i + 1]]
+                                div.text[offset : sorted_keys[i + 1]]
                                 if i < len(header_offset_map) - 1
                                 else div.text[offset:]
                             )
@@ -326,11 +355,16 @@ class EmlParser(ServiceBase):
             # Inspect all images
             for img in parsed_html.find_all("img"):
                 # Raise a heuristic if it seems like the tag is being obscured
-                if img.attrs.get('width') == 0 or img.attrs.get('height') == 0:
+                if img.attrs.get("width") == 0 or img.attrs.get("height") == 0:
                     obscured_img_tags.append(img.attrs)
             if obscured_img_tags:
-                ResultSection("Hidden IMG Tags found", body=json.dumps(obscured_img_tags),
-                              body_format=BODY_FORMAT.JSON, heuristic=1, parent=request.result)
+                ResultSection(
+                    "Hidden IMG Tags found",
+                    body=json.dumps(obscured_img_tags),
+                    body_format=BODY_FORMAT.JSON,
+                    heuristic=1,
+                    parent=request.result,
+                )
 
             # Assign aggregated info to email object
             html_email["Subject"] = subject
@@ -344,16 +378,25 @@ class EmlParser(ServiceBase):
         parser = eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         try:
             parsed_eml = parser.decode_email_bytes(content_str)
+        except ValueError as e:
+            if str(e) == "hour must be in 0..23":
+                # Invalid date given in headers, strip section and reprocess
+                content_str = content_str.replace(re.findall(b"Date:.*\n", content_str)[0], b"")
+                parsed_eml = parser.decode_email_bytes(content_str)
         except Exception as e:
+            tb = traceback.format_exc()
             if request.file_type == "code/html":
                 # Conversion of HTML → EML failed, likely because of malformed content
+                return
+            elif all(term in tb for term in ["if value[0] == '>':", "get_angle_addr"]):
+                # An email was detected but is incomplete
                 return
             else:
                 raise e
 
         header = parsed_eml["header"]
 
-        if "from" in header or "to" in header or parsed_eml.get('attachments'):
+        if "from" in header or "to" in header or parsed_eml.get("attachments"):
             all_uri = set()
             body_words = set(extract_passwords(header["subject"]))
             for body_counter, body in enumerate(parsed_eml["body"]):
@@ -421,7 +464,7 @@ class EmlParser(ServiceBase):
             if len(all_uri) > 0:
                 uri_section = ResultSection("URIs Found:", parent=request.result)
                 for uri in sorted(all_uri):
-                    for invalid_uri_char in ['"', "'", '<', '>']:
+                    for invalid_uri_char in ['"', "'", "<", ">"]:
                         for u in uri.split(invalid_uri_char):
                             if re.match(FULL_URI, u):
                                 uri = u
@@ -480,8 +523,9 @@ class EmlParser(ServiceBase):
                             f"{len(attachment) - len(attachments_added)} not added"
                         )
                         break
-                ResultSection("Extracted Attachments:", body="\n".join(
-                    [x for x in attachments_added]), parent=request.result)
+                ResultSection(
+                    "Extracted Attachments:", body="\n".join([x for x in attachments_added]), parent=request.result
+                )
 
             if request.get_param("save_emlparser_output"):
                 fd, temp_path = tempfile.mkstemp(dir=self.working_directory)
