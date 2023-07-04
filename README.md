@@ -1,8 +1,16 @@
 # EmlParser service
 
+### EML message
+
 This service is based of GOVCERT-LU eml_parser python library.
 
 https://github.com/GOVCERT-LU/eml_parser
+
+### Outlook message
+
+This service evolved to better handle outlook messages using the extract-msg library.
+
+https://github.com/TeamMsgExtractor/msg-extractor
 
 #### Service Details
 
