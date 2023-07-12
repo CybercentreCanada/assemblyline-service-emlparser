@@ -8,7 +8,6 @@ import traceback
 import uuid
 from datetime import datetime
 from ipaddress import IPv4Address, ip_address
-from tempfile import mkstemp
 from urllib.parse import urlparse
 
 import eml_parser
@@ -403,7 +402,7 @@ class EmlParser(ServiceBase):
                 body_text = BeautifulSoup(body["content"]).text
                 body_words.update(extract_passwords(body_text))
                 if request.get_param("extract_body_text"):
-                    fd, path = mkstemp()
+                    fd, path = tempfile.mkstemp(dir=self.working_directory)
                     with open(path, "w") as f:
                         f.write(body["content"])
                         os.close(fd)
@@ -469,9 +468,12 @@ class EmlParser(ServiceBase):
                             if re.match(FULL_URI, u):
                                 uri = u
                                 break
+                    try:
+                        parsed_url = urlparse(uri)
+                    except ValueError:
+                        continue
                     uri_section.add_line(uri)
                     uri_section.add_tag("network.static.uri", uri.strip())
-                    parsed_url = urlparse(uri)
                     if parsed_url.hostname and re.match(IP_ONLY_REGEX, parsed_url.hostname):
                         uri_section.add_tag("network.static.ip", parsed_url.hostname)
                     else:
@@ -507,7 +509,7 @@ class EmlParser(ServiceBase):
             if "attachment" in parsed_eml:
                 attachments = parsed_eml["attachment"]
                 for attachment in attachments:
-                    fd, path = mkstemp()
+                    fd, path = tempfile.mkstemp(dir=self.working_directory)
 
                     with open(path, "wb") as f:
                         f.write(base64.b64decode(attachment["raw"]))

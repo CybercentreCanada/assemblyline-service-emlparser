@@ -13,7 +13,7 @@
             "args": [
                 "-d",
                 "emlparser.emlparser.EmlParser",
-                "/path/to/sample"
+                "${file}"
             ],
             "justMyCode": false,
         },
