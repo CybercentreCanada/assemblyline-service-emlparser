@@ -57,7 +57,8 @@ class EmlParser(ServiceBase):
 
     def handle_outlook(self, request: ServiceRequest) -> None:
         try:
-            msg = extract_msg.openMsg(request.file_path)  # errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL)
+            msg = extract_msg.openMsg(request.file_path)
+            # msg = extract_msg.openMsg(request.file_path, errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL)
         except (
             NotImplementedError,
             extract_msg.exceptions.InvalidFileFormatError,
@@ -378,20 +379,44 @@ class EmlParser(ServiceBase):
         parser = eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         try:
             parsed_eml = parser.decode_email_bytes(content_str)
-        except ValueError as e:
-            if str(e) == "hour must be in 0..23":
+        except Exception as e:
+            exception_handled = False
+            if not exception_handled and isinstance(e, ValueError) and str(e) == "hour must be in 0..23":
                 # Invalid date given in headers, strip section and reprocess
                 content_str = content_str.replace(re.findall(b"Date:.*\n", content_str)[0], b"")
                 parsed_eml = parser.decode_email_bytes(content_str)
-        except Exception as e:
-            tb = traceback.format_exc()
-            if request.file_type == "code/html":
+                exception_handled = True
+
+            if not exception_handled and request.file_type == "code/html":
                 # Conversion of HTML → EML failed, likely because of malformed content
                 return
-            elif all(term in tb for term in ["if value[0] == '>':", "get_angle_addr"]):
+
+            tb = traceback.format_exc()
+
+            EXPECT_ATOM_TXT = "expected atom at a start of dot-atom-text but found"
+            if not exception_handled and isinstance(e, IndexError) and EXPECT_ATOM_TXT in tb:
+                bad_dot_atom_text = re.search(f"{EXPECT_ATOM_TXT} '(.*)'\n", tb).group(1).encode()
+                # bad_dot_atom_text can contain brackets, so can't use it in a regex
+                # We'll delete all lines containing what we can't parse, as we don't know which one is causing the error
+                while bad_dot_atom_text in content_str:
+                    index = content_str.index(bad_dot_atom_text)
+                    try:
+                        before = content_str.rindex(b"\n", 0, index)
+                    except ValueError:
+                        before = 0
+                    try:
+                        after = content_str.index(b"\n", index + len(bad_dot_atom_text))
+                    except ValueError:
+                        after = len(content_str)
+                    content_str = content_str[:before] + content_str[after:]
+                parsed_eml = parser.decode_email_bytes(content_str)
+                exception_handled = True
+
+            if not exception_handled and all(term in tb for term in ["if value[0] == '>':", "get_angle_addr"]):
                 # An email was detected but is incomplete
                 return
-            else:
+
+            if not exception_handled:
                 raise e
 
         header = parsed_eml["header"]
