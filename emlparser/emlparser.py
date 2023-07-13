@@ -380,7 +380,12 @@ class EmlParser(ServiceBase):
             parsed_eml = parser.decode_email_bytes(content_str)
         except Exception as e:
             exception_handled = False
-            if not exception_handled and isinstance(e, ValueError) and str(e) == "hour must be in 0..23":
+
+            if (
+                not exception_handled
+                and isinstance(e, ValueError)
+                and str(e) in ["hour must be in 0..23", "day is out of range for month"]
+            ):
                 # Invalid date given in headers, strip section and reprocess
                 content_str = content_str.replace(re.findall(b"Date:.*\n", content_str)[0], b"")
                 parsed_eml = parser.decode_email_bytes(content_str)
@@ -408,6 +413,13 @@ class EmlParser(ServiceBase):
                     except ValueError:
                         after = len(content_str)
                     content_str = content_str[:before] + content_str[after:]
+                parsed_eml = parser.decode_email_bytes(content_str)
+                exception_handled = True
+
+            UNEXPECTED_ADDR_ENDING = "at end of group display name but found"
+            if not exception_handled and isinstance(e, IndexError) and UNEXPECTED_ADDR_ENDING in tb:
+                unexpected_addr_ending_text = re.search(f"{UNEXPECTED_ADDR_ENDING} '(.*)'\n", tb).group(1).encode()
+                content_str = content_str.replace(unexpected_addr_ending_text + b"\n", b"\n")
                 parsed_eml = parser.decode_email_bytes(content_str)
                 exception_handled = True
 
