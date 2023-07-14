@@ -423,6 +423,18 @@ class EmlParser(ServiceBase):
                 parsed_eml = parser.decode_email_bytes(content_str)
                 exception_handled = True
 
+            PARSEDATE_TZ = "_parsedate_tz(data)"
+            if (
+                not exception_handled
+                and isinstance(e, TypeError)
+                and str(e) == "cannot unpack non-iterable NoneType object"
+                and PARSEDATE_TZ in tb
+            ):
+                for date_to_delete in re.findall(b"\n.*Date:.*\n", content_str):
+                    content_str = content_str.replace(date_to_delete, b"\n")
+                parsed_eml = parser.decode_email_bytes(content_str)
+                exception_handled = True
+
             if not exception_handled and all(term in tb for term in ["if value[0] == '>':", "get_angle_addr"]):
                 # An email was detected but is incomplete
                 return
