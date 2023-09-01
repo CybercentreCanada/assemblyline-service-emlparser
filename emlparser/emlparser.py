@@ -237,16 +237,31 @@ class EmlParser(ServiceBase):
             elif hasattr(msg, "subject") and msg.subject:
                 body_words.update(extract_passwords(msg.subject))
 
-            try:
-                if msg.body:
+            if msg.body:
+                # Extract IOCs from body
+                [
+                    attributes_section.add_tag("network.static.ip", x.value)
+                    for x in find_ips(msg.body.encode())
+                ]
+                [
+                    attributes_section.add_tag("network.static.domain", x.value)
+                    for x in find_domains(msg.body.encode())
+                ]
+                [
+                    attributes_section.add_tag("network.static.uri", x.value)
+                    for x in find_urls(msg.body.encode())
+                ]
+
+                try:
+                    # Attempt to update the list of possible passwords derived from email body
                     body_words.update(extract_passwords(msg.body))
                     request.temp_submission_data["email_body"] = sorted(
                         list(body_words)
                     )
-            except UnicodeDecodeError:
-                # Couldn't decode the body correctly. We could get the bytes manually and decode what we can.
-                # For the moment, just return what we have, and the user will see if the attachment won't be extracted.
-                pass
+                except UnicodeDecodeError:
+                    # Couldn't decode the body correctly. We could get the bytes manually and decode what we can.
+                    # For the moment, just return what we have, and the user will see if the attachment won't be extracted.
+                    pass
 
         # Specialized fields
         if msg.namedProperties.get(
