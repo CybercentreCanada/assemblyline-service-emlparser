@@ -25,6 +25,7 @@ from assemblyline_v4_service.common.task import MaxExtractedExceeded
 from assemblyline_v4_service.common.utils import extract_passwords
 from bs4 import BeautifulSoup
 from mailparser.utils import msgconvert
+from multidecoder.analyzers.network import find_domains, find_ips, find_urls
 
 from emlparser.outlookmsgfile import load as msg2eml
 
@@ -641,6 +642,40 @@ class EmlParser(ServiceBase):
             # Filter out useless headers from results
             self.log.debug(header.keys())
             [header.pop(h) for h in self.header_filter if h in header.keys()]
+
+            # Merge X-MS-Exchange-Organization-Persisted-Urls headers into one block
+            if header.get("x-ms-exchange-organization-persisted-urls-chunkcount"):
+                persisted_urls_block = (
+                    "".join(
+                        [
+                            header[f"x-ms-exchange-organization-persisted-urls-{i}"][0]
+                            for i in range(
+                                int(
+                                    header[
+                                        "x-ms-exchange-organization-persisted-urls-chunkcount"
+                                    ][0]
+                                )
+                            )
+                        ]
+                    )
+                    .strip()
+                    .encode()
+                )
+
+                # Look for network IOCs in this block and tag them
+                [
+                    kv_section.add_tag("network.static.domain", x.value)
+                    for x in find_domains(persisted_urls_block)
+                ]
+                [
+                    kv_section.add_tag("network.static.ip", x.value)
+                    for x in find_ips(persisted_urls_block)
+                ]
+                [
+                    kv_section.add_tag("network.static.uri", x.value)
+                    for x in find_urls(persisted_urls_block)
+                ]
+
             kv_section.set_body(
                 json.dumps(header, default=self.json_serial, sort_keys=True)
             )
