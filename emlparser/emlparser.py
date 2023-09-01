@@ -15,7 +15,12 @@ import extract_msg
 from assemblyline.odm import EMAIL_REGEX, FULL_URI, IP_ONLY_REGEX, IP_REGEX
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.request import ServiceRequest
-from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultKeyValueSection, ResultSection
+from assemblyline_v4_service.common.result import (
+    BODY_FORMAT,
+    Result,
+    ResultKeyValueSection,
+    ResultSection,
+)
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
 from assemblyline_v4_service.common.utils import extract_passwords
 from bs4 import BeautifulSoup
@@ -29,7 +34,9 @@ class EmlParser(ServiceBase):
         super().__init__(config)
 
         # eml_parser headers are typically lowercased
-        self.header_filter = [filter.lower() for filter in config.get("header_filter", [])]
+        self.header_filter = [
+            filter.lower() for filter in config.get("header_filter", [])
+        ]
 
     @staticmethod
     def json_serial(obj):
@@ -77,7 +84,9 @@ class EmlParser(ServiceBase):
                     content_str = f.read()
             self.handle_eml(request, content_str)
             return
-        headers_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
+        headers_section = ResultSection(
+            "Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result
+        )
 
         headers = {}
         headers_key_lowercase = []
@@ -136,7 +145,9 @@ class EmlParser(ServiceBase):
             "errorBehavior",
             "globalObjectID",
         ]
-        attributes_section = ResultKeyValueSection("Email Attributes", parent=request.result)
+        attributes_section = ResultKeyValueSection(
+            "Email Attributes", parent=request.result
+        )
         # Patch in all potentially interesting attributes that we don't already have
         for attribute in dir(msg):
             if (
@@ -183,7 +194,9 @@ class EmlParser(ServiceBase):
             customFilename = str(uuid.uuid4())
             try:
                 ret_value = attachment.save(
-                    customPath=self.working_directory, customFilename=customFilename, extractEmbedded=True
+                    customPath=self.working_directory,
+                    customFilename=customFilename,
+                    extractEmbedded=True,
                 )
             except Exception:
                 continue
@@ -197,7 +210,10 @@ class EmlParser(ServiceBase):
 
             try:
                 if request.add_extracted(
-                    attachment_path, attachment_name, "Attachment", safelist_interface=self.api_interface
+                    attachment_path,
+                    attachment_name,
+                    "Attachment",
+                    safelist_interface=self.api_interface,
                 ):
                     attachments_added.append(attachment_name)
             except MaxExtractedExceeded:
@@ -208,7 +224,9 @@ class EmlParser(ServiceBase):
                 break
         if attachments_added:
             ResultSection(
-                "Extracted Attachments:", parent=request.result, body="\n".join([x for x in attachments_added])
+                "Extracted Attachments:",
+                parent=request.result,
+                body="\n".join([x for x in attachments_added]),
             )
 
             # Only extract passwords if there is an attachment
@@ -221,26 +239,44 @@ class EmlParser(ServiceBase):
             try:
                 if msg.body:
                     body_words.update(extract_passwords(msg.body))
-                    request.temp_submission_data["email_body"] = sorted(list(body_words))
+                    request.temp_submission_data["email_body"] = sorted(
+                        list(body_words)
+                    )
             except UnicodeDecodeError:
                 # Couldn't decode the body correctly. We could get the bytes manually and decode what we can.
                 # For the moment, just return what we have, and the user will see if the attachment won't be extracted.
                 pass
 
         # Specialized fields
-        if msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON)) and msg.namedProperties.get(
+        if msg.namedProperties.get(
             ("851F", extract_msg.constants.PSETID_COMMON)
-        ).startswith("\\\\"):
-            plrfp = msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
-            heur_section = ResultKeyValueSection("CVE-2023-23397", parent=attributes_section)
+        ) and msg.namedProperties.get(
+            ("851F", extract_msg.constants.PSETID_COMMON)
+        ).startswith(
+            "\\\\"
+        ):
+            plrfp = msg.namedProperties.get(
+                ("851F", extract_msg.constants.PSETID_COMMON)
+            )
+            heur_section = ResultKeyValueSection(
+                "CVE-2023-23397", parent=attributes_section
+            )
             heur_section.add_tag("attribution.exploit", "CVE-2023-23397")
             heur_section.add_tag("network.static.unc_path", plrfp)
             heur_section.set_item("PidLidReminderFileParameter", plrfp)
-            if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)) is not None:
+            if (
+                msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON))
+                is not None
+            ):
                 heur_section.set_item(
-                    "PidLidReminderOverride", msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON))
+                    "PidLidReminderOverride",
+                    msg.namedProperties.get(
+                        ("851C", extract_msg.constants.PSETID_COMMON)
+                    ),
                 )
-                if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)):
+                if msg.namedProperties.get(
+                    ("851C", extract_msg.constants.PSETID_COMMON)
+                ):
                     heur_section.set_heuristic(2)
             file_location = plrfp.split("\\")
             if len(file_location) >= 3:
@@ -261,7 +297,9 @@ class EmlParser(ServiceBase):
 
         valid_headers = ["To:", "Cc:", "Sent:", "From:", "Subject:", "Reply-To:"]
 
-        if not parsed_html.body or not any(header in parsed_html.body.text for header in valid_headers):
+        if not parsed_html.body or not any(
+            header in parsed_html.body.text for header in valid_headers
+        ):
             # We can assume this is just an HTML doc (or lacking body), one of which we can't process
             return
 
@@ -275,7 +313,14 @@ class EmlParser(ServiceBase):
                 generator_metadata_content = meta.attrs.get("content", "")
                 break
 
-        header_agg = {"From": set(), "To": set(), "Cc": set(), "Sent": set(), "Reply-To": set(), "Date": set()}
+        header_agg = {
+            "From": set(),
+            "To": set(),
+            "Cc": set(),
+            "Sent": set(),
+            "Reply-To": set(),
+            "Date": set(),
+        }
 
         # Process HTML emails generated from Outlook
         if generator_metadata_content == "Microsoft Word 15":
@@ -284,7 +329,11 @@ class EmlParser(ServiceBase):
             if any(header in paragraphs[0] for header in valid_headers):
                 for p in paragraphs:
                     if any(valid_header in p.text for valid_header in valid_headers):
-                        h_key, h_value = p.text.replace("\xa0", "").replace("\r\n", " ").split(":", 1)
+                        h_key, h_value = (
+                            p.text.replace("\xa0", "")
+                            .replace("\r\n", " ")
+                            .split(":", 1)
+                        )
                         html_email[h_key] = h_value
                         # Subject line indicates the end of the email header, beginning of body
                         if "Subject" in p.text:
@@ -298,9 +347,9 @@ class EmlParser(ServiceBase):
             subject = None
             for div in parsed_html.find_all("div"):
                 # Header information within divs
-                if any(header in div.text for header in valid_headers) and "WordSection1" not in div.attrs.get(
-                    "class", []
-                ):
+                if any(
+                    header in div.text for header in valid_headers
+                ) and "WordSection1" not in div.attrs.get("class", []):
                     # Usually expect headers to be \n separated in text output but check first
                     if "\n" in div.text.strip():
                         for h in div.text.split("\n"):
@@ -375,7 +424,9 @@ class EmlParser(ServiceBase):
         self.handle_eml(request, content_str, header_agg)
 
     def handle_eml(self, request: ServiceRequest, content_str, header_agg={}) -> None:
-        parser = eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
+        parser = eml_parser.EmlParser(
+            include_raw_body=True, include_attachment_data=True
+        )
         try:
             parsed_eml = parser.decode_email_bytes(content_str)
         except Exception as e:
@@ -387,7 +438,9 @@ class EmlParser(ServiceBase):
                 and str(e) in ["hour must be in 0..23", "day is out of range for month"]
             ):
                 # Invalid date given in headers, strip section and reprocess
-                content_str = content_str.replace(re.findall(b"Date:.*\n", content_str)[0], b"")
+                content_str = content_str.replace(
+                    re.findall(b"Date:.*\n", content_str)[0], b""
+                )
                 parsed_eml = parser.decode_email_bytes(content_str)
                 exception_handled = True
 
@@ -398,8 +451,14 @@ class EmlParser(ServiceBase):
             tb = traceback.format_exc()
 
             EXPECT_ATOM_TXT = "expected atom at a start of dot-atom-text but found"
-            if not exception_handled and isinstance(e, IndexError) and EXPECT_ATOM_TXT in tb:
-                bad_dot_atom_text = re.search(f"{EXPECT_ATOM_TXT} '(.*)'\n", tb).group(1).encode()
+            if (
+                not exception_handled
+                and isinstance(e, IndexError)
+                and EXPECT_ATOM_TXT in tb
+            ):
+                bad_dot_atom_text = (
+                    re.search(f"{EXPECT_ATOM_TXT} '(.*)'\n", tb).group(1).encode()
+                )
                 # bad_dot_atom_text can contain brackets, so can't use it in a regex
                 # We'll delete all lines containing what we can't parse, as we don't know which one is causing the error
                 while bad_dot_atom_text in content_str:
@@ -417,9 +476,19 @@ class EmlParser(ServiceBase):
                 exception_handled = True
 
             UNEXPECTED_ADDR_ENDING = "at end of group display name but found"
-            if not exception_handled and isinstance(e, IndexError) and UNEXPECTED_ADDR_ENDING in tb:
-                unexpected_addr_ending_text = re.search(f"{UNEXPECTED_ADDR_ENDING} '(.*)'\n", tb).group(1).encode()
-                content_str = content_str.replace(unexpected_addr_ending_text + b"\n", b"\n")
+            if (
+                not exception_handled
+                and isinstance(e, IndexError)
+                and UNEXPECTED_ADDR_ENDING in tb
+            ):
+                unexpected_addr_ending_text = (
+                    re.search(f"{UNEXPECTED_ADDR_ENDING} '(.*)'\n", tb)
+                    .group(1)
+                    .encode()
+                )
+                content_str = content_str.replace(
+                    unexpected_addr_ending_text + b"\n", b"\n"
+                )
                 parsed_eml = parser.decode_email_bytes(content_str)
                 exception_handled = True
 
@@ -435,7 +504,9 @@ class EmlParser(ServiceBase):
                 parsed_eml = parser.decode_email_bytes(content_str)
                 exception_handled = True
 
-            if not exception_handled and all(term in tb for term in ["if value[0] == '>':", "get_angle_addr"]):
+            if not exception_handled and all(
+                term in tb for term in ["if value[0] == '>':", "get_angle_addr"]
+            ):
                 # An email was detected but is incomplete
                 return
 
@@ -455,14 +526,20 @@ class EmlParser(ServiceBase):
                     with open(path, "w") as f:
                         f.write(body["content"])
                         os.close(fd)
-                    request.add_extracted(path, "body_" + str(body_counter), "Body text")
+                    request.add_extracted(
+                        path, "body_" + str(body_counter), "Body text"
+                    )
                 if "uri" in body:
                     for uri in body["uri"]:
                         all_uri.add(uri)
             # Words in the email body, used by extract to guess passwords
             request.temp_submission_data["email_body"] = sorted(list(body_words))
 
-            kv_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
+            kv_section = ResultSection(
+                "Email Headers",
+                body_format=BODY_FORMAT.KEY_VALUE,
+                parent=request.result,
+            )
 
             # Basic tags
             from_addr = header["from"].strip() if header.get("from", None) else None
@@ -489,7 +566,9 @@ class EmlParser(ServiceBase):
                 ]
             # Add Message ID to body and tags
             if "message-id" in header["header"]:
-                kv_section.add_tag("network.email.msg_id", header["header"]["message-id"][0].strip())
+                kv_section.add_tag(
+                    "network.email.msg_id", header["header"]["message-id"][0].strip()
+                )
 
             # Add Tags for received IPs
             if "received_ip" in header:
@@ -523,10 +602,14 @@ class EmlParser(ServiceBase):
                         continue
                     uri_section.add_line(uri)
                     uri_section.add_tag("network.static.uri", uri.strip())
-                    if parsed_url.hostname and re.match(IP_ONLY_REGEX, parsed_url.hostname):
+                    if parsed_url.hostname and re.match(
+                        IP_ONLY_REGEX, parsed_url.hostname
+                    ):
                         uri_section.add_tag("network.static.ip", parsed_url.hostname)
                     else:
-                        uri_section.add_tag("network.static.domain", parsed_url.hostname)
+                        uri_section.add_tag(
+                            "network.static.domain", parsed_url.hostname
+                        )
 
             # Bring all headers together...
             extra_header = header.pop("header", {})
@@ -541,18 +624,26 @@ class EmlParser(ServiceBase):
                 # Replace
                 if any(
                     default_date in header["date"]
-                    for default_date in ["1970-01-01T00:00:00", "Thu, 01 Jan 1970 00:00:00 +0000"]
+                    for default_date in [
+                        "1970-01-01T00:00:00",
+                        "Thu, 01 Jan 1970 00:00:00 +0000",
+                    ]
                 ):
                     header["date"] = list(header_agg["Date"])
                 # Append
                 else:
                     header["date"] += list(header_agg["Date"])
-                (kv_section.add_tag("network.email.date", str(date).strip()) for date in header_agg["Date"])
+                (
+                    kv_section.add_tag("network.email.date", str(date).strip())
+                    for date in header_agg["Date"]
+                )
 
             # Filter out useless headers from results
             self.log.debug(header.keys())
             [header.pop(h) for h in self.header_filter if h in header.keys()]
-            kv_section.set_body(json.dumps(header, default=self.json_serial, sort_keys=True))
+            kv_section.set_body(
+                json.dumps(header, default=self.json_serial, sort_keys=True)
+            )
 
             attachments_added = []
             if "attachment" in parsed_eml:
@@ -565,7 +656,10 @@ class EmlParser(ServiceBase):
                         os.close(fd)
                     try:
                         if request.add_extracted(
-                            path, attachment["filename"], "Attachment ", safelist_interface=self.api_interface
+                            path,
+                            attachment["filename"],
+                            "Attachment ",
+                            safelist_interface=self.api_interface,
                         ):
                             attachments_added.append(attachment["filename"])
                     except MaxExtractedExceeded:
@@ -575,7 +669,9 @@ class EmlParser(ServiceBase):
                         )
                         break
                 ResultSection(
-                    "Extracted Attachments:", body="\n".join([x for x in attachments_added]), parent=request.result
+                    "Extracted Attachments:",
+                    body="\n".join([x for x in attachments_added]),
+                    parent=request.result,
                 )
 
             if request.get_param("save_emlparser_output"):
@@ -587,8 +683,12 @@ class EmlParser(ServiceBase):
                 with os.fdopen(fd, "w") as myfile:
                     myfile.write(json.dumps(parsed_eml, default=self.json_serial))
                 request.add_supplementary(
-                    temp_path, "parsing.json", "These are the raw results of running GOVCERT-LU's eml_parser"
+                    temp_path,
+                    "parsing.json",
+                    "These are the raw results of running GOVCERT-LU's eml_parser",
                 )
 
         else:
-            self.log.warning("emlParser could not parse EML; no useful information in result's headers")
+            self.log.warning(
+                "emlParser could not parse EML; no useful information in result's headers"
+            )
