@@ -158,10 +158,18 @@ class EmlParser(ServiceBase):
 
         # Try to tag interesting fields
         def tag_field(tag, header_name, msg_name):
+            # Sanitize input before tagging
+            def sanitize(input):
+                value = input
+                if tag == "network.email.msg_id":
+                    # Remove any whitespace and remove <> surround MSG ID
+                    value = value.strip().strip("<>")
+                return value
+
             if header_name and header_name in headers and headers[header_name]:
-                headers_section.add_tag(tag, headers[header_name])
+                headers_section.add_tag(tag, sanitize(headers[header_name]))
             elif msg_name and hasattr(msg, msg_name) and getattr(msg, msg_name):
-                attributes_section.add_tag(tag, getattr(msg, msg_name))
+                attributes_section.add_tag(tag, sanitize(getattr(msg, msg_name)))
 
         tag_field("network.email.address", "From", "sender")
         tag_field("network.email.address", "Reply-To", None)
@@ -494,7 +502,7 @@ class EmlParser(ServiceBase):
                 ]
             # Add Message ID to body and tags
             if "message-id" in header["header"]:
-                kv_section.add_tag("network.email.msg_id", header["header"]["message-id"][0].strip())
+                kv_section.add_tag("network.email.msg_id", header["header"]["message-id"][0].strip().strip("<>"))
 
             # Add Tags for received IPs
             if "received_ip" in header:
