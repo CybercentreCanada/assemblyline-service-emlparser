@@ -5,7 +5,7 @@
     "sections": [
       {
         "auto_collapse": false,
-        "body": "{\"date\": [\"['1970-01-01T00:00:00+00:00']\"], \"from\": [\"Sender McSender <sender@gmail.com>\"], \"sent\": [\"Thu Jul 29 23:17:37 2010\"], \"subject\": [\"Subject\"], \"to\": [\"\\\"Receiver McReceiver\\\"\"]}",
+        "body": "{\"date\": [\"1970-01-01T00:00:00+00:00\"], \"from\": [\"Sender McSender <sender@gmail.com>\"], \"sent\": [\"Thu Jul 29 23:17:37 2010\"], \"subject\": [\"Subject\"], \"to\": [\"\\\"Receiver McReceiver\\\"\"]}",
         "body_config": {},
         "body_format": "KEY_VALUE",
         "classification": "TLP:C",
