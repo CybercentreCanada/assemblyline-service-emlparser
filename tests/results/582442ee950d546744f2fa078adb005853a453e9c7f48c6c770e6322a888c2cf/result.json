@@ -57,7 +57,7 @@
           "network": {
             "email": {
               "msg_id": [
-                "<3d78e766-9997-d488-3119-7637113cd8db@wizzsolutions.com>"
+                "3d78e766-9997-d488-3119-7637113cd8db@wizzsolutions.com"
               ]
             }
           }
@@ -140,7 +140,7 @@
         {
           "heur_id": null,
           "signatures": [],
-          "value": "<3d78e766-9997-d488-3119-7637113cd8db@wizzsolutions.com>"
+          "value": "3d78e766-9997-d488-3119-7637113cd8db@wizzsolutions.com"
         }
       ],
       "network.email.subject": [

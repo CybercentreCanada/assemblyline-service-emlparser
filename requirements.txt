@@ -5,4 +5,4 @@ mail-parser
 bs4
 lxml
 eml-parser
-multidecoder
+multidecoder==0.1.0
