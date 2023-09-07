@@ -20,6 +20,7 @@ from assemblyline_v4_service.common.task import MaxExtractedExceeded
 from assemblyline_v4_service.common.utils import extract_passwords
 from bs4 import BeautifulSoup
 from mailparser.utils import msgconvert
+from multidecoder.analyzers.network import find_domains, find_ips, find_urls
 
 from emlparser.outlookmsgfile import load as msg2eml
 
@@ -157,10 +158,18 @@ class EmlParser(ServiceBase):
 
         # Try to tag interesting fields
         def tag_field(tag, header_name, msg_name):
+            # Sanitize input before tagging
+            def sanitize(input):
+                value = input
+                if tag == "network.email.msg_id":
+                    # Remove any whitespace and remove <> surround MSG ID
+                    value = value.strip().strip("<>")
+                return value
+
             if header_name and header_name in headers and headers[header_name]:
-                headers_section.add_tag(tag, headers[header_name])
+                headers_section.add_tag(tag, sanitize(headers[header_name]))
             elif msg_name and hasattr(msg, msg_name) and getattr(msg, msg_name):
-                attributes_section.add_tag(tag, getattr(msg, msg_name))
+                attributes_section.add_tag(tag, sanitize(getattr(msg, msg_name)))
 
         tag_field("network.email.address", "From", "sender")
         tag_field("network.email.address", "Reply-To", None)
@@ -218,14 +227,18 @@ class EmlParser(ServiceBase):
             elif hasattr(msg, "subject") and msg.subject:
                 body_words.update(extract_passwords(msg.subject))
 
-            try:
-                if msg.body:
+            if msg.body:
+                # Extract IOCs from body
+                [attributes_section.add_tag("network.static.ip", x.value) for x in find_ips(msg.body.encode())]
+                [attributes_section.add_tag("network.static.domain", x.value) for x in find_domains(msg.body.encode())]
+                [attributes_section.add_tag("network.static.uri", x.value) for x in find_urls(msg.body.encode())]
+                try:
                     body_words.update(extract_passwords(msg.body))
                     request.temp_submission_data["email_body"] = sorted(list(body_words))
-            except UnicodeDecodeError:
-                # Couldn't decode the body correctly. We could get the bytes manually and decode what we can.
-                # For the moment, just return what we have, and the user will see if the attachment won't be extracted.
-                pass
+                except UnicodeDecodeError:
+                    # Couldn't decode the body correctly. We could get the bytes manually and decode what we can.
+                    # For the moment, just return what we have, and the user will see if the attachment won't be extracted.
+                    pass
 
         # Specialized fields
         if msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON)) and msg.namedProperties.get(
@@ -489,7 +502,7 @@ class EmlParser(ServiceBase):
                 ]
             # Add Message ID to body and tags
             if "message-id" in header["header"]:
-                kv_section.add_tag("network.email.msg_id", header["header"]["message-id"][0].strip())
+                kv_section.add_tag("network.email.msg_id", header["header"]["message-id"][0].strip().strip("<>"))
 
             # Add Tags for received IPs
             if "received_ip" in header:
@@ -553,6 +566,24 @@ class EmlParser(ServiceBase):
             self.log.debug(header.keys())
             [header.pop(h) for h in self.header_filter if h in header.keys()]
             kv_section.set_body(json.dumps(header, default=self.json_serial, sort_keys=True))
+
+            # Merge X-MS-Exchange-Organization-Persisted-Urls headers into one block
+            if header.get("x-ms-exchange-organization-persisted-urls-chunkcount"):
+                persisted_urls_block = (
+                    "".join(
+                        [
+                            header[f"x-ms-exchange-organization-persisted-urls-{i}"][0]
+                            for i in range(int(header["x-ms-exchange-organization-persisted-urls-chunkcount"][0]))
+                        ]
+                    )
+                    .strip()
+                    .encode()
+                )
+
+                # Look for network IOCs in this block and tag them
+                [kv_section.add_tag("network.static.domain", x.value) for x in find_domains(persisted_urls_block)]
+                [kv_section.add_tag("network.static.ip", x.value) for x in find_ips(persisted_urls_block)]
+                [kv_section.add_tag("network.static.uri", x.value) for x in find_urls(persisted_urls_block)]
 
             attachments_added = []
             if "attachment" in parsed_eml:
