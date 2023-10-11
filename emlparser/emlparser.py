@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 
 import eml_parser
 import extract_msg
-from assemblyline.odm import EMAIL_REGEX, FULL_URI, IP_ONLY_REGEX, IP_REGEX
+from assemblyline.odm import DOMAIN_ONLY_REGEX, EMAIL_REGEX, FULL_URI, IP_ONLY_REGEX, IP_REGEX
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.request import ServiceRequest
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultKeyValueSection, ResultSection
@@ -23,6 +23,8 @@ from mailparser.utils import msgconvert
 from multidecoder.analyzers.network import find_domains, find_ips, find_urls
 
 from emlparser.outlookmsgfile import load as msg2eml
+
+NETWORK_IOC_TYPES = ["uri", "email", "domain"]
 
 
 class EmlParser(ServiceBase):
@@ -457,8 +459,9 @@ class EmlParser(ServiceBase):
 
         header = parsed_eml["header"]
 
+        all_iocs = {}
+        [all_iocs.setdefault(t, set()) for t in NETWORK_IOC_TYPES]
         if "from" in header or "to" in header or parsed_eml.get("attachments"):
-            all_uri = set()
             body_words = set(extract_passwords(header["subject"]))
             for body_counter, body in enumerate(parsed_eml["body"]):
                 body_text = BeautifulSoup(body["content"]).text
@@ -469,9 +472,8 @@ class EmlParser(ServiceBase):
                         f.write(body["content"])
                         os.close(fd)
                     request.add_extracted(path, "body_" + str(body_counter), "Body text")
-                if "uri" in body:
-                    for uri in body["uri"]:
-                        all_uri.add(uri)
+                for ioc_type in NETWORK_IOC_TYPES:
+                    all_iocs[ioc_type] = all_iocs[ioc_type].union(set(body.get(ioc_type, [])))
             # Words in the email body, used by extract to guess passwords
             request.temp_submission_data["email_body"] = sorted(list(body_words))
 
@@ -522,9 +524,9 @@ class EmlParser(ServiceBase):
                     kv_section.add_tag("network.static.domain", dom.strip())
 
             # If we've found URIs, add them to a section
-            if len(all_uri) > 0:
+            if all_iocs["uri"]:
                 uri_section = ResultSection("URIs Found:", parent=request.result)
-                for uri in sorted(all_uri):
+                for uri in sorted(all_iocs["uri"]):
                     for invalid_uri_char in ['"', "'", "<", ">"]:
                         for u in uri.split(invalid_uri_char):
                             if re.match(FULL_URI, u):
@@ -540,6 +542,22 @@ class EmlParser(ServiceBase):
                         uri_section.add_tag("network.static.ip", parsed_url.hostname)
                     else:
                         uri_section.add_tag("network.static.domain", parsed_url.hostname)
+            # If we've found domains, add them to a section
+            if all_iocs["domain"]:
+                domain_section = ResultSection("Domains Found:", parent=request.result)
+                for domain in sorted(all_iocs["domain"]):
+                    if not re.match(DOMAIN_ONLY_REGEX, domain):
+                        continue
+                    domain_section.add_line(domain)
+                    domain_section.add_tag("network.static.domain", domain)
+            # If we've found email addresses, add them to a section
+            if all_iocs["email"]:
+                email_section = ResultSection("Email Addresses Found:", parent=request.result)
+                for eml_adr in sorted(all_iocs["email"]):
+                    if not re.match(EMAIL_REGEX, eml_adr):
+                        continue
+                    email_section.add_line(eml_adr)
+                    email_section.add_tag("network.email.address", eml_adr)
 
             # Bring all headers together...
             extra_header = header.pop("header", {})
