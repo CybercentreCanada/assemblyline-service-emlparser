@@ -70,6 +70,55 @@
         },
         "title_text": "URIs Found:",
         "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "app.mailinblack.com\natimorganti.it\nelsto.eu\ninvitations.mailinblack.com\nwww.elsto.eu\nwww.mailinblack.com\nwww.stokvis.eu",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "tags": {
+          "network": {
+            "static": {
+              "domain": [
+                "app.mailinblack.com",
+                "atimorganti.it",
+                "elsto.eu",
+                "invitations.mailinblack.com",
+                "www.elsto.eu",
+                "www.mailinblack.com",
+                "www.stokvis.eu"
+              ]
+            }
+          }
+        },
+        "title_text": "Domains Found:",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "descours_et_cabaud@invitations.mailinblack.com\nfactuur@elsto.eu\ninfo@atimorganti.it\ns.vandermeij@elsto.eu",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "tags": {
+          "network": {
+            "email": {
+              "address": [
+                "descours_et_cabaud@invitations.mailinblack.com",
+                "factuur@elsto.eu",
+                "info@atimorganti.it",
+                "s.vandermeij@elsto.eu"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Addresses Found:",
+        "zeroize_on_tag_safe": false
       }
     ]
   },
@@ -84,12 +133,32 @@
         {
           "heur_id": null,
           "signatures": [],
+          "value": "descours_et_cabaud@invitations.mailinblack.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "factuur@elsto.eu"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
           "value": "factuur@elsto.eu"
         },
         {
           "heur_id": null,
           "signatures": [],
           "value": "helpdesk@stokvis.eu"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "info@atimorganti.it"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "s.vandermeij@elsto.eu"
         }
       ],
       "network.email.date": [
@@ -127,12 +196,37 @@
         {
           "heur_id": null,
           "signatures": [],
+          "value": "app.mailinblack.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
           "value": "as4pr01mb9229.eurprd01.prod.exchangelabs.com"
         },
         {
           "heur_id": null,
           "signatures": [],
+          "value": "atimorganti.it"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
           "value": "du2pr01mb8432.eurprd01.prod.exchangelabs.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "elsto.eu"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "invitations.mailinblack.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "www.elsto.eu"
         },
         {
           "heur_id": null,
@@ -143,6 +237,16 @@
           "heur_id": null,
           "signatures": [],
           "value": "www.mailinblack.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "www.mailinblack.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "www.stokvis.eu"
         },
         {
           "heur_id": null,
