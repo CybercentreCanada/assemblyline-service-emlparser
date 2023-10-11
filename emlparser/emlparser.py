@@ -544,20 +544,24 @@ class EmlParser(ServiceBase):
                         uri_section.add_tag("network.static.domain", parsed_url.hostname)
             # If we've found domains, add them to a section
             if all_iocs["domain"]:
-                domain_section = ResultSection("Domains Found:", parent=request.result)
+                domain_section = ResultSection("Domains Found:")
                 for domain in sorted(all_iocs["domain"]):
                     if not re.match(DOMAIN_ONLY_REGEX, domain):
                         continue
                     domain_section.add_line(domain)
                     domain_section.add_tag("network.static.domain", domain)
+                if domain_section.body:
+                    request.result.add_section(domain_section)
             # If we've found email addresses, add them to a section
             if all_iocs["email"]:
-                email_section = ResultSection("Email Addresses Found:", parent=request.result)
+                email_section = ResultSection("Email Addresses Found:")
                 for eml_adr in sorted(all_iocs["email"]):
                     if not re.match(EMAIL_REGEX, eml_adr):
                         continue
                     email_section.add_line(eml_adr)
                     email_section.add_tag("network.email.address", eml_adr)
+                if email_section.body:
+                    request.result.add_section(email_section)
 
             # Bring all headers together...
             extra_header = header.pop("header", {})
