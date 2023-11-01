@@ -11,6 +11,7 @@
         "classification": "TLP:C",
         "depth": 0,
         "heuristic": null,
+        "promote_to": null,
         "tags": {
           "network": {
             "email": {
@@ -31,6 +32,7 @@
         "classification": "TLP:C",
         "depth": 0,
         "heuristic": null,
+        "promote_to": null,
         "tags": {
           "network": {
             "static": {
@@ -52,6 +54,7 @@
         "classification": "TLP:C",
         "depth": 0,
         "heuristic": null,
+        "promote_to": null,
         "tags": {
           "network": {
             "email": {
@@ -108,7 +111,6 @@
     },
     "temp_submission_data": {
       "email_body": [
-        "",
         "!!!HOW_TO_DECRYPT!!!",
         "*",
         "+",

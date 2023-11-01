@@ -11,6 +11,7 @@
         "classification": "TLP:C",
         "depth": 0,
         "heuristic": null,
+        "promote_to": null,
         "tags": {
           "network": {
             "email": {
@@ -50,6 +51,7 @@
         "classification": "TLP:C",
         "depth": 0,
         "heuristic": null,
+        "promote_to": null,
         "tags": {
           "network": {
             "email": {
@@ -79,6 +81,7 @@
         "classification": "TLP:C",
         "depth": 0,
         "heuristic": null,
+        "promote_to": null,
         "tags": {},
         "title_text": "Extracted Attachments:",
         "zeroize_on_tag_safe": false
@@ -188,7 +191,6 @@
     },
     "temp_submission_data": {
       "email_body": [
-        "",
         "(054)",
         "*",
         "018000511940",
