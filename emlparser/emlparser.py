@@ -191,20 +191,14 @@ class EmlParser(ServiceBase):
 
         attachments_added = []
         for attachment in msg.attachments:
-            customFilename = str(uuid.uuid4())
             try:
-                ret_value = attachment.save(
-                    customPath=self.working_directory, customFilename=customFilename, extractEmbedded=True
+                _, attachment_path = attachment.save(
+                    customPath=self.working_directory, customFilename=str(uuid.uuid4()), extractEmbedded=True
                 )
             except Exception:
                 continue
 
-            if isinstance(attachment, extract_msg.signed_attachment.SignedAttachment):
-                attachment_name = os.path.basename(ret_value)
-                attachment_path = ret_value
-            else:
-                attachment_name = attachment.getFilename()
-                attachment_path = os.path.join(self.working_directory, customFilename)
+            attachment_name = attachment.getFilename()
 
             try:
                 if request.add_extracted(
@@ -243,19 +237,19 @@ class EmlParser(ServiceBase):
                     pass
 
         # Specialized fields
-        if msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON)) and msg.namedProperties.get(
-            ("851F", extract_msg.constants.PSETID_COMMON)
+        if msg.namedProperties.get(("851F", extract_msg.constants.ps.PSETID_COMMON)) and msg.namedProperties.get(
+            ("851F", extract_msg.constants.ps.PSETID_COMMON)
         ).startswith("\\\\"):
-            plrfp = msg.namedProperties.get(("851F", extract_msg.constants.PSETID_COMMON))
+            plrfp = msg.namedProperties.get(("851F", extract_msg.constants.ps.PSETID_COMMON))
             heur_section = ResultKeyValueSection("CVE-2023-23397", parent=attributes_section)
             heur_section.add_tag("attribution.exploit", "CVE-2023-23397")
             heur_section.add_tag("network.static.unc_path", plrfp)
             heur_section.set_item("PidLidReminderFileParameter", plrfp)
-            if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)) is not None:
+            if msg.namedProperties.get(("851C", extract_msg.constants.ps.PSETID_COMMON)) is not None:
                 heur_section.set_item(
-                    "PidLidReminderOverride", msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON))
+                    "PidLidReminderOverride", msg.namedProperties.get(("851C", extract_msg.constants.ps.PSETID_COMMON))
                 )
-                if msg.namedProperties.get(("851C", extract_msg.constants.PSETID_COMMON)):
+                if msg.namedProperties.get(("851C", extract_msg.constants.ps.PSETID_COMMON)):
                     heur_section.set_heuristic(2)
             file_location = plrfp.split("\\")
             if len(file_location) >= 3:
