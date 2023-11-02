@@ -20,7 +20,7 @@ from assemblyline_v4_service.common.task import MaxExtractedExceeded
 from assemblyline_v4_service.common.utils import extract_passwords
 from bs4 import BeautifulSoup
 from mailparser.utils import msgconvert
-from multidecoder.analyzers.network import find_domains, find_ips, find_urls
+from multidecoder.decoders.network import find_domains, find_ips, find_urls
 
 from emlparser.outlookmsgfile import load as msg2eml
 
