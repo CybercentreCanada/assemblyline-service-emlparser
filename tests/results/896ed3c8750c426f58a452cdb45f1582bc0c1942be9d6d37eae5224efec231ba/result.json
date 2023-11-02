@@ -11,6 +11,7 @@
         "classification": "TLP:C",
         "depth": 0,
         "heuristic": null,
+        "promote_to": null,
         "tags": {
           "network": {
             "email": {
@@ -28,6 +29,48 @@
         },
         "title_text": "Email Headers",
         "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "gmail.com",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "static": {
+              "domain": [
+                "gmail.com"
+              ]
+            }
+          }
+        },
+        "title_text": "Domains Found:",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "sender@gmail.com",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "email": {
+              "address": [
+                "sender@gmail.com"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Addresses Found:",
+        "zeroize_on_tag_safe": false
       }
     ]
   },
@@ -39,6 +82,11 @@
     "heuristics": [],
     "tags": {
       "network.email.address": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "sender@gmail.com"
+        },
         {
           "heur_id": null,
           "signatures": [],
@@ -58,11 +106,17 @@
           "signatures": [],
           "value": "Subject"
         }
+      ],
+      "network.static.domain": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "gmail.com"
+        }
       ]
     },
     "temp_submission_data": {
       "email_body": [
-        "",
         "17",
         "2010Subject",
         "2010Subject:",

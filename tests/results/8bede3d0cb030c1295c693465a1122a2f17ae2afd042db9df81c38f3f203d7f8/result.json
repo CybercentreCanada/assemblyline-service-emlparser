@@ -11,6 +11,7 @@
         "classification": "TLP:C",
         "depth": 0,
         "heuristic": null,
+        "promote_to": null,
         "tags": {
           "network": {
             "email": {
@@ -50,11 +51,21 @@
         "classification": "TLP:C",
         "depth": 0,
         "heuristic": null,
+        "promote_to": null,
         "tags": {
           "network": {
             "email": {
               "msg_id": [
-                " <PH0PR13MB5794E12107ADF18D78BAFBF283E09@PH0PR13MB5794.namprd13.prod.outlook.com>"
+                "PH0PR13MB5794E12107ADF18D78BAFBF283E09@PH0PR13MB5794.namprd13.prod.outlook.com"
+              ]
+            },
+            "static": {
+              "domain": [
+                "forms.office.com",
+                "sura.com.co"
+              ],
+              "uri": [
+                "https://forms.office.com/Pages/ResponsePage.aspx?id=_tQLPBERE02ODHwzuet1gcZ35vV7DQtCkWrPHh3d2X1UN1FNVjdBM0I2M0hYRUNZR0lOQkU0UTVOVS4u"
               ]
             }
           }
@@ -70,6 +81,7 @@
         "classification": "TLP:C",
         "depth": 0,
         "heuristic": null,
+        "promote_to": null,
         "tags": {},
         "title_text": "Extracted Attachments:",
         "zeroize_on_tag_safe": false
@@ -110,7 +122,7 @@
         {
           "heur_id": null,
           "signatures": [],
-          "value": " <PH0PR13MB5794E12107ADF18D78BAFBF283E09@PH0PR13MB5794.namprd13.prod.outlook.com>"
+          "value": "PH0PR13MB5794E12107ADF18D78BAFBF283E09@PH0PR13MB5794.namprd13.prod.outlook.com"
         }
       ],
       "network.email.subject": [
@@ -135,6 +147,16 @@
           "heur_id": null,
           "signatures": [],
           "value": "PH0PR13MB5794.namprd13.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "forms.office.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "sura.com.co"
         }
       ],
       "network.static.ip": [
@@ -158,11 +180,17 @@
           "signatures": [],
           "value": "fe80::"
         }
+      ],
+      "network.static.uri": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "https://forms.office.com/Pages/ResponsePage.aspx?id=_tQLPBERE02ODHwzuet1gcZ35vV7DQtCkWrPHh3d2X1UN1FNVjdBM0I2M0hYRUNZR0lOQkU0UTVOVS4u"
+        }
       ]
     },
     "temp_submission_data": {
       "email_body": [
-        "",
         "(054)",
         "*",
         "018000511940",

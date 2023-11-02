@@ -11,6 +11,7 @@
         "classification": "TLP:C",
         "depth": 0,
         "heuristic": null,
+        "promote_to": null,
         "tags": {
           "network": {
             "email": {
@@ -22,6 +23,50 @@
         },
         "title_text": "Email Headers",
         "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "jitjat.org\nreddithub.com",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "static": {
+              "domain": [
+                "jitjat.org",
+                "reddithub.com"
+              ]
+            }
+          }
+        },
+        "title_text": "Domains Found:",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "taro666@jitjat.org\ntaro@reddithub.com",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "email": {
+              "address": [
+                "taro666@jitjat.org",
+                "taro@reddithub.com"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Addresses Found:",
+        "zeroize_on_tag_safe": false
       }
     ]
   },
@@ -32,17 +77,40 @@
   "results": {
     "heuristics": [],
     "tags": {
+      "network.email.address": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "taro666@jitjat.org"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "taro@reddithub.com"
+        }
+      ],
       "network.email.date": [
         {
           "heur_id": null,
           "signatures": [],
           "value": "1970-01-01 00:00:00+00:00"
         }
+      ],
+      "network.static.domain": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "jitjat.org"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "reddithub.com"
+        }
       ]
     },
     "temp_submission_data": {
       "email_body": [
-        "",
         "!!!HOW_TO_DECRYPT!!!",
         "*",
         "+",
