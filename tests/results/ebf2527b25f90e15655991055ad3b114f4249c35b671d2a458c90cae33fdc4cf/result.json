@@ -5,7 +5,26 @@
     "sections": [
       {
         "auto_collapse": false,
-        "body": "{\"content-type\": [\"multipart/report; boundary=\\\"8f5bafa4-5334-4c85-9e6e-026098737c13\\\"\"], \"date\": [\"1970-01-01T00:00:00+00:00\"], \"from\": [\"from@from.com\"], \"mime-version\": [\"1.0\"], \"subject\": [\"ABC\"], \"to\": [\"to@to.com\"]}",
+        "body": {
+          "content-type": [
+            "multipart/report; boundary=\"8f5bafa4-5334-4c85-9e6e-026098737c13\""
+          ],
+          "date": [
+            "['Sun, 01 Jan 2023 12:12:12 +0000']"
+          ],
+          "from": [
+            "from@from.com"
+          ],
+          "mime-version": [
+            "1.0"
+          ],
+          "subject": [
+            "ABC"
+          ],
+          "to": [
+            "to@to.com"
+          ]
+        },
         "body_config": {},
         "body_format": "KEY_VALUE",
         "classification": "TLP:C",
@@ -20,7 +39,7 @@
                 "to@to.com"
               ],
               "date": [
-                "1970-01-01 00:00:00+00:00"
+                "2023-01-01 12:12:12+00:00"
               ],
               "subject": [
                 "ABC"
@@ -74,7 +93,7 @@
         {
           "heur_id": null,
           "signatures": [],
-          "value": "1970-01-01 00:00:00+00:00"
+          "value": "2023-01-01 12:12:12+00:00"
         }
       ],
       "network.email.subject": [

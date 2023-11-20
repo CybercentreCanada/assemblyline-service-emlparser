@@ -5,7 +5,24 @@
     "sections": [
       {
         "auto_collapse": false,
-        "body": "{\"content-transfer-encoding\": [\"quoted-printable\"], \"content-type\": [\"text/plain; charset=\\\"utf-8\\\"\"], \"date\": [\"1970-01-01T00:00:00+00:00\"], \"mime-version\": [\"1.0\"], \"subject\": [\"TWC - Master Tasks\"], \"to\": []}",
+        "body": {
+          "content-transfer-encoding": [
+            "quoted-printable"
+          ],
+          "content-type": [
+            "text/plain; charset=\"utf-8\""
+          ],
+          "date": [
+            "1970-01-01T00:00:00+00:00"
+          ],
+          "mime-version": [
+            "1.0"
+          ],
+          "subject": [
+            "TWC - Master Tasks"
+          ],
+          "to": []
+        },
         "body_config": {},
         "body_format": "KEY_VALUE",
         "classification": "TLP:C",

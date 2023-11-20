@@ -5,7 +5,92 @@
     "sections": [
       {
         "auto_collapse": false,
-        "body": "{\"authentication-results\": [\"[recipient's mail server]; dkim=pass header.d=servconsa.pe header.s=default header.b=i5PN6W7l; dmarc=none; spf=pass ([recipient's mail server]: domain of mcornejo@servconsa.pe designates 192.185.68.24 as permitted sender) smtp.mailfrom=mcornejo@servconsa.pe\"], \"content-type\": [\"multipart/mixed; boundary=\\\"----=_NextPart_00208_42721_2483550191.3383782689\\\"\"], \"date\": [\"['Tue, 29 Mar 2022 19:04:23 +0630']\"], \"dkim-signature\": [\"v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;\\td=servconsa.pe; s=default; h=Content-Type:MIME-Version:Subject:To:From:Date:\\tSender:Reply-To:Message-ID:Cc:Content-Transfer-Encoding:Content-ID:\\tContent-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc\\t:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:\\tList-Subscribe:List-Post:List-Owner:List-Archive;\\tbh=eJjdR8v3hG9L7kCHixl+Y72nAYm1itOt98SNsZNhdQc=; b=i5PN6W7l3u0fYu32g8A2WHmNQT\\tip7h/FAkSBC4+3i6b70M/HNbKvLKx6+arH+BnJ7Fs2sw+NHBkeweKAhgc7zITgYegLcZ10hqBgVJg\\tSeuGiSC5CZfhKzlau1nyCxFCUvEupFmwJYPiTl40FoWEPCtnwPie424X88DzIFgHt68fSpu8csFvM\\t+iUC9HdnUaNrl15YX9VXCqIHStdThdg1lPQkehye4hHxb/PmLgTi9E1BY9MqDat42x6oA/AV8YppH\\t2IQJw00UPYoCLZdErxxS2qM1DU+nMIa8/OSJCvFGysfkCQJT7QM4oOe8MSvZ4bH5JTYdhcgp9j/zA\\thVPxSyEg==;\"], \"from\": [\"<>\"], \"mime-version\": [\"1.0\"], \"received\": [\"from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.68.24])\\t(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))\\t(No client certificate requested)\\tby [recipient's mail server] (Postfix) with ESMTPS id 4KSTXQ1qBYzFpVk\\tfor <[recipient's email address]>; Tue, 29 Mar 2022 12:34:25 +0000 (UTC)\", \"from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])\\tby gateway20.websitewelcome.com (Postfix) with ESMTP id A2ECA400DB56F\\tfor <[recipient's email address]>; Tue, 29 Mar 2022 07:34:24 -0500 (CDT)\", \"from gator4218.hostgator.com ([108.167.189.44])\\tby cmsmtp with SMTP\\tid ZB3InNxrF9AGSZB3InA3l9; Tue, 29 Mar 2022 07:34:24 -0500\", \"from [65.18.122.64] (port=29055)\\tby gator4218.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384\\t(Exim 4.94.2)\\t(envelope-from <mcornejo@servconsa.pe>)\\tid 1nZB3G-002rEs-DS\\tfor [recipient's email address]; Tue, 29 Mar 2022 07:34:24 -0500\"], \"received_domain\": [\"cm12.websitewelcome.com\", \"gateway20.websitewelcome.com\", \"gator4218.hostgator.com\"], \"received_email\": [\"mcornejo@servconsa.pe\"], \"received_ip\": [\"100.42.49.8\", \"108.167.189.44\", \"192.185.68.24\", \"65.18.122.64\"], \"return-path\": [\"<mcornejo@servconsa.pe>\"], \"subject\": [\"FW: Re: [subject line information removed]\"], \"to\": [\"<>\"], \"x-antiabuse\": [\"This header was added to track abuse, please include it with any abuse report\", \"Primary Hostname - gator4218.hostgator.com\", \"Original Domain - [recipient's email domain]\", \"Originator/Caller UID/GID - [47 12] / [47 12]\", \"Sender Address Domain - servconsa.pe\"], \"x-authority-reason\": [\"nr=8\"], \"x-bwhitelist\": [\"no\"], \"x-email-count\": [\"263\"], \"x-exim-id\": [\"1nZB3G-002rEs-DS\"], \"x-local-domain\": [\"yes\"], \"x-source-auth\": [\"mcornejo@servconsa.pe\"], \"x-source-cap\": [\"c2VydmNvbnNhcGU7c2VydmNvbnNhcGU7Z2F0b3I0MjE4Lmhvc3RnYXRvci5jb20=\"], \"x-source-ip\": [\"65.18.122.64\"], \"x-source-l\": [\"No\"], \"x-source-sender\": [\"([65.18.122.64]) [65.18.122.64]:29055\"]}",
+        "body": {
+          "authentication-results": [
+            "[recipient's mail server]; dkim=pass header.d=servconsa.pe header.s=default header.b=i5PN6W7l; dmarc=none; spf=pass ([recipient's mail server]: domain of mcornejo@servconsa.pe designates 192.185.68.24 as permitted sender) smtp.mailfrom=mcornejo@servconsa.pe"
+          ],
+          "content-type": [
+            "multipart/mixed; boundary=\"----=_NextPart_00208_42721_2483550191.3383782689\""
+          ],
+          "date": [
+            "['Tue, 29 Mar 2022 19:04:23 +0630']"
+          ],
+          "dkim-signature": [
+            "v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;\td=servconsa.pe; s=default; h=Content-Type:MIME-Version:Subject:To:From:Date:\tSender:Reply-To:Message-ID:Cc:Content-Transfer-Encoding:Content-ID:\tContent-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc\t:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:\tList-Subscribe:List-Post:List-Owner:List-Archive;\tbh=eJjdR8v3hG9L7kCHixl+Y72nAYm1itOt98SNsZNhdQc=; b=i5PN6W7l3u0fYu32g8A2WHmNQT\tip7h/FAkSBC4+3i6b70M/HNbKvLKx6+arH+BnJ7Fs2sw+NHBkeweKAhgc7zITgYegLcZ10hqBgVJg\tSeuGiSC5CZfhKzlau1nyCxFCUvEupFmwJYPiTl40FoWEPCtnwPie424X88DzIFgHt68fSpu8csFvM\t+iUC9HdnUaNrl15YX9VXCqIHStdThdg1lPQkehye4hHxb/PmLgTi9E1BY9MqDat42x6oA/AV8YppH\t2IQJw00UPYoCLZdErxxS2qM1DU+nMIa8/OSJCvFGysfkCQJT7QM4oOe8MSvZ4bH5JTYdhcgp9j/zA\thVPxSyEg==;"
+          ],
+          "from": [
+            "<>"
+          ],
+          "mime-version": [
+            "1.0"
+          ],
+          "received": [
+            "from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.68.24])\t(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))\t(No client certificate requested)\tby [recipient's mail server] (Postfix) with ESMTPS id 4KSTXQ1qBYzFpVk\tfor <[recipient's email address]>; Tue, 29 Mar 2022 12:34:25 +0000 (UTC)",
+            "from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])\tby gateway20.websitewelcome.com (Postfix) with ESMTP id A2ECA400DB56F\tfor <[recipient's email address]>; Tue, 29 Mar 2022 07:34:24 -0500 (CDT)",
+            "from gator4218.hostgator.com ([108.167.189.44])\tby cmsmtp with SMTP\tid ZB3InNxrF9AGSZB3InA3l9; Tue, 29 Mar 2022 07:34:24 -0500",
+            "from [65.18.122.64] (port=29055)\tby gator4218.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384\t(Exim 4.94.2)\t(envelope-from <mcornejo@servconsa.pe>)\tid 1nZB3G-002rEs-DS\tfor [recipient's email address]; Tue, 29 Mar 2022 07:34:24 -0500"
+          ],
+          "received_domain": [
+            "cm12.websitewelcome.com",
+            "gateway20.websitewelcome.com",
+            "gator4218.hostgator.com"
+          ],
+          "received_email": [
+            "mcornejo@servconsa.pe"
+          ],
+          "received_ip": [
+            "100.42.49.8",
+            "108.167.189.44",
+            "192.185.68.24",
+            "65.18.122.64"
+          ],
+          "return-path": [
+            "<mcornejo@servconsa.pe>"
+          ],
+          "subject": [
+            "FW: Re: [subject line information removed]"
+          ],
+          "to": [
+            "<>"
+          ],
+          "x-antiabuse": [
+            "This header was added to track abuse, please include it with any abuse report",
+            "Primary Hostname - gator4218.hostgator.com",
+            "Original Domain - [recipient's email domain]",
+            "Originator/Caller UID/GID - [47 12] / [47 12]",
+            "Sender Address Domain - servconsa.pe"
+          ],
+          "x-authority-reason": [
+            "nr=8"
+          ],
+          "x-bwhitelist": [
+            "no"
+          ],
+          "x-email-count": [
+            "263"
+          ],
+          "x-exim-id": [
+            "1nZB3G-002rEs-DS"
+          ],
+          "x-local-domain": [
+            "yes"
+          ],
+          "x-source-auth": [
+            "mcornejo@servconsa.pe"
+          ],
+          "x-source-cap": [
+            "c2VydmNvbnNhcGU7c2VydmNvbnNhcGU7Z2F0b3I0MjE4Lmhvc3RnYXRvci5jb20="
+          ],
+          "x-source-ip": [
+            "65.18.122.64"
+          ],
+          "x-source-l": [
+            "No"
+          ],
+          "x-source-sender": [
+            "([65.18.122.64]) [65.18.122.64]:29055"
+          ]
+        },
         "body_config": {},
         "body_format": "KEY_VALUE",
         "classification": "TLP:C",
@@ -38,19 +123,6 @@
           }
         },
         "title_text": "Email Headers",
-        "zeroize_on_tag_safe": false
-      },
-      {
-        "auto_collapse": false,
-        "body": null,
-        "body_config": {},
-        "body_format": "TEXT",
-        "classification": "TLP:C",
-        "depth": 0,
-        "heuristic": null,
-        "promote_to": null,
-        "tags": {},
-        "title_text": "URIs Found:",
         "zeroize_on_tag_safe": false
       },
       {
