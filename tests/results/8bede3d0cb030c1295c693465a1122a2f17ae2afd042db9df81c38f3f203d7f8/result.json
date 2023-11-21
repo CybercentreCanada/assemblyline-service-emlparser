@@ -58,7 +58,7 @@
           "network": {
             "email": {
               "address": [
-                "FondoSura <fondosura@sura.com.co>"
+                "fondosura@sura.com.co"
               ],
               "date": [
                 "Wed, 14 Dec 2022 21:30:32 +0000"
@@ -175,7 +175,7 @@
         {
           "heur_id": null,
           "signatures": [],
-          "value": "FondoSura <fondosura@sura.com.co>"
+          "value": "fondosura@sura.com.co"
         }
       ],
       "network.email.date": [

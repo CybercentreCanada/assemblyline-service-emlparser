@@ -33,6 +33,7 @@
           "network": {
             "email": {
               "address": [
+                "kmurat.bicer@stm.com.tr",
                 "jayan@wizzsolutions.com"
               ],
               "date": [
@@ -198,6 +199,11 @@
           "heur_id": null,
           "signatures": [],
           "value": "jayan@wizzsolutions.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "kmurat.bicer@stm.com.tr"
         }
       ],
       "network.email.date": [
