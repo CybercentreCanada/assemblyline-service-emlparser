@@ -5,7 +5,26 @@
     "sections": [
       {
         "auto_collapse": false,
-        "body": "{\"content-type\": [\"multipart/report; boundary=\\\"8f5bafa4-5334-4c85-9e6e-026098737c13\\\"\"], \"date\": [\"1970-01-01T00:00:00+00:00\"], \"from\": [\"from@from.com\"], \"mime-version\": [\"1.0\"], \"subject\": [\"ABC\"], \"to\": [\"to@to.com\"]}",
+        "body": {
+          "content-type": [
+            "multipart/report; boundary=\"8f5bafa4-5334-4c85-9e6e-026098737c13\""
+          ],
+          "date": [
+            "1970-01-01T00:00:00+00:00"
+          ],
+          "from": [
+            "from@from.com"
+          ],
+          "mime-version": [
+            "1.0"
+          ],
+          "subject": [
+            "ABC"
+          ],
+          "to": [
+            "to@to.com"
+          ]
+        },
         "body_config": {},
         "body_format": "KEY_VALUE",
         "classification": "TLP:C",

@@ -20,7 +20,7 @@ from assemblyline_v4_service.common.task import MaxExtractedExceeded
 from assemblyline_v4_service.common.utils import extract_passwords
 from bs4 import BeautifulSoup
 from mailparser.utils import msgconvert
-from multidecoder.decoders.network import find_domains, find_ips, find_urls
+from multidecoder.decoders.network import EMAIL_RE, find_domains, find_emails, find_ips, find_urls
 
 from emlparser.outlookmsgfile import load as msg2eml
 
@@ -102,8 +102,8 @@ class EmlParser(ServiceBase):
                         headers_section.add_tag("network.static.domain", m)
                 for m in re.findall(IP_REGEX, v):
                     headers_section.add_tag("network.static.ip", m)
-                for m in re.findall(EMAIL_REGEX, v):
-                    headers_section.add_tag("network.static.address", m)
+                for m in find_emails(v.encode()):
+                    headers_section.add_tag("network.email.address", m.value)
 
         # Sometimes we have both "Date" and "date"
         if "Date" in headers:
@@ -113,31 +113,33 @@ class EmlParser(ServiceBase):
 
         attributes_to_skip = [
             "attachments",
-            "body",
-            "recipients",
-            "props",
-            "treePath",
-            "deencapsulatedRtf",
-            "htmlBodyPrepared",
-            "htmlInjectableHeader",
-            "htmlBody",
-            "compressedRtf",
-            "rtfEncapInjectableHeader",
-            "rtfBody",
-            "rtfPlainInjectableHeader",
-            "path",
-            "named",
-            "namedProperties",
-            "headerFormatProperties",
-            "headerDict",
-            "header",
-            "kwargs",
-            "appointmentTimeZoneDefinitionStartDisplay",
-            "sideEffects",
             "appointmentTimeZoneDefinitionEndDisplay",
+            "appointmentTimeZoneDefinitionStartDisplay",
+            "body",
             "cleanGlobalObjectID",
+            "compressedRtf",
+            "dateFormat",
+            "datetimeFormat",
+            "deencapsulatedRtf",
             "errorBehavior",
             "globalObjectID",
+            "header",
+            "headerDict",
+            "headerFormatProperties",
+            "htmlBody",
+            "htmlBodyPrepared",
+            "htmlInjectableHeader",
+            "kwargs",
+            "named",
+            "namedProperties",
+            "path",
+            "props",
+            "recipients",
+            "rtfBody",
+            "rtfEncapInjectableHeader",
+            "rtfPlainInjectableHeader",
+            "sideEffects",
+            "treePath",
         ]
         attributes_section = ResultKeyValueSection("Email Attributes", parent=request.result)
         # Patch in all potentially interesting attributes that we don't already have
@@ -161,17 +163,27 @@ class EmlParser(ServiceBase):
         # Try to tag interesting fields
         def tag_field(tag, header_name, msg_name):
             # Sanitize input before tagging
-            def sanitize(input):
-                value = input
+            def sanitize(value):
                 if tag == "network.email.msg_id":
                     # Remove any whitespace and remove <> surround MSG ID
                     value = value.strip().strip("<>")
+                elif tag == "network.email.address":
+                    match = re.search(EMAIL_RE, value.encode())
+                    if match:
+                        value = match.group(0)
                 return value
 
             if header_name and header_name in headers and headers[header_name]:
-                headers_section.add_tag(tag, sanitize(headers[header_name]))
-            elif msg_name and hasattr(msg, msg_name) and getattr(msg, msg_name):
-                attributes_section.add_tag(tag, sanitize(getattr(msg, msg_name)))
+                value = sanitize(headers[header_name])
+                if value:
+                    headers_section.add_tag(tag, value)
+                    return
+            # Either we are interested in the attribute, or the header was not present,
+            # or the value of the header was not valid
+            if msg_name and hasattr(msg, msg_name) and getattr(msg, msg_name):
+                value = sanitize(getattr(msg, msg_name))
+                if value:
+                    attributes_section.add_tag(tag, value)
 
         tag_field("network.email.address", "From", "sender")
         tag_field("network.email.address", "Reply-To", None)
@@ -211,6 +223,19 @@ class EmlParser(ServiceBase):
                     f"{len(msg.attachments) - len(attachments_added)} not added"
                 )
                 break
+
+        if msg.body:
+            # Extract IOCs from body
+            [attributes_section.add_tag("network.static.ip", x.value) for x in find_ips(msg.body.encode())]
+            [attributes_section.add_tag("network.static.domain", x.value) for x in find_domains(msg.body.encode())]
+            [attributes_section.add_tag("network.static.uri", x.value) for x in find_urls(msg.body.encode())]
+            if request.get_param("extract_body_text"):
+                with tempfile.NamedTemporaryFile(dir=self.working_directory, delete=False) as tmp_f:
+                    tmp_f.write(msg.body)
+                request.add_extracted(
+                    tmp_f.name, "email_body", "Extracted email body", safelist_interface=self.api_interface
+                )
+
         if attachments_added:
             ResultSection(
                 "Extracted Attachments:", parent=request.result, body="\n".join([x for x in attachments_added])
@@ -224,16 +249,13 @@ class EmlParser(ServiceBase):
                 body_words.update(extract_passwords(msg.subject))
 
             if msg.body:
-                # Extract IOCs from body
-                [attributes_section.add_tag("network.static.ip", x.value) for x in find_ips(msg.body.encode())]
-                [attributes_section.add_tag("network.static.domain", x.value) for x in find_domains(msg.body.encode())]
-                [attributes_section.add_tag("network.static.uri", x.value) for x in find_urls(msg.body.encode())]
                 try:
                     body_words.update(extract_passwords(msg.body))
                     request.temp_submission_data["email_body"] = sorted(list(body_words))
                 except UnicodeDecodeError:
                     # Couldn't decode the body correctly. We could get the bytes manually and decode what we can.
-                    # For the moment, just return what we have, and the user will see if the attachment won't be extracted.
+                    # For the moment, just return what we have, and the user will see if the attachment won't be
+                    # extracted.
                     pass
 
         # Specialized fields

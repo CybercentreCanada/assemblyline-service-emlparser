@@ -5,7 +5,45 @@
     "sections": [
       {
         "auto_collapse": false,
-        "body": "{\"content-disposition\": [\"inline\"], \"content-transfer-encoding\": [\"8bit\"], \"content-type\": [\"text/plain; charset=\\\"UTF-8\\\"\"], \"date\": [\"['Tue, 06 Dec 2022 09:49:11 +0100']\"], \"from\": [\"Amani Daniel <agricon@agriconconsult.com>\"], \"message-id\": [\"20117356208c9-5475-4068-81al-8721h3s18sxf4562148@agriconconsult.com\"], \"received\": [\"from [45.183.92.135] (helo=[127.0.0.1])\\tby motenas.co.uk with esmtpsa  (TLS1) tls TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA\\t(Exim 4.93)\\t(envelope-from <agricon@agriconconsult.com>)\\tid 1p2TdX-0007DN-96\\tfor eolfipcscyj@; Tue, 06 Dec 2022 09:49:12 +0100\"], \"received_domain\": [\"motenas.co.uk\"], \"received_email\": [\"agricon@agriconconsult.com\"], \"received_ip\": [\"127.0.0.1\", \"45.183.92.135\"], \"subject\": [\"SPAM: All of your data has been copied. Your system is compromised.\"], \"to\": [\"eolfipcscyj\"]}",
+        "body": {
+          "content-disposition": [
+            "inline"
+          ],
+          "content-transfer-encoding": [
+            "8bit"
+          ],
+          "content-type": [
+            "text/plain; charset=\"UTF-8\""
+          ],
+          "date": [
+            "['Tue, 06 Dec 2022 09:49:11 +0100']"
+          ],
+          "from": [
+            "Amani Daniel <agricon@agriconconsult.com>"
+          ],
+          "message-id": [
+            "20117356208c9-5475-4068-81al-8721h3s18sxf4562148@agriconconsult.com"
+          ],
+          "received": [
+            "from [45.183.92.135] (helo=[127.0.0.1])\tby motenas.co.uk with esmtpsa  (TLS1) tls TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA\t(Exim 4.93)\t(envelope-from <agricon@agriconconsult.com>)\tid 1p2TdX-0007DN-96\tfor eolfipcscyj@; Tue, 06 Dec 2022 09:49:12 +0100"
+          ],
+          "received_domain": [
+            "motenas.co.uk"
+          ],
+          "received_email": [
+            "agricon@agriconconsult.com"
+          ],
+          "received_ip": [
+            "127.0.0.1",
+            "45.183.92.135"
+          ],
+          "subject": [
+            "SPAM: All of your data has been copied. Your system is compromised."
+          ],
+          "to": [
+            "eolfipcscyj"
+          ]
+        },
         "body_config": {},
         "body_format": "KEY_VALUE",
         "classification": "TLP:C",

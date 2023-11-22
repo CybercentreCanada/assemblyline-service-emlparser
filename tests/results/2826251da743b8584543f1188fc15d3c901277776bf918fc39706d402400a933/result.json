@@ -5,7 +5,28 @@
     "sections": [
       {
         "auto_collapse": false,
-        "body": "{\"content-transfer-encoding\": [\"quoted-printable\"], \"content-type\": [\"text/html; charset=\\\"utf-8\\\"\"], \"date\": [\"1970-01-01T00:00:00+00:00\"], \"from\": [\"\\\"\\ufffd\\u0011Pr\\ufffd\\ufffd\\u0440\\ufffdp\\u043a\\u0405\\u043d\\u043e Internet @\\ufffdplo\\ufffd\\ufffdr 13\\\"\"], \"mime-version\": [\"1.0\"], \"subject\": \"\", \"to\": [], \"x-mimeole\": [\"Produced By Microsoft MimeOLE\"]}",
+        "body": {
+          "content-transfer-encoding": [
+            "quoted-printable"
+          ],
+          "content-type": [
+            "text/html; charset=\"utf-8\""
+          ],
+          "date": [
+            "1970-01-01T00:00:00+00:00"
+          ],
+          "from": [
+            "\"\ufffd\u0011Pr\ufffd\ufffd\u0440\ufffdp\u043a\u0405\u043d\u043e Internet @\ufffdplo\ufffd\ufffdr 13\""
+          ],
+          "mime-version": [
+            "1.0"
+          ],
+          "subject": "",
+          "to": [],
+          "x-mimeole": [
+            "Produced By Microsoft MimeOLE"
+          ]
+        },
         "body_config": {},
         "body_format": "KEY_VALUE",
         "classification": "TLP:C",
