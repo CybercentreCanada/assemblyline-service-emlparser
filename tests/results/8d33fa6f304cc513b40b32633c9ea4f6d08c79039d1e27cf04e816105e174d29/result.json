@@ -141,7 +141,7 @@
       },
       {
         "auto_collapse": false,
-        "body": "UnknownFilename T6IEW.bin",
+        "body": "UnknownFilename_0",
         "body_config": {},
         "body_format": "TEXT",
         "classification": "TLP:C",
@@ -157,7 +157,7 @@
   "files": {
     "extracted": [
       {
-        "name": "UnknownFilename T6IEW.bin",
+        "name": "UnknownFilename_0",
         "sha256": "c12855587f1f0be22cd9979297cee679c91d6f8b2b1a6c3a43e9224d2aca6f37"
       }
     ],

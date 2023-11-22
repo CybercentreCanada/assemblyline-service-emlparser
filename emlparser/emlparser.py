@@ -205,15 +205,15 @@ class EmlParser(ServiceBase):
                 pass
 
         attachments_added = []
-        for attachment in msg.attachments:
+        for attachment_index, attachment in enumerate(msg.attachments):
             try:
-                _, attachment_path = attachment.save(
-                    customPath=self.working_directory, customFilename=str(uuid.uuid4()), extractEmbedded=True
-                )
+                _, attachment_path = attachment.save(customPath=self.working_directory, extractEmbedded=True)
             except Exception:
                 continue
 
             attachment_name = attachment.getFilename()
+            if attachment_name.startswith("UnknownFilename"):
+                attachment_name = f"UnknownFilename_{attachment_index}"
 
             try:
                 if request.add_extracted(
