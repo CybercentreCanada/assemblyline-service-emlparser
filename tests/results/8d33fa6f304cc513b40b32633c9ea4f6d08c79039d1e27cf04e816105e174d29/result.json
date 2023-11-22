@@ -1,0 +1,392 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 0,
+    "sections": [
+      {
+        "auto_collapse": false,
+        "body": {
+          "Content-Language": "en-US",
+          "Content-Type": "multipart/mixed;\r\n\tboundary=\"_002_168316052542830645999692928864913356turningpointwareham_\"",
+          "Date": "Thu, 4 May 2023 00:35:25 +0000",
+          "From": "\" Spinks-Law\"",
+          "MIME-Version": "1.0",
+          "Message-ID": "<168316052542.83064.5999692928864913356@turningpointwareham.org>",
+          "Received": "from MW4PR16MB4791.namprd16.prod.outlook.com (::1) by\r\n DM6PR16MB2969.namprd16.prod.outlook.com with HTTPS; Thu, 4 May 2023 00:40:33\r\n +0000\nfrom DM6PR02CA0143.namprd02.prod.outlook.com (2603:10b6:5:332::10)\r\n by MW4PR16MB4791.namprd16.prod.outlook.com (2603:10b6:303:18c::11) with\r\n Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.22; Thu, 4 May\r\n 2023 00:35:29 +0000\nfrom DM6NAM12FT112.eop-nam12.prod.protection.outlook.com\r\n (2603:10b6:5:332:cafe::54) by DM6PR02CA0143.outlook.office365.com\r\n (2603:10b6:5:332::10) with Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.22 via Frontend\r\n Transport; Thu, 4 May 2023 00:35:29 +0000\nfrom NAM12-MW2-obe.outbound.protection.outlook.com (40.107.244.113)\r\n by DM6NAM12FT112.mail.protection.outlook.com (10.13.179.151) with Microsoft\r\n SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id\r\n 15.20.6387.9 via Frontend Transport; Thu, 4 May 2023 00:35:29 +0000\nfrom SJ0PR03CA0173.namprd03.prod.outlook.com (2603:10b6:a03:338::28)\r\n by BLAPR10MB5105.namprd10.prod.outlook.com (2603:10b6:208:325::24) with\r\n Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.26; Thu, 4 May\r\n 2023 00:35:26 +0000\nfrom DM6NAM10FT037.eop-nam10.prod.protection.outlook.com\r\n (2603:10b6:a03:338:cafe::4c) by SJ0PR03CA0173.outlook.office365.com\r\n (2603:10b6:a03:338::28) with Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6363.22 via Frontend\r\n Transport; Thu, 4 May 2023 00:35:26 +0000\nfrom [213.255.209.53] (213.255.209.53) by\r\n DM6NAM10FT037.mail.protection.outlook.com (10.13.153.29) with Microsoft SMTP\r\n Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id\r\n 15.20.6363.20 via Frontend Transport; Thu, 4 May 2023 00:35:25 +0000",
+          "Subject": "Salary Amendment Policy for Employees on Spinks-Law on\r\n Thursday/May/2023 03:35 AM",
+          "Thread-Index": "AQHZfiEJkNREFBsHykeV0QzHmbuL7g==",
+          "Thread-Topic": "Salary Amendment Policy for Employees on Spinks-Law on\r\n Thursday/May/2023 03:35 AM",
+          "To": "Allison Hanby <Allison@spinks-law.com>",
+          "X-MS-Exchange-Organization-AuthSource": "\r\n DM6NAM12FT112.eop-nam12.prod.protection.outlook.com",
+          "X-MS-Exchange-Organization-Network-Message-Id": "\r\n 00dcdd8a-41ea-4cac-8b03-08db4c37763f",
+          "X-MS-Has-Attach": "yes",
+          "X-Microsoft-Antispam-Mailbox-Delivery": "\r\n ucf:0;jmr:0;auth:0;dest:I;ENG:(910001)(944506478)(944626604)(920097)(930097);",
+          "X-Microsoft-Antispam-Message-Info": "\r\n =?utf-8?B?VGxDVXMzT0FFN3JIS3lHcmNnbjV0ejlNM1JNamE2clhXejViNEtxem55enY5?=\r\n =?utf-8?B?T0t3aWM4VCttUFl6Nld3TSs1QmJEVVh0a1pRQzEwUW1CSWRvalpsbnJYSDc4?=\r\n =?utf-8?B?V3EvTmVHYWhzWW9KRFp2WEsrT0ZMZk9PT1dkY3NmR3ZiMEFvYWdNUVFvR2I1?=\r\n =?utf-8?B?aTlnN083YWtEaVRkb2FHaWxRbEdCZWhCWlJqRmxZT0t2Rnc0ay9ac0Vzejdy?=\r\n =?utf-8?B?cG03NXNEbStjdnpFcEpqQ1VvR2JXQ2Z1UGRIOWIxOENlQTZUNGdMbmgwV0s0?=\r\n =?utf-8?B?bGpmbngrRFBoZnBVVnA1bm04YVlqd1RZL1JRQXdWanNyUFhwYXJOK3djc0tm?=\r\n =?utf-8?B?OEszNXNnSGlJWVFocUVERXMweHJZTGEwdUlISmdmdG1JOHdUMVhPaGJIbWZ5?=\r\n =?utf-8?B?ZFJkNjZkRnFDeFBWQkFxWG5BQUhPVk51T1p0bmJNemt4Mk40WXB5cWFScUVo?=\r\n =?utf-8?B?WFpRTnpRSC9FWmo0VFBNbERuT3d1ZWIwSFU3WDFqbWR0OWZwektDdzBMUWdu?=\r\n =?utf-8?B?Und6WSthcjVsU0dMS0N4UlVsb25SWUFjcGdWeU5NMHBtYlpZeGp1MDR4cGNS?=\r\n =?utf-8?B?dklBclBNdW1kQzU2R1pFenJEb2pHQW5XNTJ6eG5XKzBiUmMvUjQwZTY5T1Yr?=\r\n =?utf-8?B?eEo2aS9BTStac0tib3M2L3VLRXVKREJQR1IyKy9OenQwcXU1RWlTZHF3MGp1?=\r\n =?utf-8?B?TyswOXVIWWZvMkttVE5wdmxCeFZqeFFCMlQ2MlV1TzVNZlphcXY4ODI4VHZa?=\r\n =?utf-8?B?ZVRUWHcrOFkwKzEyYkh2RWlKbGNMcVNLUllTaWp6V1BjSzFLMjVuaktkeFZU?=\r\n =?utf-8?B?aEoxQUVNMlVaK1dqdm51Y280U0tFeDhxbU1hTjJGckVRZ3VjQkZzRVNadUx3?=\r\n =?utf-8?B?N0NTRWJwOGRvVXh5ZGw2YUJrT2hRZGRoL2RCMkpOTVFxdU1CR0FtcWQ5d2R0?=\r\n =?utf-8?B?aFhZMThsNDVaa25Za1VDVFBINTZRY3V4MDh0cXJmN2RMQ1djOU9jMkxSYStt?=\r\n =?utf-8?B?TkNxOXl3TEY5SGYrbjFuN2J5RXhZVXFEV01kWUc5Mno4Wk0za3p1Y1V6Yjlx?=\r\n =?utf-8?B?alZGSU9Qb250ejFtdHFPcUFJUFRxT2JrT3MrZWVjdXd1RXdCOUhDbHBZM0FD?=\r\n =?utf-8?B?cXFERnlMVUFiMGJMUUZ2SDRXaWg5NzRobEpIQUdRdWxMb3hEemI3SkQvSHV5?=\r\n =?utf-8?B?MHIxZzY4bzQrRzVkYS8zTHRBYlkwRTBGbmNLRUVQQ09HWXhzMnJKdWlBM2E5?=\r\n =?utf-8?B?eTNTeGY1bnJIZ29jbXJOMDJBUzEva1lmbWp2SytCQkoyVno4Mkp3bjZnRTVq?=\r\n =?utf-8?B?WDE0K2hCTmt6ZjVhZlNUZlEvaEJYRHNzR2xWMHl1dUFGVTlyamFaQkk2RHFQ?=\r\n =?utf-8?B?OXRKR0IvUU16Rk9UWkdIczd4Vm1KdXVXeHBVSlVRak1sWjdrdFRUSmJzZU1J?=\r\n =?utf-8?B?Q0Jsamx6U1lCU2RXVjdPQ2pMU0pQSCtzRFVyQklmaVFhZzEzNlhNM1RidlVK?=\r\n =?utf-8?B?ZHpDQjljNkw1K0lBUWJ2RkdUbDVwQ2R4MU9GTURYMUhYaFpMMmU3ZTlTRERP?=\r\n =?utf-8?B?QU5Vdk44cWVvVmRubWpUd0xwMDJ5TTdxWTM5TkkyZjZjYVhVM2FYQVlPc0pU?=\r\n =?utf-8?B?NE1LMFpwQmMwVHRTT1pHSHQ4endVNXJsSzR0UFhLVVp4RHJ5bmUvV1lIcU9F?=\r\n =?utf-8?B?U3dYem9OeEc1RzZvSmlXWkp1VDcyVnN5WmJrYUFjcHFDUVJLUUEzOTR1ZDVC?=\r\n =?utf-8?B?QUlrNlhEcElVOHl2aC9QdDhUemM1c3VYMkkxSnhYaUJ2V1ljT041MDljR0JM?=\r\n =?utf-8?B?ZzhjcmE1ZUNuR2xiS042anAyanl6NnQ0U1VUV2FoREVrVGorK3pZUUs4cVRN?=\r\n =?utf-8?B?NHU2VEptZUp6VVhJek4xOWk2Q1kxUGUvbi9uQm5DRjlDMWJuSmJIckhlS2E0?=\r\n =?utf-8?B?a1k1UmhHYnVwWFN5eldlZmFkSXBUc3ZNcTgzTG1XSDlyM3hCRURJTzE0Szdp?=\r\n =?utf-8?B?Y0lZZ2F3bDU5VVBlSEd0SHFVYkx4MDZkQnEwbVYrL2s5ODF1THNZMHBNU3FE?=\r\n =?utf-8?B?V2ZKVDBqTlRZL0pEc3ZCb3dPeEgvOUcyeE84UWE1VHpJd00zRmcrOUVoaWRx?=\r\n =?utf-8?B?dzRDcytEWEkzNXVVUlYzeFlSQmxlZjRYaytiUXd0Tmx1cVNxUGxRZ3o2K051?=\r\n =?utf-8?B?Tk0xcis3Mm1YWll2SCt0Q3dDYnBFUFlob2wxWExiYklBcmZpYXA0TTFoeUhJ?=\r\n =?utf-8?B?WmtwVTJoUDV0bEpzaXNDZjVHcUtPL2c0OFhZTUVCSVdaeEowdzdtQ1c5ZWR4?=\r\n =?utf-8?B?eVhTOWxwa3BGYUUvaXlqUUR2SWRZK3NKT1hmeWthODlVWUprYVZqQ01ibk5B?=\r\n =?utf-8?Q?BRR10RkfVCaHMKrc=3D?=",
+          "authentication-results": "spf=softfail (sender IP is 40.107.244.113)\r\n smtp.mailfrom=turningpointwareham.org; dkim=pass (signature was verified)\r\n header.d=turningpointwareham.onmicrosoft.com;dmarc=none action=none\r\n header.from=turningpointwareham.org;compauth=pass reason=115",
+          "received-spf": "SoftFail (protection.outlook.com: domain of transitioning\r\n turningpointwareham.org discourages use of 213.255.209.53 as permitted\r\n sender)",
+          "x-forefront-antispam-report": "\r\n CIP:40.107.244.113;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:NAM12-MW2-obe.outbound.protection.outlook.com;PTR:mail-mw2nam12on2113.outbound.protection.outlook.com;CAT:NONE;SFS:(13230028)(4636009)(1042500001)(451199021)(1590799018)(19302899009)(82599016)(36736006)(16576012)(6916009)(58800400005)(6706004)(7636003)(6486002)(1580799015)(33964004)(8676002)(86362001)(26005)(5660300002)(22186003)(1096003)(8636004)(336012)(2616005)(36756003)(956004)(9316004)(83380400001)(64886010)(3940600001)(43540500003);DIR:INB;",
+          "x-microsoft-antispam": "BCL:0;",
+          "x-ms-exchange-atpmessageproperties": "SA|SL",
+          "x-ms-exchange-crosstenant-authas": "Anonymous",
+          "x-ms-exchange-crosstenant-authsource": "\r\n DM6NAM12FT112.eop-nam12.prod.protection.outlook.com",
+          "x-ms-exchange-crosstenant-fromentityheader": "Internet",
+          "x-ms-exchange-crosstenant-id": "37109bac-58ab-4990-83d3-7814b7d474aa",
+          "x-ms-exchange-crosstenant-network-message-id": "\r\n 00dcdd8a-41ea-4cac-8b03-08db4c37763f",
+          "x-ms-exchange-crosstenant-originalarrivaltime": "04 May 2023 00:35:29.1345 (UTC)",
+          "x-ms-exchange-processed-by-bccfoldering": "15.20.6363.022",
+          "x-ms-exchange-transport-crosstenantheadersstamped": "MW4PR16MB4791",
+          "x-ms-exchange-transport-endtoendlatency": "00:05:04.7319309",
+          "x-ms-office365-filtering-correlation-id": "00dcdd8a-41ea-4cac-8b03-08db4c37763f",
+          "x-ms-publictraffictype": "Email",
+          "x-ms-traffictypediagnostic": "\r\n DM6NAM10FT037:EE_|BLAPR10MB5105:EE_|DM6NAM12FT112:EE_|MW4PR16MB4791:EE_|DM6PR16MB2969:EE_"
+        },
+        "body_config": {},
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "email": {
+              "address": [
+                "\" Spinks-Law\"",
+                "Allison@spinks-law.com"
+              ],
+              "date": [
+                "Thu, 4 May 2023 00:35:25 +0000"
+              ],
+              "subject": [
+                "Salary Amendment Policy for Employees on Spinks-Law on\r\n Thursday/May/2023 03:35 AM"
+              ]
+            },
+            "static": {
+              "domain": [
+                "MW4PR16MB4791.namprd16.prod.outlook.com",
+                "DM6PR16MB2969.namprd16.prod.outlook.com",
+                "DM6PR02CA0143.namprd02.prod.outlook.com",
+                "DM6NAM12FT112.eop-nam12.prod.protection.outlook.com",
+                "DM6PR02CA0143.outlook.office365.com",
+                "NAM12-MW2-obe.outbound.protection.outlook.com",
+                "DM6NAM12FT112.mail.protection.outlook.com",
+                "SJ0PR03CA0173.namprd03.prod.outlook.com",
+                "BLAPR10MB5105.namprd10.prod.outlook.com",
+                "DM6NAM10FT037.eop-nam10.prod.protection.outlook.com",
+                "SJ0PR03CA0173.outlook.office365.com",
+                "DM6NAM10FT037.mail.protection.outlook.com"
+              ],
+              "ip": [
+                "::1",
+                "2603:10b6:5:332::",
+                "2603:10b6:303:18c::",
+                "2603:10b6:5:332:cafe::",
+                "40.107.244.113",
+                "10.13.179.151",
+                "2603:10b6:a03:338::",
+                "2603:10b6:208:325::",
+                "2603:10b6:a03:338:cafe::",
+                "213.255.209.53",
+                "10.13.153.29"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Headers",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": {
+          "areStringsUnicode": "True",
+          "attachmentsDelayed": "False",
+          "attachmentsReady": "True",
+          "classType": "'IPM.Note'",
+          "classified": "False",
+          "crlf": "'\\r\\n'",
+          "defaultFolderName": "'2023-05-04_0035 Salary Amendment Policy for Employees on Spinks-Law on ThursdayMay2023 0335 AM'",
+          "detectedBodies": "<BodyTypes.RTF|PLAIN: 3>",
+          "headerInit": "True",
+          "importance": "<Importance.MEDIUM: 1>",
+          "insecureFeatures": "<InsecureFeatures.NONE: 0>",
+          "isRead": "True",
+          "isSent": "True",
+          "messageId": "'<168316052542.83064.5999692928864913356@turningpointwareham.org>'",
+          "parsedDate": "(2023, 5, 4, 0, 35, 25, 0, 1, -1)",
+          "prefixLen": "0",
+          "prefixList": "[]",
+          "receivedTime": "2023-05-04T00:40:33+00:00",
+          "recipientSeparator": "';'",
+          "responseRequested": "False",
+          "sender": "'\" Spinks-Law\"'",
+          "sensitivity": "<Sensitivity.NORMAL: 0>",
+          "stringEncoding": "'utf-16-le'"
+        },
+        "body_config": {},
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "email": {
+              "msg_id": [
+                "168316052542.83064.5999692928864913356@turningpointwareham.org"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Attributes",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "UnknownFilename T6IEW.bin",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Extracted Attachments:",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [
+      {
+        "name": "UnknownFilename T6IEW.bin",
+        "sha256": "c12855587f1f0be22cd9979297cee679c91d6f8b2b1a6c3a43e9224d2aca6f37"
+      }
+    ],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [],
+    "tags": {
+      "network.email.address": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "\" Spinks-Law\""
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "Allison@spinks-law.com"
+        }
+      ],
+      "network.email.date": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "Thu, 4 May 2023 00:35:25 +0000"
+        }
+      ],
+      "network.email.msg_id": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "168316052542.83064.5999692928864913356@turningpointwareham.org"
+        }
+      ],
+      "network.email.subject": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "Salary Amendment Policy for Employees on Spinks-Law on\r\n Thursday/May/2023 03:35 AM"
+        }
+      ],
+      "network.static.domain": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "BLAPR10MB5105.namprd10.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DM6NAM10FT037.eop-nam10.prod.protection.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DM6NAM10FT037.mail.protection.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DM6NAM12FT112.eop-nam12.prod.protection.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DM6NAM12FT112.mail.protection.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DM6PR02CA0143.namprd02.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DM6PR02CA0143.outlook.office365.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DM6PR16MB2969.namprd16.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "MW4PR16MB4791.namprd16.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "NAM12-MW2-obe.outbound.protection.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "SJ0PR03CA0173.namprd03.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "SJ0PR03CA0173.outlook.office365.com"
+        }
+      ],
+      "network.static.ip": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "10.13.153.29"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "10.13.179.151"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "213.255.209.53"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10b6:208:325::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10b6:303:18c::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10b6:5:332::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10b6:5:332:cafe::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10b6:a03:338::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10b6:a03:338:cafe::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "40.107.244.113"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "::1"
+        }
+      ]
+    },
+    "temp_submission_data": {
+      "email_body": [
+        "03",
+        "03:35",
+        "2023",
+        "35",
+        "AM",
+        "Amendment",
+        "Any",
+        "CONFIDENTIALITY",
+        "Employees",
+        "If",
+        "Law",
+        "May",
+        "Policy",
+        "STATEMENT",
+        "Salary",
+        "Spinks",
+        "Spinks-Law",
+        "This",
+        "Thursday",
+        "Thursday/May/2023",
+        "all",
+        "and",
+        "are",
+        "by",
+        "confidential",
+        "contact",
+        "contain",
+        "copies",
+        "destroy",
+        "disclosure",
+        "distribution",
+        "e",
+        "e-mail",
+        "for",
+        "information",
+        "information.",
+        "intended",
+        "is",
+        "mail",
+        "may",
+        "message",
+        "message.",
+        "not",
+        "of",
+        "on",
+        "or",
+        "original",
+        "please",
+        "privileged",
+        "prohibited",
+        "prohibited.",
+        "recipient",
+        "recipient(s)",
+        "recipient(s),",
+        "reply",
+        "review",
+        "review,",
+        "s",
+        "sender",
+        "sole",
+        "the",
+        "unauthorized",
+        "use",
+        "use,",
+        "you"
+      ]
+    }
+  }
+}

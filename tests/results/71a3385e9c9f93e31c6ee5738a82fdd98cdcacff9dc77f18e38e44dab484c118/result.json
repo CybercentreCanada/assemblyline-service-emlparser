@@ -8,7 +8,7 @@
         "body": {
           "Date": "Fri, 21 Apr 2023 22:20:05 +0000",
           "From": "Unknown",
-          "To": "whatever@domain.local"
+          "To": "whatever@domain.local <whatever@domain.local>"
         },
         "body_config": {},
         "body_format": "KEY_VALUE",
@@ -20,7 +20,8 @@
           "network": {
             "email": {
               "address": [
-                "Unknown"
+                "Unknown",
+                "whatever@domain.local"
               ],
               "date": [
                 "Fri, 21 Apr 2023 22:20:05 +0000"
@@ -62,7 +63,6 @@
           "defaultFolderName": "'2023-04-21_2220 test POC CVE-2023-23397 against a patched Outlook'",
           "detectedBodies": "<BodyTypes.RTF|PLAIN: 3>",
           "fInvited": "False",
-          "filename": "'/tmp/71a3385e9c9f93e31c6ee5738a82fdd98cdcacff9dc77f18e38e44dab484c118'",
           "headerInit": "True",
           "iconIndex": "<IconIndex.SINGLE_INSTANCE_MEETING: 1026>",
           "importance": "<Importance.MEDIUM: 1>",
@@ -109,9 +109,6 @@
         "tags": {
           "network": {
             "email": {
-              "address": [
-                "whatever@domain.local"
-              ],
               "subject": [
                 "test POC CVE-2023-23397 against a patched Outlook"
               ]
