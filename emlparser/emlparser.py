@@ -59,8 +59,7 @@ class EmlParser(ServiceBase):
 
     def handle_outlook(self, request: ServiceRequest) -> None:
         try:
-            msg = extract_msg.openMsg(request.file_path)
-            # msg = extract_msg.openMsg(request.file_path, errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL)
+            msg = extract_msg.openMsg(request.file_path, errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL)
         except (
             NotImplementedError,
             extract_msg.exceptions.InvalidFileFormatError,
@@ -122,10 +121,12 @@ class EmlParser(ServiceBase):
             "datetimeFormat",
             "deencapsulatedRtf",
             "errorBehavior",
+            "filename",
             "globalObjectID",
             "header",
             "headerDict",
             "headerFormatProperties",
+            "headerText",
             "htmlBody",
             "htmlBodyPrepared",
             "htmlInjectableHeader",
@@ -187,8 +188,10 @@ class EmlParser(ServiceBase):
 
         tag_field("network.email.address", "From", "sender")
         tag_field("network.email.address", "Reply-To", None)
+        tag_field("network.email.address", "In-Reply-To", "inReplyTo")
+        tag_field("network.email.address", "Return-Path", None)
         for recipient in msg.recipients:
-            attributes_section.add_tag("network.email.address", recipient.email)
+            headers_section.add_tag("network.email.address", recipient.email)
         tag_field("network.email.date", "Date", "date")
         tag_field("network.email.subject", "Subject", "subject")
         tag_field("network.email.msg_id", "Message-Id", "messageId")
@@ -202,15 +205,15 @@ class EmlParser(ServiceBase):
                 pass
 
         attachments_added = []
-        for attachment in msg.attachments:
+        for attachment_index, attachment in enumerate(msg.attachments):
             try:
-                _, attachment_path = attachment.save(
-                    customPath=self.working_directory, customFilename=str(uuid.uuid4()), extractEmbedded=True
-                )
+                _, attachment_path = attachment.save(customPath=self.working_directory, extractEmbedded=True)
             except Exception:
                 continue
 
             attachment_name = attachment.getFilename()
+            if attachment_name.startswith("UnknownFilename"):
+                attachment_name = f"UnknownFilename_{attachment_index}"
 
             try:
                 if request.add_extracted(
@@ -229,6 +232,7 @@ class EmlParser(ServiceBase):
             [attributes_section.add_tag("network.static.ip", x.value) for x in find_ips(msg.body.encode())]
             [attributes_section.add_tag("network.static.domain", x.value) for x in find_domains(msg.body.encode())]
             [attributes_section.add_tag("network.static.uri", x.value) for x in find_urls(msg.body.encode())]
+            [attributes_section.add_tag("network.email.address", x.value) for x in find_emails(msg.body.encode())]
             if request.get_param("extract_body_text"):
                 with tempfile.NamedTemporaryFile(dir=self.working_directory, delete=False) as tmp_f:
                     tmp_f.write(msg.body)
