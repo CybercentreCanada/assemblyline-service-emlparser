@@ -6,162 +6,55 @@
       {
         "auto_collapse": false,
         "body": {
-          "accept-language": [
-            "en-US"
-          ],
-          "authentication-results": [
-            "dkim=none (message not signed) header.d=none;dmarc=none action=none header.from=elsto.eu;"
-          ],
-          "content-transfer-encoding": [
-            "quoted-printable"
-          ],
-          "content-type": [
-            "text/plain; charset=\"utf-8\""
-          ],
-          "date": [
-            "['Wed, 21 Dec 2022 14:13:39 +0000']"
-          ],
-          "from": [
-            "Elsto Factuur <factuur@elsto.eu>"
-          ],
-          "in-reply-to": [
-            "<824988934.74307.1671631686612@mib-daemon-engine-8cfd895b6-hspqq>"
-          ],
-          "message-id": [
-            "DU2PR01MB84321444B98E963C3289D757F9EB9@DU2PR01MB8432.eurprd01.prod.exchangelabs.com"
-          ],
-          "mime-version": [
-            "1.0"
-          ],
-          "received": [
-            "from AS4PR01MB9229.eurprd01.prod.exchangelabs.com (2603:10a6:20b:4ec::18) by AM0PR01MB3971.eurprd01.prod.exchangelabs.com with HTTPS; Wed, 21 Dec 2022 14:13:42 +0000",
-            "from DU2PR01MB8432.eurprd01.prod.exchangelabs.com (2603:10a6:10:2e7::10) by AS4PR01MB9229.eurprd01.prod.exchangelabs.com (2603:10a6:20b:4ec::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.16; Wed, 21 Dec 2022 14:13:40 +0000",
-            "from DU2PR01MB8432.eurprd01.prod.exchangelabs.com ([fe80::15bf:e8cc:d3a9:6a0e]) by DU2PR01MB8432.eurprd01.prod.exchangelabs.com ([fe80::15bf:e8cc:d3a9:6a0e%2]) with mapi id 15.20.5924.016; Wed, 21 Dec 2022 14:13:39 +0000"
-          ],
-          "received_domain": [
-            "am0pr01mb3971.eurprd01.prod.exchangelabs.com",
-            "as4pr01mb9229.eurprd01.prod.exchangelabs.com",
-            "du2pr01mb8432.eurprd01.prod.exchangelabs.com"
-          ],
-          "received_ip": [
-            "2603:10a6:10:2e7::10",
-            "2603:10a6:20b:4ec::18",
-            "fe80::15bf:e8cc:d3a9:6a0e"
-          ],
-          "references": [
-            "<824988934.74307.1671631686612@mib-daemon-engine-8cfd895b6-hspqq>"
-          ],
-          "return-path": [
-            "factuur@elsto.eu"
-          ],
-          "subject": [
-            "FW: ELSTO Drives & Controls invoice: 493682"
-          ],
-          "thread-index": [
-            "AQHZFUWpWH1M7bLj+EGGeYMTXd9JHK54YiUg"
-          ],
-          "thread-topic": [
-            "ELSTO Drives & Controls invoice: 493682"
-          ],
-          "to": [
-            "Helpdesk <helpdesk@stokvis.eu>"
-          ],
-          "x-forefront-antispam-report": [
-            "CIP:255.255.255.255;CTRY:;LANG:nl;SCL:-1;SRV:;IPV:NLI;SFV:SKI;H:DU2PR01MB8432.eurprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:;DIR:INB;"
-          ],
-          "x-microsoft-antispam": [
-            "BCL:0;"
-          ],
-          "x-microsoft-antispam-mailbox-delivery": [
-            "ucf:0;jmr:0;auth:0;dest:I;ENG:(910001)(944506478)(944626604)(920097)(425001)(930097);"
-          ],
-          "x-microsoft-antispam-message-info": [
-            "yYjiRMxodbJeMnxaktrHSAVfxfi+J/T0BHHoTLgtwguZVxVxQhj5g/6+XI6LFIdKr6M1YY4i/gfLHIPbRlgoJeXHtcrnHwvJglMGpIcfMSCFsOYP8Zq5ty+dRRcQssD3DJvqqjt9YlkxJm77c1Xlm9yauN0QSMvjEVBNH7/3auNxMEkTzuJ1wZ2X7JFCMw6EwtWls3rDICXA1qU1Zhnac9inh2GUQMtANRIqVySAy/wNgN0GzPe6jHg0Axmmvf/btRLrQ8w/K8+mCOawx38RYUBIwtF1HzPYzXf66LWJNBQN2InOfvVzn0ohDb4ZDVfS2W1J5SKCvcRwThv1Rduzcbph8XMZeVLLYrMCl753DoZiNVI6+xFdgDjRh+6fWirO7kmHfa51CG7gZcTCEx3hABkrshE8MXa7DqxcrTtBVAJdM5oZAqNUsIOe7K+OqbD5kG15lBHdimBvcI8HiaWuryn/j9VUQ1FijL/7e32QNVym+9OS5mw49nNQXjcngi12KFm1iOekDmQ6l3qcDSrPOGVAVq8nio+fRwkV5PMW+xMWxR8UzOh1gx1gxfRGDrr4yZgqiKPpZXugMDxf+oSpxoB1Cwb+8qA62/RHBZKEt3NrQCBtTBCIM0kfFj2lFa6hgcQBDCGtiFG8UNXFIeuoqvvfZLEsp6CUyITq3kv64R7TwvXkVg2uUgcUesBJJ9LTRZUDTz81D1kK5YLXG0IuHQ=="
-          ],
-          "x-ms-exchange-crosstenant-authas": [
-            "Internal"
-          ],
-          "x-ms-exchange-crosstenant-authsource": [
-            " DU2PR01MB8432.eurprd01.prod.exchangelabs.com"
-          ],
-          "x-ms-exchange-crosstenant-fromentityheader": [
-            "Hosted"
-          ],
-          "x-ms-exchange-crosstenant-id": [
-            "205722e3-9d47-4cfd-b9f9-42a6ff81e956"
-          ],
-          "x-ms-exchange-crosstenant-mailboxtype": [
-            "HOSTED"
-          ],
-          "x-ms-exchange-crosstenant-network-message-id": [
-            " 5f05cbd7-f535-4719-cdbb-08dae35d8f1f"
-          ],
-          "x-ms-exchange-crosstenant-originalarrivaltime": [
-            "21 Dec 2022 14:13:39.8411 (UTC)"
-          ],
-          "x-ms-exchange-crosstenant-userprincipalname": [
-            "7JxxcbK7up8JqUSqr5Vdtj/SL1HkCmRROfdVVgubIFwms4PRcZUKbVTIWubLwdOUTIhm2uwfzCKFGLkh5Cmxvw=="
-          ],
-          "x-ms-exchange-messagesentrepresentingtype": [
-            "1"
-          ],
-          "x-ms-exchange-organization-authas": [
-            "Internal"
-          ],
-          "x-ms-exchange-organization-authmechanism": [
-            "04"
-          ],
-          "x-ms-exchange-organization-authsource": [
-            "  DU2PR01MB8432.eurprd01.prod.exchangelabs.com"
-          ],
-          "x-ms-exchange-organization-expirationinterval": [
-            "1:00:00:00.0000000"
-          ],
-          "x-ms-exchange-organization-expirationintervalreason": [
-            "OriginalSubmit"
-          ],
-          "x-ms-exchange-organization-expirationstarttime": [
-            " 21 Dec 2022 14:13:40.1557 (UTC)"
-          ],
-          "x-ms-exchange-organization-expirationstarttimereason": [
-            "OriginalSubmit"
-          ],
-          "x-ms-exchange-organization-messagedirectionality": [
-            "Originating"
-          ],
-          "x-ms-exchange-organization-network-message-id": [
-            "  5f05cbd7-f535-4719-cdbb-08dae35d8f1f"
-          ],
-          "x-ms-exchange-organization-scl": [
-            "-1"
-          ],
-          "x-ms-exchange-processed-by-bccfoldering": [
-            "15.20.5924.016"
-          ],
-          "x-ms-exchange-sharedmailbox-routingagent-processed": [
-            "True"
-          ],
-          "x-ms-exchange-transport-crosstenantheadersstamped": [
-            "AS4PR01MB9229"
-          ],
-          "x-ms-exchange-transport-endtoendlatency": [
-            "00:00:02.4813182"
-          ],
-          "x-ms-has-attach": [
-            "yes"
-          ],
-          "x-ms-office365-filtering-correlation-id": [
-            "5f05cbd7-f535-4719-cdbb-08dae35d8f1f"
-          ],
-          "x-ms-publictraffictype": [
-            "Email"
-          ],
-          "x-ms-tnef-correlator": [
-            "<DU2PR01MB84321444B98E963C3289D757F9EB9@DU2PR01MB8432.eurprd01.prod.exchangelabs.com>"
-          ],
-          "x-ms-traffictypediagnostic": [
-            "DU2PR01MB8432:EE_|AS4PR01MB9229:EE_"
-          ]
+          "Accept-Language": "en-US",
+          "Authentication-Results": "dkim=none (message not signed)\r\n header.d=none;dmarc=none action=none header.from=elsto.eu;",
+          "Content-Language": "nl-NL",
+          "Content-Transfer-Encoding": "binary",
+          "Content-Type": "application/ms-tnef; name=\"winmail.dat\"",
+          "Date": "Wed, 21 Dec 2022 14:13:39 +0000",
+          "From": "Elsto Factuur <factuur@elsto.eu>",
+          "In-Reply-To": "<824988934.74307.1671631686612@mib-daemon-engine-8cfd895b6-hspqq>",
+          "MIME-Version": "1.0",
+          "Message-ID": "\r\n <DU2PR01MB84321444B98E963C3289D757F9EB9@DU2PR01MB8432.eurprd01.prod.exchangelabs.com>",
+          "Received": "from AS4PR01MB9229.eurprd01.prod.exchangelabs.com\r\n (2603:10a6:20b:4ec::18) by AM0PR01MB3971.eurprd01.prod.exchangelabs.com with\r\n HTTPS; Wed, 21 Dec 2022 14:13:42 +0000\nfrom DU2PR01MB8432.eurprd01.prod.exchangelabs.com\r\n (2603:10a6:10:2e7::10) by AS4PR01MB9229.eurprd01.prod.exchangelabs.com\r\n (2603:10a6:20b:4ec::18) with Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.16; Wed, 21 Dec\r\n 2022 14:13:40 +0000\nfrom DU2PR01MB8432.eurprd01.prod.exchangelabs.com\r\n ([fe80::15bf:e8cc:d3a9:6a0e]) by DU2PR01MB8432.eurprd01.prod.exchangelabs.com\r\n ([fe80::15bf:e8cc:d3a9:6a0e%2]) with mapi id 15.20.5924.016; Wed, 21 Dec 2022\r\n 14:13:39 +0000",
+          "References": "<824988934.74307.1671631686612@mib-daemon-engine-8cfd895b6-hspqq>",
+          "Return-Path": "factuur@elsto.eu",
+          "Subject": "FW: ELSTO Drives & Controls invoice: 493682",
+          "Thread-Index": "AQHZFUWpWH1M7bLj+EGGeYMTXd9JHK54YiUg",
+          "Thread-Topic": "ELSTO Drives & Controls invoice: 493682",
+          "To": "Helpdesk <helpdesk@stokvis.eu>",
+          "X-Forefront-Antispam-Report": "\r\n CIP:255.255.255.255;CTRY:;LANG:nl;SCL:-1;SRV:;IPV:NLI;SFV:SKI;H:DU2PR01MB8432.eurprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:;DIR:INB;",
+          "X-MS-Exchange-CrossTenant-AuthAs": "Internal",
+          "X-MS-Exchange-CrossTenant-AuthSource": "DU2PR01MB8432.eurprd01.prod.exchangelabs.com",
+          "X-MS-Exchange-CrossTenant-FromEntityHeader": "Hosted",
+          "X-MS-Exchange-CrossTenant-Id": "205722e3-9d47-4cfd-b9f9-42a6ff81e956",
+          "X-MS-Exchange-CrossTenant-MailboxType": "HOSTED",
+          "X-MS-Exchange-CrossTenant-Network-Message-Id": "5f05cbd7-f535-4719-cdbb-08dae35d8f1f",
+          "X-MS-Exchange-CrossTenant-OriginalArrivalTime": "21 Dec 2022 14:13:39.8411\r\n (UTC)",
+          "X-MS-Exchange-CrossTenant-UserPrincipalName": "7JxxcbK7up8JqUSqr5Vdtj/SL1HkCmRROfdVVgubIFwms4PRcZUKbVTIWubLwdOUTIhm2uwfzCKFGLkh5Cmxvw==",
+          "X-MS-Exchange-MessageSentRepresentingType": "1",
+          "X-MS-Exchange-Organization-AuthAs": "Internal",
+          "X-MS-Exchange-Organization-AuthMechanism": "04",
+          "X-MS-Exchange-Organization-AuthSource": "\r\n DU2PR01MB8432.eurprd01.prod.exchangelabs.com",
+          "X-MS-Exchange-Organization-ExpirationInterval": "1:00:00:00.0000000",
+          "X-MS-Exchange-Organization-ExpirationIntervalReason": "OriginalSubmit",
+          "X-MS-Exchange-Organization-ExpirationStartTime": "21 Dec 2022 14:13:40.1557\r\n (UTC)",
+          "X-MS-Exchange-Organization-ExpirationStartTimeReason": "OriginalSubmit",
+          "X-MS-Exchange-Organization-MessageDirectionality": "Originating",
+          "X-MS-Exchange-Organization-Network-Message-Id": "\r\n 5f05cbd7-f535-4719-cdbb-08dae35d8f1f",
+          "X-MS-Exchange-Organization-SCL": "-1",
+          "X-MS-Exchange-Processed-By-BccFoldering": "15.20.5924.016",
+          "X-MS-Exchange-SharedMailbox-RoutingAgent-Processed": "True",
+          "X-MS-Exchange-Transport-CrossTenantHeadersStamped": "AS4PR01MB9229",
+          "X-MS-Exchange-Transport-EndToEndLatency": "00:00:02.4813182",
+          "X-MS-Has-Attach": "yes",
+          "X-MS-Office365-Filtering-Correlation-Id": "5f05cbd7-f535-4719-cdbb-08dae35d8f1f",
+          "X-MS-PublicTrafficType": "Email",
+          "X-MS-TNEF-Correlator": "\r\n <DU2PR01MB84321444B98E963C3289D757F9EB9@DU2PR01MB8432.eurprd01.prod.exchangelabs.com>",
+          "X-MS-TrafficTypeDiagnostic": "DU2PR01MB8432:EE_|AS4PR01MB9229:EE_",
+          "X-Microsoft-Antispam": "BCL:0;",
+          "X-Microsoft-Antispam-Mailbox-Delivery": "\r\n\tucf:0;jmr:0;auth:0;dest:I;ENG:(910001)(944506478)(944626604)(920097)(425001)(930097);",
+          "X-Microsoft-Antispam-Message-Info": "\r\n\tyYjiRMxodbJeMnxaktrHSAVfxfi+J/T0BHHoTLgtwguZVxVxQhj5g/6+XI6LFIdKr6M1YY4i/gfLHIPbRlgoJeXHtcrnHwvJglMGpIcfMSCFsOYP8Zq5ty+dRRcQssD3DJvqqjt9YlkxJm77c1Xlm9yauN0QSMvjEVBNH7/3auNxMEkTzuJ1wZ2X7JFCMw6EwtWls3rDICXA1qU1Zhnac9inh2GUQMtANRIqVySAy/wNgN0GzPe6jHg0Axmmvf/btRLrQ8w/K8+mCOawx38RYUBIwtF1HzPYzXf66LWJNBQN2InOfvVzn0ohDb4ZDVfS2W1J5SKCvcRwThv1Rduzcbph8XMZeVLLYrMCl753DoZiNVI6+xFdgDjRh+6fWirO7kmHfa51CG7gZcTCEx3hABkrshE8MXa7DqxcrTtBVAJdM5oZAqNUsIOe7K+OqbD5kG15lBHdimBvcI8HiaWuryn/j9VUQ1FijL/7e32QNVym+9OS5mw49nNQXjcngi12KFm1iOekDmQ6l3qcDSrPOGVAVq8nio+fRwkV5PMW+xMWxR8UzOh1gx1gxfRGDrr4yZgqiKPpZXugMDxf+oSpxoB1Cwb+8qA62/RHBZKEt3NrQCBtTBCIM0kfFj2lFa6hgcQBDCGtiFG8UNXFIeuoqvvfZLEsp6CUyITq3kv64R7TwvXkVg2uUgcUesBJJ9LTRZUDTz81D1kK5YLXG0IuHQ=="
         },
         "body_config": {},
         "body_format": "KEY_VALUE",
@@ -174,13 +67,11 @@
             "email": {
               "address": [
                 "factuur@elsto.eu",
+                "<824988934.74307.1671631686612@mib-daemon-engine-8cfd895b6-hspqq>",
                 "helpdesk@stokvis.eu"
               ],
               "date": [
-                "2022-12-21 14:13:39+00:00"
-              ],
-              "msg_id": [
-                "DU2PR01MB84321444B98E963C3289D757F9EB9@DU2PR01MB8432.eurprd01.prod.exchangelabs.com"
+                "Wed, 21 Dec 2022 14:13:39 +0000"
               ],
               "subject": [
                 "FW: ELSTO Drives & Controls invoice: 493682"
@@ -188,9 +79,14 @@
             },
             "static": {
               "domain": [
-                "am0pr01mb3971.eurprd01.prod.exchangelabs.com",
-                "as4pr01mb9229.eurprd01.prod.exchangelabs.com",
-                "du2pr01mb8432.eurprd01.prod.exchangelabs.com"
+                "AS4PR01MB9229.eurprd01.prod.exchangelabs.com",
+                "AM0PR01MB3971.eurprd01.prod.exchangelabs.com",
+                "DU2PR01MB8432.eurprd01.prod.exchangelabs.com"
+              ],
+              "ip": [
+                "2603:10a6:20b:4ec::",
+                "2603:10a6:10:2e7::",
+                "fe80::"
               ]
             }
           }
@@ -200,68 +96,35 @@
       },
       {
         "auto_collapse": false,
-        "body": "http://www.elsto.eu/\nhttps://app.mailinblack.com/mibc-fr-06/admin/api/v2.0/unauthenticated/logo/26da2138605348769dc54bfb460bf0f3/logo_import.jpg\nhttps://app.mailinblack.com/mibc-fr-06/invitation?lang=en&id=8a3d9783-eae8-4d88-b576-bcb291202d77&utm_source=DA-en&utm_medium=email&utm_campaign=no-robot&utm_content=saas\nhttps://www.mailinblack.com/en/product/mailinblack-spam-protection/?utm_source=DA&utm_medium=emailda&utm_campaign=new-banner-step1&utm_content=saas\nhttps://www.stokvis.eu/disclaimer\nhttps://www.stokvis.eu/leveringsvoorwaarden-fme",
-        "body_config": {},
-        "body_format": "TEXT",
-        "classification": "TLP:C",
-        "depth": 0,
-        "heuristic": null,
-        "promote_to": null,
-        "tags": {
-          "network": {
-            "static": {
-              "domain": [
-                "www.elsto.eu",
-                "app.mailinblack.com",
-                "www.mailinblack.com",
-                "www.stokvis.eu"
-              ],
-              "uri": [
-                "http://www.elsto.eu/",
-                "https://app.mailinblack.com/mibc-fr-06/admin/api/v2.0/unauthenticated/logo/26da2138605348769dc54bfb460bf0f3/logo_import.jpg",
-                "https://app.mailinblack.com/mibc-fr-06/invitation?lang=en&id=8a3d9783-eae8-4d88-b576-bcb291202d77&utm_source=DA-en&utm_medium=email&utm_campaign=no-robot&utm_content=saas",
-                "https://www.mailinblack.com/en/product/mailinblack-spam-protection/?utm_source=DA&utm_medium=emailda&utm_campaign=new-banner-step1&utm_content=saas",
-                "https://www.stokvis.eu/disclaimer",
-                "https://www.stokvis.eu/leveringsvoorwaarden-fme"
-              ]
-            }
-          }
+        "body": {
+          "areStringsUnicode": "True",
+          "attachmentsDelayed": "False",
+          "attachmentsReady": "True",
+          "classType": "'IPM.Note'",
+          "classified": "False",
+          "crlf": "'\\r\\n'",
+          "defaultFolderName": "'2022-12-21_1413 FW ELSTO Drives & Controls invoice 493682'",
+          "detectedBodies": "<BodyTypes.RTF|PLAIN: 3>",
+          "headerInit": "True",
+          "importance": "<Importance.MEDIUM: 1>",
+          "inReplyTo": "'<824988934.74307.1671631686612@mib-daemon-engine-8cfd895b6-hspqq>'",
+          "insecureFeatures": "<InsecureFeatures.NONE: 0>",
+          "isRead": "True",
+          "isSent": "True",
+          "messageId": "'\\r\\n <DU2PR01MB84321444B98E963C3289D757F9EB9@DU2PR01MB8432.eurprd01.prod.exchangelabs.com>'",
+          "parsedDate": "(2022, 12, 21, 14, 13, 39, 0, 1, -1)",
+          "prefixLen": "0",
+          "prefixList": "[]",
+          "priority": "<Priority.NORMAL: 0>",
+          "receivedTime": "2022-12-21T14:13:42.634903+00:00",
+          "recipientSeparator": "';'",
+          "responseRequested": "False",
+          "sender": "'Elsto Factuur <factuur@elsto.eu>'",
+          "sensitivity": "<Sensitivity.NORMAL: 0>",
+          "stringEncoding": "'utf-16-le'"
         },
-        "title_text": "URIs Found:",
-        "zeroize_on_tag_safe": false
-      },
-      {
-        "auto_collapse": false,
-        "body": "app.mailinblack.com\natimorganti.it\nelsto.eu\ninvitations.mailinblack.com\nwww.elsto.eu\nwww.mailinblack.com\nwww.stokvis.eu",
         "body_config": {},
-        "body_format": "TEXT",
-        "classification": "TLP:C",
-        "depth": 0,
-        "heuristic": null,
-        "promote_to": null,
-        "tags": {
-          "network": {
-            "static": {
-              "domain": [
-                "app.mailinblack.com",
-                "atimorganti.it",
-                "elsto.eu",
-                "invitations.mailinblack.com",
-                "www.elsto.eu",
-                "www.mailinblack.com",
-                "www.stokvis.eu"
-              ]
-            }
-          }
-        },
-        "title_text": "Domains Found:",
-        "zeroize_on_tag_safe": false
-      },
-      {
-        "auto_collapse": false,
-        "body": "descours_et_cabaud@invitations.mailinblack.com\nfactuur@elsto.eu\ninfo@atimorganti.it\ns.vandermeij@elsto.eu",
-        "body_config": {},
-        "body_format": "TEXT",
+        "body_format": "KEY_VALUE",
         "classification": "TLP:C",
         "depth": 0,
         "heuristic": null,
@@ -270,27 +133,81 @@
           "network": {
             "email": {
               "address": [
-                "descours_et_cabaud@invitations.mailinblack.com",
-                "factuur@elsto.eu",
                 "info@atimorganti.it",
-                "s.vandermeij@elsto.eu"
+                "S.vanderMeij@elsto.eu",
+                "descours_et_cabaud@invitations.mailinblack.com",
+                "factuur@elsto.eu"
+              ],
+              "msg_id": [
+                "DU2PR01MB84321444B98E963C3289D757F9EB9@DU2PR01MB8432.eurprd01.prod.exchangelabs.com"
+              ]
+            },
+            "static": {
+              "domain": [
+                "atimorganti.it",
+                "www.elsto.eu",
+                "elsto.eu",
+                "www.stokvis.eu",
+                "invitations.mailinblack.com",
+                "app.mailinblack.com",
+                "www.mailinblack.com"
+              ],
+              "uri": [
+                "http://www.elsto.eu/",
+                "https://www.stokvis.eu/leveringsvoorwaarden-fme",
+                "https://www.stokvis.eu/disclaimer",
+                "https://app.mailinblack.com/mibc-fr-06/admin/api/v2.0/unauthenticated/logo/26da2138605348769dc54bfb460bf0f3/logo_import.jpg",
+                "https://app.mailinblack.com/mibc-fr-06/invitation?lang=en&id=8a3d9783-eae8-4d88-b576-bcb291202d77&utm_source=DA-en&utm_medium=email&utm_campaign=no-robot&utm_content=saas",
+                "https://www.mailinblack.com/en/product/mailinblack-spam-protection/?utm_source=DA&utm_medium=emailda&utm_campaign=new-banner-step1&utm_content=saas"
               ]
             }
           }
         },
-        "title_text": "Email Addresses Found:",
+        "title_text": "Email Attributes",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "ATT31851.bmp\nATT94535.bmp",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Extracted Attachments:",
         "zeroize_on_tag_safe": false
       }
     ]
   },
   "files": {
-    "extracted": [],
+    "extracted": [
+      {
+        "name": "ATT31851.bmp",
+        "sha256": "3bab647facec607a21d121e64494a3106e2009b8b76269b4ad1a1ac4c44a279a"
+      },
+      {
+        "name": "ATT94535.bmp",
+        "sha256": "c6d40a178d29e03f3baac8fd728041d37213d448fd3699b52e4c417f023f327a"
+      }
+    ],
     "supplementary": []
   },
   "results": {
     "heuristics": [],
     "tags": {
       "network.email.address": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "<824988934.74307.1671631686612@mib-daemon-engine-8cfd895b6-hspqq>"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "S.vanderMeij@elsto.eu"
+        },
         {
           "heur_id": null,
           "signatures": [],
@@ -315,18 +232,13 @@
           "heur_id": null,
           "signatures": [],
           "value": "info@atimorganti.it"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "s.vandermeij@elsto.eu"
         }
       ],
       "network.email.date": [
         {
           "heur_id": null,
           "signatures": [],
-          "value": "2022-12-21 14:13:39+00:00"
+          "value": "Wed, 21 Dec 2022 14:13:39 +0000"
         }
       ],
       "network.email.msg_id": [
@@ -347,32 +259,27 @@
         {
           "heur_id": null,
           "signatures": [],
-          "value": "am0pr01mb3971.eurprd01.prod.exchangelabs.com"
+          "value": "AM0PR01MB3971.eurprd01.prod.exchangelabs.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "AS4PR01MB9229.eurprd01.prod.exchangelabs.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DU2PR01MB8432.eurprd01.prod.exchangelabs.com"
         },
         {
           "heur_id": null,
           "signatures": [],
           "value": "app.mailinblack.com"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "app.mailinblack.com"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "as4pr01mb9229.eurprd01.prod.exchangelabs.com"
         },
         {
           "heur_id": null,
           "signatures": [],
           "value": "atimorganti.it"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "du2pr01mb8432.eurprd01.prod.exchangelabs.com"
         },
         {
           "heur_id": null,
@@ -392,27 +299,29 @@
         {
           "heur_id": null,
           "signatures": [],
-          "value": "www.elsto.eu"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "www.mailinblack.com"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
           "value": "www.mailinblack.com"
         },
         {
           "heur_id": null,
           "signatures": [],
           "value": "www.stokvis.eu"
+        }
+      ],
+      "network.static.ip": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10a6:10:2e7::"
         },
         {
           "heur_id": null,
           "signatures": [],
-          "value": "www.stokvis.eu"
+          "value": "2603:10a6:20b:4ec::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "fe80::"
         }
       ],
       "network.static.uri": [
@@ -458,23 +367,33 @@
         ".",
         "/",
         "0",
+        "06",
         "08",
         "15",
         "15:08",
         "2022",
         "21",
         "2215",
+        "26da2138605348769dc54bfb460bf0f3",
         "31",
         "493682",
+        "4d88",
         "7",
         "7865200",
         "88",
+        "8a3d9783",
+        "<descours_et_cabaud@invitations.mailinblack.com>",
+        "<factuur@elsto.eu>",
+        "<https://app.mailinblack.com/mibc-fr-06/admin/api/v2.0/unauthenticated/logo/26da2138605348769dc54bfb460bf0f3/logo_import.jpg>",
+        "<https://app.mailinblack.com/mibc-fr-06/invitation?lang=en&id=8a3d9783-eae8-4d88-b576-bcb291202d77&utm_source=DA-en&utm_medium=email&utm_campaign=no-robot&utm_content=saas>",
+        "<https://www.mailinblack.com/en/product/mailinblack-spam-protection/?utm_source=DA&utm_medium=emailda&utm_campaign=new-banner-step1&utm_content=saas>",
         "ATI",
         "Aan",
         "Aan:",
         "All",
         "Best",
         "Controls",
+        "DA",
         "Daarop",
         "Deliver",
         "Drives",
@@ -508,7 +427,7 @@
         "Re",
         "Re:",
         "S",
-        "S.vanderMeij@elsto.eu",
+        "S.vanderMeij@elsto.eu<mailto:S.vanderMeij@elsto.eu>",
         "Sandy",
         "T",
         "T:",
@@ -522,15 +441,21 @@
         "W:",
         "You",
         "Your",
+        "admin",
         "advanced",
         "analysed",
         "and",
         "anti",
         "anti-spam",
         "anti-virus",
+        "api",
+        "app",
         "artificial",
         "atimorganti",
+        "b576",
+        "banner",
         "based",
+        "bcb291202d77",
         "been",
         "below",
         "bericht",
@@ -538,6 +463,7 @@
         "button",
         "by",
         "click",
+        "com",
         "contacted",
         "cyberattacks",
         "cyberattacks.",
@@ -546,55 +472,76 @@
         "december",
         "deliver",
         "der",
+        "descours_et_cabaud",
         "deze",
         "disclaimer",
-        "disclaimer.",
+        "disclaimer<https://www.stokvis.eu/disclaimer>.",
         "do",
         "doen",
         "doen?",
         "door",
+        "eae8",
         "een",
         "elsto",
         "email",
+        "emailda",
         "en",
         "eu",
         "factuur",
         "filters",
         "first",
+        "fme",
         "for",
+        "fr",
         "from",
         "gestuurd",
         "groet",
         "has",
         "heb",
+        "http",
+        "https",
+        "id",
         "ik",
         "in",
         "inbox",
         "info",
         "info@atimorganti.it",
+        "info@atimorganti.it<mailto:info@atimorganti.it>",
         "informatie",
         "intelligence",
+        "invitation",
+        "invitations",
         "invoice",
         "invoice:",
         "is",
         "it",
         "it.",
+        "jpg",
         "just",
         "kan",
         "kan/mag",
         "klikken",
         "klikken....",
+        "lang",
         "leveringen",
+        "leveringsvoorwaarden",
         "link",
+        "logo",
+        "logo_import",
         "mag",
         "mail",
         "mail.",
+        "mailinblack",
+        "mailto",
         "me",
+        "mibc",
         "moeten",
         "my",
         "naar",
         "need",
         "net",
+        "new",
+        "no",
         "now",
         "on",
         "ongewenste",
@@ -602,14 +549,19 @@
         "ontvangen",
         "onze",
         "op",
+        "product",
         "protected",
         "protection",
         "providing",
         "regards",
         "regards,",
+        "robot",
+        "saas",
         "security",
         "solution",
         "spam",
+        "step1",
+        "stokvis",
         "technologies",
         "technologies.",
         "the",
@@ -618,15 +570,22 @@
         "to",
         "toepassing",
         "toepassing,",
+        "unauthenticated",
+        "utm_campaign",
+        "utm_content",
+        "utm_medium",
+        "utm_source",
+        "v2",
         "van",
         "vanderMeij",
         "verstrekte",
         "virus",
         "voorwaarden",
+        "voorwaarden<https://www.stokvis.eu/leveringsvoorwaarden-fme>",
         "vriendelijke",
         "woensdag",
         "www",
-        "www.elsto.eu",
+        "www.elsto.eu<http://www.elsto.eu/>",
         "you",
         "zijn",
         "zou",
