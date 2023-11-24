@@ -5,7 +5,6 @@ import os
 import re
 import tempfile
 import traceback
-import uuid
 from datetime import datetime
 from ipaddress import IPv4Address, ip_address
 from urllib.parse import urlparse
@@ -59,7 +58,9 @@ class EmlParser(ServiceBase):
 
     def handle_outlook(self, request: ServiceRequest) -> None:
         try:
-            msg = extract_msg.openMsg(request.file_path, errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL)
+            msg: extract_msg.msg_classes.msg.MSGFile = extract_msg.openMsg(
+                request.file_path, errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL
+            )
         except (
             NotImplementedError,
             extract_msg.exceptions.InvalidFileFormatError,
@@ -227,15 +228,28 @@ class EmlParser(ServiceBase):
                 )
                 break
 
-        if msg.body:
+        body = None
+        try:
+            body = msg.body.encode()
+        except UnicodeDecodeError:
+            # Do our best to find some kind of body
+            try:
+                body = body.htmlBody
+            except Exception:
+                try:
+                    body = body.rtfBody
+                except Exception:
+                    pass
+
+        if body:
             # Extract IOCs from body
-            [attributes_section.add_tag("network.static.ip", x.value) for x in find_ips(msg.body.encode())]
-            [attributes_section.add_tag("network.static.domain", x.value) for x in find_domains(msg.body.encode())]
-            [attributes_section.add_tag("network.static.uri", x.value) for x in find_urls(msg.body.encode())]
-            [attributes_section.add_tag("network.email.address", x.value) for x in find_emails(msg.body.encode())]
+            [attributes_section.add_tag("network.static.ip", x.value) for x in find_ips(body)]
+            [attributes_section.add_tag("network.static.domain", x.value) for x in find_domains(body)]
+            [attributes_section.add_tag("network.static.uri", x.value) for x in find_urls(body)]
+            [attributes_section.add_tag("network.email.address", x.value) for x in find_emails(body)]
             if request.get_param("extract_body_text"):
-                with tempfile.NamedTemporaryFile(dir=self.working_directory, delete=False) as tmp_f:
-                    tmp_f.write(msg.body)
+                with tempfile.NamedTemporaryFile(dir=self.working_directory, mode="wb", delete=False) as tmp_f:
+                    tmp_f.write(body)
                 request.add_extracted(
                     tmp_f.name, "email_body", "Extracted email body", safelist_interface=self.api_interface
                 )
@@ -252,9 +266,9 @@ class EmlParser(ServiceBase):
             elif hasattr(msg, "subject") and msg.subject:
                 body_words.update(extract_passwords(msg.subject))
 
-            if msg.body:
+            if body:
                 try:
-                    body_words.update(extract_passwords(msg.body))
+                    body_words.update(extract_passwords(body.decode()))
                     request.temp_submission_data["email_body"] = sorted(list(body_words))
                 except UnicodeDecodeError:
                     # Couldn't decode the body correctly. We could get the bytes manually and decode what we can.
