@@ -230,7 +230,9 @@ class EmlParser(ServiceBase):
 
         body = None
         try:
-            body = msg.body.encode()
+            body = msg.body
+            if body is not None:
+                body = body.encode()
         except UnicodeDecodeError:
             # Do our best to find some kind of body
             try:
