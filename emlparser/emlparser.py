@@ -208,8 +208,13 @@ class EmlParser(ServiceBase):
         attachments_added = []
         for attachment_index, attachment in enumerate(msg.attachments):
             try:
-                _, attachment_path = attachment.save(customPath=self.working_directory, extractEmbedded=True)
+                save_type, attachment_path = attachment.save(
+                    customPath=self.working_directory, extractEmbedded=True, skipNotImplemented=True
+                )
             except Exception:
+                continue
+
+            if save_type is extract_msg.constants.SaveType.NONE:
                 continue
 
             attachment_name = attachment.getFilename()
