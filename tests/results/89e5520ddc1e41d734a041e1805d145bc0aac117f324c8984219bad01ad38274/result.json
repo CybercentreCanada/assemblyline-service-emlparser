@@ -1,0 +1,687 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 0,
+    "sections": [
+      {
+        "auto_collapse": false,
+        "body": {
+          "ARC-Authentication-Results": "i=3; mx.microsoft.com 1; spf=fail (sender ip is\r\n 172.96.137.144) smtp.rcpttodomain=jdwetherspoon.co.uk\r\n smtp.mailfrom=aec.edu.in; dmarc=none action=none header.from=aec.edu.in;\r\n dkim=fail (signature did not verify) header.d=ashwasteservices.co.uk;\r\n arc=fail (47)\ni=2; mx.microsoft.com 1; spf=pass (sender ip is\r\n 40.107.22.62) smtp.rcpttodomain=leighton.cheshire.sch.uk\r\n smtp.mailfrom=ashwasteservices.co.uk; dmarc=bestguesspass action=none\r\n header.from=ashwasteservices.co.uk; dkim=pass (signature was verified)\r\n header.d=ashwasteservices.co.uk; arc=pass (0 oda=0 ltdi=1)\ni=1; mx.microsoft.com 1; spf=fail (sender ip is\r\n 148.253.171.42) smtp.rcpttodomain=leighton.cheshire.sch.uk\r\n smtp.mailfrom=ashwasteservices.co.uk; dmarc=none action=none\r\n header.from=ashwasteservices.co.uk; dkim=none (message not signed); arc=none\r\n (0)",
+          "ARC-Message-Signature": "i=3; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;\r\n s=arcselector9901;\r\n h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;\r\n bh=VE8fcbgMdUTQUo1yHjN6REszvYqdXPDOvuh0FNlMb7k=;\r\n b=D9yCebW9JOjQ0PBujhLa3A+SjG2UouycFol+VnkxKeMJI9sQtdmD1r8sm8gvrVUHdaFNpP5RBzNYYFPhDxhuEdLOJVFH76qbJgQ9IRH/viVQN/sdrMOSDeFAdvGy+elCUVcU1NlZZdXMwTLJ8SC1aaUKfX/IR3xMEj4a1E6wo7aJtmUBU5M8zsRBHr2q6JvjvD+RiU3OwXa/vBnJ1SOpeAQZsRyE86S896tUHHQoImlfirFNQfD9oMf5vWeGP3HhKoAaqvver1rP7EcBQhls/Fe1CYrUbNs5/xyCmtjdBODOzRg5vN7uo58UrlQpD3eLEPqXcFMv9eq7Z2W3QoQG/A==\ni=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;\r\n s=arcselector9901;\r\n h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;\r\n bh=OmA2/CniPl7BsMjr5BLcyaweeE/SsK+jeKvYWQB/yKo=;\r\n b=CL9HAzwolQFYLbIwP6WK1PMFjssDmYFECfIw02qxujW91K8EcMqpAaWLBhv2fLJTuC/L6/M6Bbf66lbsgsPZvQHRa0E1Q2CS0T4QyLPgjunRCzFi1f50hVGufhsZfrlebhRBkmpijVlkrlZ1OK0bGvp9JmLvlHAltp+uG24D4UP3sLBO9jBwI34cz85OCyFmkeKJat0S1L+3aR+JUeY97ptjspL7k6S4JKzeuaoT+CTaiu9+3SDtbtizwLsqJuR9tDkCV49C/CaSx4ZUZuH4LNee0ZHW6pJWZEkt++4Q9tIkhAHPI7Et0R8e1494531iWuLc9NL4DK1HhcIEN8Q1RA==\ni=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;\r\n s=arcselector9901;\r\n h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;\r\n bh=OmA2/CniPl7BsMjr5BLcyaweeE/SsK+jeKvYWQB/yKo=;\r\n b=ZMPf0MRcrdpaHY7O0NV7u5w1/Wmlbw1yPd5ps4CPcN9N8a62JKvEdQGn88v+Bb4M/favFHotTisQvYSTW29QpbRcpLZ80y64qIOw/TyihdarUYqr9GJNFmgOCrLuAQXx4pLlJmi2OA/mgsNVn+TginBL2NeG4c6inVp87ckha+3FFI++OPzL1rpKLMwTkBrUCuryAkmA90lGNYI6FNSTC71JKCnT/knhvyzAsjjw7IHkb1ea99JE36UmZ3b1kf7GP7ExzTUVcnIHcEvopy8DwW//aENQJzwiblxsM0xoThv4XPj5H3RdXKk7IDHuB0UjUjXTyAQIIcttUlQZNwQU7Q==",
+          "ARC-Seal": "i=3; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=fail;\r\n b=N2Tp3Hlvs8rs2HpUQ4MxN1fGalVAXFHiugTJ2yHf4qqq4olRZaJK7+LbdoONNaIKgtubCyTBVmeU+HG85upYgrQK/8z6I1XVuGDR46kdSPB9TCoZUW6nXQE24jLvWvsFkS66DOJNI6BdhGOxGH+sm2VoQO7DOZPIa00PUP1AzrbvEZ2cVNUkUNxmA1UYT7/4k6y2Qa5rb1RM/GhH4UdZ4LMUb48HGycyofYnLnk1xGgPLKnmPbP/uaYb9titFXukzditzWmDGJETS+By4mWWXNE7ZTWsbYQGXSA4MZRXYfVOcag5MGRC4o+Jp4LfH0k3OP+uVkUUQu8nCpo0XmeKmA==\ni=2; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=pass;\r\n b=Kaf8MIPU3YA5EZkQpHF0CVPxE+ln+aPymGcDeeRtikUGSRRSkfn0VHOIfsTYGucmd8YHMbjuWEfm7n2R3UuvJx/ocZzzWtePnWQDGL44n0MrAklfhC3UmEEvuMFZUrx+HfFvlvZqsbdEc8epazjWKfLW/IIz07TF6a5VOlsFOATNGZ+gimjQuS/UlfTZcZZ1rBl6uYHIdjBIbm/mL6jjCWqEGqlIosvK3wfedyoPZusOWDTaG3Y3Flke/TrlCb7Lm6ukih9jHbX+HSomOmINMQC4A32t9IgFsqPu0ZcdbtJS7HVl9i2wBPeSxhwvsVhdbWhssnKbK+ls6hwubnFdog==\ni=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;\r\n b=nlVS4IImouvYCDLr4Xpn7HMvWCk5zUOMRc8ZkuL1tps3g8NO0BOs5PAzmr/twnDIEzGR8nO9dQ20syV+utXmVKrCJKhD/uEc4ommeGNWmOdvMhbaWNuwvxuSB9dfWGIuVIYJ7HIRKlU9gri6NSCI3xZ/6w4wwxf0gxb5b6j+dxwvhaWW1uoPSy7P9Kf2jamzcnK+7VuKzoUU0hdfuSPtOsIj+v/CtluHsud+qOoE7wQUqlMm5P8MtWvBX9C7WYH1HpnPyl4zL7Uz7/n0mpymiS9Zs4PjjYG3LOjijoaZLSNsj7j5zb6V5DLdQ0r/ierzGMgeJv7KJ7AEZjCCzyMj2A==",
+          "Authentication-Results-Original": "spf=pass (sender IP is 40.107.22.62)\r\n smtp.mailfrom=ashwasteservices.co.uk; dkim=pass (signature was verified)\r\n header.d=ashwasteservices.co.uk;dmarc=bestguesspass action=none\r\n header.from=ashwasteservices.co.uk;compauth=pass reason=109",
+          "Content-Type": "multipart/mixed;\r\n boundary=--boundary_190_c9404bac-11ec-4991-8233-d38c67e61ede",
+          "DKIM-Signature": "v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n d=adityagroup.onmicrosoft.com; s=selector2-adityagroup-onmicrosoft-com;\r\n h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;\r\n bh=VE8fcbgMdUTQUo1yHjN6REszvYqdXPDOvuh0FNlMb7k=;\r\n b=y7681Iy5VdQAgpnPhREFcsTaLd/PRIPRi11g2QTIVDCvqbAQ3XNO/vgA38B4nitY2oWv+ehsjpyDvGwtB0pfVctvGaQOTS/BJV9S6i9FZGnEXVxlUUmiWKwEzCeO11if4FtoUjeDiZ2XOWvpkiski+vAyADhmlr4b+VZWyVHdUk=\nv=1; a=rsa-sha256; c=relaxed/relaxed;\r\n d=ashwasteservices.co.uk; s=selector1;\r\n h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;\r\n bh=OmA2/CniPl7BsMjr5BLcyaweeE/SsK+jeKvYWQB/yKo=;\r\n b=ob72pNSSfj6j+pTvR+G9siH+iPmyGmuA9Dw5h9EZ6vtIuww054T5sah+IwYtiiaDcCeCFE181jMryoCyV3aM0JcOo826zfOShoWDbjcUwIDNUHYIHE6wxwQiiMKIA2+CmlVRoh+G/rqntHBqUZSVN/hSOwbhB4AMOPH08V4w2d0=",
+          "Date": "Wed, 13 Dec 2023 13:14:09 -0800",
+          "From": "info@aec.edu.in",
+          "MIME-Version": "1.0",
+          "Message-ID": "<908be25f-c58f-465e-8b9e-758c2a8461XXTK8c@DB5PEPF00014B9F.eurprd02.prod.outlook.com>",
+          "Received": "from APEX01.jdwint.local (172.30.1.91) by APEX01.jdwint.local\r\n (172.30.1.91) with Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.16 via Mailbox\r\n Transport; Wed, 13 Dec 2023 21:15:11 +0000\nfrom APEX02.jdwint.local (172.30.1.92) by APEX01.jdwint.local\r\n (172.30.1.91) with Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.16; Wed, 13 Dec\r\n 2023 21:15:10 +0000\nfrom cluster-a.mailcontrol.com (172.30.0.83) by APEX02.jdwint.local\r\n (172.30.1.92) with Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.16 via Frontend\r\n Transport; Wed, 13 Dec 2023 21:15:10 +0000\n(from mailcontrol@localhost)\r\n\tby rly08a.srv.mailcontrol.com (MailControl) with ESMTP id 3BDLFAIA294437\r\n\tfor dataqueries@jdwetherspoon.co.uk; Wed, 13 Dec 2023 21:15:10 GMT\nfrom APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2074.outbound.protection.outlook.com [40.107.117.74])\r\n\tby rly08a-eth0.srv.mailcontrol.com (envelope-sender returnz1ycuyjg6g34tue76873qkk9r21xycvqfh@aec.edu.in) (MIMEDefang) with ESMTP id 3BDLF31s293757\r\n\t(TLS bits=256 verify=OK); Wed, 13 Dec 2023 21:15:10 +0000 (GMT)\nfrom SG2PR06CA0188.apcprd06.prod.outlook.com (2603:1096:4:1::20) by\r\n SEZPR03MB8231.apcprd03.prod.outlook.com (2603:1096:101:18d::12) with\r\n Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.33; Wed, 13 Dec\r\n 2023 21:14:54 +0000\nfrom SG2PEPF000B66CF.apcprd03.prod.outlook.com\r\n (2603:1096:4:1:cafe::86) by SG2PR06CA0188.outlook.office365.com\r\n (2603:1096:4:1::20) with Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.26 via Frontend\r\n Transport; Wed, 13 Dec 2023 21:14:53 +0000\nfrom aec.edu.in (172.96.137.144) by\r\n SG2PEPF000B66CF.mail.protection.outlook.com (10.167.240.23) with Microsoft\r\n SMTP Server id 15.20.7091.26 via Frontend Transport; Wed, 13 Dec 2023\r\n 21:14:51 +0000\nfrom AS4PR10MB5319.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:4b9::13)\r\n by DB9PR10MB4778.EURPRD10.PROD.OUTLOOK.COM with HTTPS; Wed, 13 Dec 2023\r\n 09:38:58 +0000\nfrom DU2PR04CA0217.eurprd04.prod.outlook.com (2603:10a6:10:2b1::12)\r\n by AS4PR10MB5319.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:4b9::13) with\r\n Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.26; Wed, 13 Dec\r\n 2023 09:38:51 +0000\nfrom DB5PEPF00014B8B.eurprd02.prod.outlook.com\r\n (2603:10a6:10:2b1:cafe::46) by DU2PR04CA0217.outlook.office365.com\r\n (2603:10a6:10:2b1::12) with Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.33 via Frontend\r\n Transport; Wed, 13 Dec 2023 09:38:51 +0000\nfrom EUR05-AM6-obe.outbound.protection.outlook.com (40.107.22.62) by\r\n DB5PEPF00014B8B.mail.protection.outlook.com (10.167.8.199) with Microsoft\r\n SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id\r\n 15.20.7091.26 via Frontend Transport; Wed, 13 Dec 2023 09:38:51 +0000\nfrom DB9PR06CA0013.eurprd06.prod.outlook.com (2603:10a6:10:1db::18)\r\n by AS4PR05MB9160.eurprd05.prod.outlook.com (2603:10a6:20b:4ef::12) with\r\n Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.33; Wed, 13 Dec\r\n 2023 09:38:45 +0000\nfrom DB5PEPF00014B9F.eurprd02.prod.outlook.com\r\n (2603:10a6:10:1db:cafe::81) by DB9PR06CA0013.outlook.office365.com\r\n (2603:10a6:10:1db::18) with Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7068.33 via Frontend\r\n Transport; Wed, 13 Dec 2023 09:38:45 +0000\nfrom MANGROVE (148.253.171.42) by\r\n DB5PEPF00014B9F.mail.protection.outlook.com (10.167.8.169) with Microsoft\r\n SMTP Server id 15.20.7091.26 via Frontend Transport; Wed, 13 Dec 2023\r\n 09:38:45 +0000",
+          "Received-SPF": "Fail (protection.outlook.com: domain of aec.edu.in does not\r\n designate 172.96.137.144 as permitted sender)\r\n receiver=protection.outlook.com; client-ip=172.96.137.144; helo=aec.edu.in;\nPass (protection.outlook.com: domain of ashwasteservices.co.uk\r\n designates 40.107.22.62 as permitted sender) receiver=protection.outlook.com;\r\n client-ip=40.107.22.62; helo=EUR05-AM6-obe.outbound.protection.outlook.com;\r\n pr=C\nFail (protection.outlook.com: domain of ashwasteservices.co.uk\r\n does not designate 148.253.171.42 as permitted sender)\r\n receiver=protection.outlook.com; client-ip=148.253.171.42; helo=MANGROVE;",
+          "Reply-To": "<lcthusi@bereatech.co.za>",
+          "Return-Path": "returnz1ycuyjg6g34tue76873qkk9r21xycvqfh@aec.edu.in",
+          "Subject": "[EXT] Invoice (Account 6125)",
+          "To": "<dataqueries@jdwetherspoon.co.uk>",
+          "X-EOPAttributedMessage": "2",
+          "X-Forefront-Antispam-Report": "CIP:172.96.137.144;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:aec.edu.in;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(136003)(376002)(346002)(396003)(39860400002)(230922051799003)(1800799012)(64100799003)(451199024)(82310400011)(186009)(9613299003)(46966006)(36840700001)(40470700004)(41300700001)(41320700001)(2613699003)(2013699003)(5660300002)(15650500001)(8676002)(2906002)(235185007)(8936002)(3613699003)(1513699003)(9316004)(83380400001)(26005)(956004)(36860700001)(47076005)(336012)(40480700001)(6496006)(9686003)(6666004)(33964004)(81166007)(82740400003)(166002)(36736006)(70586007)(6916009)(6486002)(40460700003)(786003)(70206006)(478600001)(316002)(5004080100003)(36900700001);DIR:OUT;SFP:1101;",
+          "X-Forefront-Antispam-Report-Untrusted": "CIP:148.253.171.42;CTRY:GB;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MANGROVE;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(396003)(346002)(39860400002)(136003)(376002)(230922051799003)(1800799012)(451199024)(186009)(82310400011)(64100799003)(40470700004)(36840700001)(46966006)(40480700001)(40460700003)(70206006)(2013699003)(166002)(82740400003)(81166007)(356005)(3613699003)(86362001)(31696002)(9316004)(26005)(36860700001)(47076005)(33964004)(336012)(70586007)(9686003)(956004)(83380400001)(6496006)(6486002)(2906002)(15650500001)(478600001)(316002)(36736006)(6916009)(5660300002)(8936002)(8676002)(41300700001)(235185007)(36900700001);DIR:OUT;SFP:1101;\nCIP:40.107.22.62;CTRY:NL;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:EUR05-AM6-obe.outbound.protection.outlook.com;PTR:mail-am6eur05on2062.outbound.protection.outlook.com;CAT:NONE;SFS:(13230031)(852800001)(230922051799003)(451199024)(19302899012)(26402899012)(8636004)(26005)(956004)(336012)(33964004)(58800400005)(9686003)(83380400001)(5660300002)(15650500001)(1096003)(8676002)(6486002)(36736006)(34206002)(6496006)(2013699003)(3613699003)(9316004)(31696002)(86362001)(166002)(7636003);DIR:INB;",
+          "X-MS-Exchange-AntiSpam-Relay": "0",
+          "X-MS-Exchange-Authentication-Results": "spf=fail (sender IP is 172.96.137.144)\r\n smtp.mailfrom=aec.edu.in; dkim=fail (signature did not verify)\r\n header.d=ashwasteservices.co.uk;dmarc=none action=none\r\n header.from=aec.edu.in;\nspf=fail (sender IP is 148.253.171.42)\r\n smtp.mailfrom=ashwasteservices.co.uk; dkim=none (message not signed)\r\n header.d=none;dmarc=none action=none header.from=ashwasteservices.co.uk;",
+          "X-MS-Exchange-CrossTenant-AuthAs": "Anonymous",
+          "X-MS-Exchange-CrossTenant-AuthSource": "SG2PEPF000B66CF.apcprd03.prod.outlook.com",
+          "X-MS-Exchange-CrossTenant-FromEntityHeader": "HybridOnPrem",
+          "X-MS-Exchange-CrossTenant-Id": "7359f896-71e2-4dae-b8a3-15cdf97f2f10",
+          "X-MS-Exchange-CrossTenant-Network-Message-Id": "9eca8b5f-86b7-4c8b-3953-08dbfc208bfc",
+          "X-MS-Exchange-CrossTenant-OriginalArrivalTime": "13 Dec 2023 21:14:51.3897\r\n (UTC)",
+          "X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp": "TenantId=7359f896-71e2-4dae-b8a3-15cdf97f2f10;Ip=[172.96.137.144];Helo=[aec.edu.in]",
+          "X-MS-Exchange-ForwardingLoop": "businessmanager@leighton.cheshire.sch.uk;d001de68-6171-4fbd-8355-fb2b8bab8ed2",
+          "X-MS-Exchange-Organization-AuthAs": "Anonymous",
+          "X-MS-Exchange-Organization-AuthSource": "APEX02.jdwint.local",
+          "X-MS-Exchange-Organization-Network-Message-Id": "06e41bf5-ff3a-4a22-f29d-08dbfc20971a",
+          "X-MS-Exchange-Processed-By-BccFoldering": "15.20.7091.020\n15.01.2507.016",
+          "X-MS-Exchange-SenderADCheck": "1",
+          "X-MS-Exchange-Transport-CrossTenantHeadersPromoted": "DB5PEPF00014B8B.eurprd02.prod.outlook.com",
+          "X-MS-Exchange-Transport-CrossTenantHeadersStamped": "AS4PR05MB9160\nAS4PR10MB5319\nSEZPR03MB8231",
+          "X-MS-Exchange-Transport-CrossTenantHeadersStripped": "DB5PEPF00014B8B.eurprd02.prod.outlook.com\nSG2PEPF000B66CF.apcprd03.prod.outlook.com",
+          "X-MS-Exchange-Transport-EndToEndLatency": "00:00:00.3991517",
+          "X-MS-Office365-Filtering-Correlation-Id": "9eca8b5f-86b7-4c8b-3953-08dbfc208bfc",
+          "X-MS-Office365-Filtering-Correlation-Id-Prvs": "b170194a-035d-455f-4e25-08dbfbbf4d0f\nbb2e98dc-f858-49f8-e0ac-08dbfbbf50cc",
+          "X-MS-PublicTrafficType": "Email",
+          "X-MS-TrafficTypeDiagnostic": "DB5PEPF00014B9F:EE_|AS4PR05MB9160:EE_|DB5PEPF00014B8B:EE_|AS4PR10MB5319:EE_|DB9PR10MB4778:EE_|SG2PEPF000B66CF:EE_|SEZPR03MB8231:EE_",
+          "X-MailControl-ReportSpam": "https://www.mailcontrol.com/sr/pkDKgmOO0KnGX2PQPOmvUmmLQnadxIEhr-nq-C9uwo6pcYWlhN859SvTjk5Og5zd489r_f9qTWv3vm7b4Ic-_w==",
+          "X-MailControlDKIMCheck": "ZmFpbCBhc2h3YXN0ZXNlcnZpY2VzLmNvLnVrIFtmYWlsIChtZXNzYWdlIGhhcyBiZWVuIGFsdGVyZWQpXQ==\ncGFzcyBhZGl0eWFncm91cC5vbm1pY3Jvc29mdC5jb20gW3Bhc3Nd",
+          "X-Mailcontrol-Inbound": "PARyX3P1uQPYUcXfeqb8YeM6gSf15qUzzx4ervmPNlFUT4S4xXAc369IR2gf4MrDo4wE4oP6bSXzCCnd!oD6uSI9jRgb!B2ufLqvVpqzdBE=",
+          "X-Mailcontrol-Refers-To": "3BDLF31s293757",
+          "X-Microsoft-Antispam": "BCL:0;",
+          "X-Microsoft-Antispam-Mailbox-Delivery": "ucf:0;jmr:0;auth:0;dest:I;ENG:(910001)(944506478)(944626604)(920097)(930097)(140003);",
+          "X-Microsoft-Antispam-Message-Info": "QR/aQwIIIgb1zKtaoiCOFDQM4nBa84Go9IukOEH3bnctNnoZuzQPHRXMvlrHel/tXBjgvMhpdjAlx8WmzyUTdlHoyyjbPZ8aysfOVsrc+3yHxRY0ci9c8BtYwAtPwXVD94EvCCrQp5PuJbIRzT+BRHJH5oq1VEmd1F/ZjDtviGH6z3GSq5FOu80OUCZf0FIBoXStS73vKcHghLkEO4xdS+vRKMX0JNFyzyFYEKVbzdpBLzEdilc4bqndIY34zcRt229bCxgx7/BSWAz/xjGOckWA85JrJtXS6sV1oiAN1W9rFM2V1RElduR0At33qMe6cczzaevulL6zJS4TRNLcHXkDZWhfTLtVg8jok1Mz7p9BHJAUyWjamgt/tJ2uj4NPjxBXNonSkfJ8m75WWkfD13ZGibVti//DxDOuC0cSgGI2qvikDa3yOMIZ4QMvyAWlFJiLniVWPq+RI3wuvf5VGW+Kggk2UALkWfm5750NKv6mmBE23xVFmyKnGTz+UmttFrfPLvMB0S9Ca/HZdVw9cytMJmrSAytrofmkmrMMwj59sIbwjKBXTn1wZhheAKe0Ht0CTzqHZuvWifWHKZD8yaLl73HoSq+t9l3tDJ94UhDzXFLJ4DkjLqk+Q83kvjirAj1svS0iIkaIH/dlNKLmrHR99V8KHxy4poXkyAPPI9ZR/VQyBZCJMwPusQxg0+K0DE3qyzh5MREP1geIYqpCj00FhH38WROyVd/P2423xTnUQgIf0mGfTnhx/RyP4kdoaad8TFXmwXlduMpC72UvFiyAtLSEJ+H1dHAM7ld9qkz7qpQ5jnhKl0aRG35vxNqiwUZy9//FkB6s4001Up/uG+uZBrwZP5HZvSwxMl7o7kPIygK/Zi9xbbAUTVbhgbavGPsNmozJKmYnmxbFakA0KKZUqbF6+pzq+jb3MQVR/oaTuzxSN3OVVyQGYOzAFXX4",
+          "X-Microsoft-Antispam-Message-Info-Original": "osKWiAipvHgbzskKNSKno8Wv2YZzSWnXG05fbuBhyN2EAhxeTUvxckz+nipOfl9ZJUsvzz1ecqG6bxz+wAW2cZRbgYJ9Xjw/YvG3UxxVMUgnQCEw1V+dIywiOc2wdq0Zs4w/KdpMMLUXVud5RXZxuaR1pjgpbI3vu1svtLLznVHSlI2FdNOLPLd5n5FUz+OJywKsEFYFg8tShLHw5JJeoNPV/Ra+xj3KcrjP0hmsPdzqn+CzSYMXgCGU3zkzJXvzAelco+Y/7xj7hxpZLvEh2uGjzKNXgmSyfPDoX7tA9PxhSpScLg+tm+41S2Lek5BNGbW/buG+3fMDPkSWaEnIYXmlGwFz7Xs7dRWSkj/KARIvLs+x2pdVYvKTlG4E8fTW/dMOS3SkTruemCcLc2tb7Q2HLWp2xL7uPWGhJRbM4y2TnnmgkLG+Q3Dsw5kNnCCX0wAzgHcp1YZsabmPwhRuChdSbwLxjv/XY0Fm743gfaym/EEmJfkhMELii+sRI4Z6qrWj3yqFReAxh5ipIGIWPLOBURzpNJJNb356k3JljObjPZrvakSYqTWPYFme14wlc+0+NYoZLpSFymHN7+avutjjKfwCnzCXp2NFdn3xBYygRFBBk50faN3UBLsXs7elj+btSsYw58ORzOft55A7+zD8QP4W/JLDUAFEPFi9Tdu5R27Kwas8vbHi3gcBgcaBljaIZ1QqoOE+KEqUIghRlXCP4RgXqghMLaSTwgb9hQda7s4yiYBjlaCshhFjVfheMagWvpkwIMeShFU/4NHulwbop7nFbevq8cIfvwV4TPQ=\n=?us-ascii?Q?sc9Xb1/yq0Ak8LZqfD3XVMpfCpL8wmeosn0Vmy8H9NpK0mpjxlmLJrcWWJ8z?=\r\n =?us-ascii?Q?lw1JLcUWJ0GUCc/8fPxk2IUeefyFsAQe6tfMA/w++qOQE/rWiKcsxIvXlSeD?=\r\n =?us-ascii?Q?gAvfX7y3eq4kFvM3UG/WR1+tEyn1CcM1EDiBkGMJJTP5fTCETvD9QDYIstE5?=\r\n =?us-ascii?Q?Yqfrl0X5A1osmvUh6RCI3Igk57eczqkPK+EfyONNhlEbnMij66zvy/x0vBjM?=\r\n =?us-ascii?Q?59h7L+PLZp1TZLMncGsAqsdtN+LnesZWV091BdPTFkTo3iueY1jq8x7YLYB7?=\r\n =?us-ascii?Q?XXDAjigji+vDO77+n4r5r8q9rCuR1X5GWB0EY1JPXrriePmYaHqNdqfCm/qM?=\r\n =?us-ascii?Q?RgZ8KS89nqG5xWqrG2hG5L+4xoK35x/44jsL/6j2I2utCy5Jn/jsKvnxeL2Z?=\r\n =?us-ascii?Q?L8OG4trwqFmgtCSLwmz0eVYFG6O6GXXR3sDwQOEiosLXv3N4wELfjAaQiePI?=\r\n =?us-ascii?Q?jJxdPfjq4scpf3nndGCEkm7wOPcct1TtAaFfA7IhVjIIOyiKbJqbELe1Blvv?=\r\n =?us-ascii?Q?TT6jqvj0qK+BwCD/UbfbkvyHAP5IosVQvLkNLfGVVBPKXKwTu1sSOvCaF0jl?=\r\n =?us-ascii?Q?rnrxv/iEU82fRjKJye/qaFevtzaJmilPStppvfSSJ30rFjWiLF5SPo0S5CUm?=\r\n =?us-ascii?Q?iGIWbc/h9+K+CllA7xAqnK8wwlHqNBCYfM+7YpZL16E+R72X4gmRW/D6GU0R?=\r\n =?us-ascii?Q?LtxYUYlPbxCM0EfSmqJUxjowqU0SKWXkCIeu7VEi5Hv6Bl+ihw7zGY6BVJ7E?=\r\n =?us-ascii?Q?E3mgT+yzD/I7d5g7/whdwtaKtK+TtwNWgPeqcLjLHZWdSjBFBPKQLXUNWNsY?=\r\n =?us-ascii?Q?ih/vFCw1+IpLhzPmu9QTfLnAl09OA4/nq6/zsyLuq+RRzV/KUB6Atn3xgJd3?=\r\n =?us-ascii?Q?ppwzZHUZt9VhI4ptwPz5iMtd2689k+8/ZEM4Id50T40v/f66e/4pcitYwvj4?=\r\n =?us-ascii?Q?LK1+A70JSayF1vKpQOzXUbDdkgbbjmtOCck+J70magCAbUCajEN6q1ABvurd?=\r\n =?us-ascii?Q?BueVWCWe9JOMMv0GleKAA3R6Vc3kIY7pf0rtK58YJ4cn4uQBBLJX8VuZKEDG?=\r\n =?us-ascii?Q?MXSHWqUvWxx0Wbnb7+ViJ9ZsSs5XooYqUDV/Kx32jaUIRGmE6HE8w0ZmVOzC?=\r\n =?us-ascii?Q?AUDuQ49mSyo+g2pbZ+YJrMV0nKwcbxf3N3ysMGXn7A5TEA+EOHKUqyf3YOsk?=\r\n =?us-ascii?Q?uvzLh6KC48e6C6iaTATNCNhWQjV2WpX0L3RGROyVQU++QFCp7Yx1byOaaDaW?=\r\n =?us-ascii?Q?hx+8Y4YyP2en/HVWBt62Z0qPtGztvQITBbaVJjV4A+75Ij1sspOgZetCf+8t?=\r\n =?us-ascii?Q?j1mj/aiV4dR7iiA06YUdZQwftxNpBL1VH1/EOpj7WKGHDfoHX7f4EIm+Txxx?=\r\n =?us-ascii?Q?bY69Re92PAAuo9wkaCR9UPDE1adiayLmhDVo9zZ6YbKE5zfrhsfMhKe2bXRT?=\r\n =?us-ascii?Q?F9r9l0PNgqm/gTjxXoFIdJbRpHA3KSWcEKBttUaX/56PmIuVdFGgziHmiR9a?=\r\n =?us-ascii?Q?ZUaDDPnVfx+0qqG6HVtaht9Mrhfe12Uh2rgCkKaqw62vwqs23cqFPhZ7xbU3?=\r\n =?us-ascii?Q?Vle7g6jEBFPjYv+iHXAkUI+utNJ16sgvuGNFiA4tmWESbKpX9Qiw4h0gDPW4?=\r\n =?us-ascii?Q?JlLO+refFO+pIzkXxKqIQHoan8YZa/JGvzSOWxpfGErjk6wPOcEgPOMZLYDZ?=\r\n =?us-ascii?Q?gDz5vedsaWSj0JXL6AGiePoif+mYuAp93GdwG+0oPv/1k1zOC0itLZwDxS0c?=\r\n =?us-ascii?Q?8B5nxZPLsQywX5cnOIRLq36D8qhh0IW6uyjf2iWtvVXiab8538ajRfo1u3Al?=\r\n =?us-ascii?Q?bVlK7RVuLl6eyaCKxkJeE3XI7uyM4xPuH/Q=3D?=",
+          "X-Microsoft-Antispam-Untrusted": "BCL:0;\nBCL:0;",
+          "X-Modified-HTML": "6\n39",
+          "X-Spam-Score": "-1.9"
+        },
+        "body_config": {},
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "email": {
+              "address": [
+                "dataqueries@jdwetherspoon.co.uk",
+                "returnz1ycuyjg6g34tue76873qkk9r21xycvqfh@aec.edu.in",
+                "info@aec.edu.in",
+                "lcthusi@bereatech.co.za"
+              ],
+              "date": [
+                "Wed, 13 Dec 2023 13:14:09 -0800"
+              ],
+              "subject": [
+                "[EXT] Invoice (Account 6125)"
+              ]
+            },
+            "static": {
+              "domain": [
+                "APEX01.jdwint.local",
+                "APEX02.jdwint.local",
+                "cluster-a.mailcontrol.com",
+                "rly08a.srv.mailcontrol.com",
+                "APC01-TYZ-obe.outbound.protection.outlook.com",
+                "rly08a-eth0.srv.mailcontrol.com",
+                "SG2PR06CA0188.apcprd06.prod.outlook.com",
+                "SEZPR03MB8231.apcprd03.prod.outlook.com",
+                "SG2PEPF000B66CF.apcprd03.prod.outlook.com",
+                "SG2PR06CA0188.outlook.office365.com",
+                "aec.edu.in",
+                "SG2PEPF000B66CF.mail.protection.outlook.com",
+                "AS4PR10MB5319.EURPRD10.PROD.OUTLOOK.COM",
+                "DB9PR10MB4778.EURPRD10.PROD.OUTLOOK.COM",
+                "DU2PR04CA0217.eurprd04.prod.outlook.com",
+                "DB5PEPF00014B8B.eurprd02.prod.outlook.com",
+                "DU2PR04CA0217.outlook.office365.com",
+                "EUR05-AM6-obe.outbound.protection.outlook.com",
+                "DB5PEPF00014B8B.mail.protection.outlook.com",
+                "DB9PR06CA0013.eurprd06.prod.outlook.com",
+                "AS4PR05MB9160.eurprd05.prod.outlook.com",
+                "DB5PEPF00014B9F.eurprd02.prod.outlook.com",
+                "DB9PR06CA0013.outlook.office365.com",
+                "DB5PEPF00014B9F.mail.protection.outlook.com"
+              ],
+              "ip": [
+                "172.30.1.91",
+                "172.30.1.92",
+                "172.30.0.83",
+                "40.107.117.74",
+                "2603:1096:4:1::",
+                "2603:1096:101:18d::",
+                "2603:1096:4:1:cafe::",
+                "172.96.137.144",
+                "10.167.240.23",
+                "2603:10a6:20b:4b9::",
+                "2603:10a6:10:2b1::",
+                "2603:10a6:10:2b1:cafe::",
+                "40.107.22.62",
+                "10.167.8.199",
+                "2603:10a6:10:1db::",
+                "2603:10a6:20b:4ef::",
+                "2603:10a6:10:1db:cafe::",
+                "148.253.171.42",
+                "10.167.8.169"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Headers",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": {
+          "areStringsUnicode": "True",
+          "attachmentsDelayed": "False",
+          "attachmentsReady": "True",
+          "classType": "'IPM.Note'",
+          "classified": "False",
+          "crlf": "'\\r\\n'",
+          "currentVersion": "165413",
+          "currentVersionName": "'16.0'",
+          "defaultFolderName": "'2023-12-13_1314 [EXT] Invoice (Account 6125)'",
+          "detectedBodies": "<BodyTypes.RTF|PLAIN: 3>",
+          "headerInit": "True",
+          "importance": "<Importance.MEDIUM: 1>",
+          "insecureFeatures": "<InsecureFeatures.NONE: 0>",
+          "isRead": "True",
+          "isSent": "True",
+          "messageId": "'<908be25f-c58f-465e-8b9e-758c2a8461XXTK8c@DB5PEPF00014B9F.eurprd02.prod.outlook.com>'",
+          "parsedDate": "(2023, 12, 13, 13, 14, 9, 0, 1, -1)",
+          "prefixLen": "0",
+          "prefixList": "[]",
+          "priority": "<Priority.NORMAL: 0>",
+          "receivedTime": "2023-12-13T21:15:11.147679+00:00",
+          "recipientSeparator": "';'",
+          "responseRequested": "False",
+          "sender": "'info@aec.edu.in'",
+          "sensitivity": "<Sensitivity.NORMAL: 0>",
+          "stringEncoding": "'utf-16-le'"
+        },
+        "body_config": {},
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "email": {
+              "address": [
+                "enquiries@ashwasteservices.co.uk"
+              ],
+              "msg_id": [
+                "908be25f-c58f-465e-8b9e-758c2a8461XXTK8c@DB5PEPF00014B9F.eurprd02.prod.outlook.com"
+              ]
+            },
+            "static": {
+              "domain": [
+                "www.ashwasteservices.co.uk",
+                "ashwasteservices.co.uk"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Attributes",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "Monthly Statement.HTML",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Extracted Attachments:",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [
+      {
+        "name": "Monthly Statement.HTML",
+        "sha256": "14f8da86874d033637592951011169e50c0d2dfc7bb38d043f17dc2dfbafd942"
+      },
+      {
+        "name": "Monthly Statement.HTML_refanged.html",
+        "sha256": "32f74d6e080f9ad119c56ad4654d9976137ab095fa5aaa9227903f1b454a8ea1"
+      },
+      {
+        "name": "Monthly Statement.HTML_c64d12f4e6628341cb4605ca60d165d3852ef9a21c0fdbf14baac2f85bd36ba0.js",
+        "sha256": "c64d12f4e6628341cb4605ca60d165d3852ef9a21c0fdbf14baac2f85bd36ba0"
+      }
+    ],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [],
+    "tags": {
+      "network.email.address": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "dataqueries@jdwetherspoon.co.uk"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "enquiries@ashwasteservices.co.uk"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "info@aec.edu.in"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "lcthusi@bereatech.co.za"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "returnz1ycuyjg6g34tue76873qkk9r21xycvqfh@aec.edu.in"
+        }
+      ],
+      "network.email.date": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "Wed, 13 Dec 2023 13:14:09 -0800"
+        }
+      ],
+      "network.email.msg_id": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "908be25f-c58f-465e-8b9e-758c2a8461XXTK8c@DB5PEPF00014B9F.eurprd02.prod.outlook.com"
+        }
+      ],
+      "network.email.subject": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "[EXT] Invoice (Account 6125)"
+        }
+      ],
+      "network.static.domain": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "APC01-TYZ-obe.outbound.protection.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "APEX01.jdwint.local"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "APEX02.jdwint.local"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "AS4PR05MB9160.eurprd05.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "AS4PR10MB5319.EURPRD10.PROD.OUTLOOK.COM"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DB5PEPF00014B8B.eurprd02.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DB5PEPF00014B8B.mail.protection.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DB5PEPF00014B9F.eurprd02.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DB5PEPF00014B9F.mail.protection.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DB9PR06CA0013.eurprd06.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DB9PR06CA0013.outlook.office365.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DB9PR10MB4778.EURPRD10.PROD.OUTLOOK.COM"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DU2PR04CA0217.eurprd04.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DU2PR04CA0217.outlook.office365.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "EUR05-AM6-obe.outbound.protection.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "SEZPR03MB8231.apcprd03.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "SG2PEPF000B66CF.apcprd03.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "SG2PEPF000B66CF.mail.protection.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "SG2PR06CA0188.apcprd06.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "SG2PR06CA0188.outlook.office365.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "aec.edu.in"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "ashwasteservices.co.uk"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "cluster-a.mailcontrol.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "rly08a-eth0.srv.mailcontrol.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "rly08a.srv.mailcontrol.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "www.ashwasteservices.co.uk"
+        }
+      ],
+      "network.static.ip": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "10.167.240.23"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "10.167.8.169"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "10.167.8.199"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "148.253.171.42"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "172.30.0.83"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "172.30.1.91"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "172.30.1.92"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "172.96.137.144"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:1096:101:18d::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:1096:4:1::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:1096:4:1:cafe::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10a6:10:1db::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10a6:10:1db:cafe::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10a6:10:2b1::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10a6:10:2b1:cafe::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10a6:20b:4b9::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10a6:20b:4ef::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "40.107.117.74"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "40.107.22.62"
+        }
+      ]
+    },
+    "temp_submission_data": {
+      "email_body": [
+        "(Account",
+        "****PLEASE",
+        "01978",
+        "16",
+        "541",
+        "6125",
+        "6125)",
+        "807",
+        "9AE",
+        "ABOVE",
+        "AND",
+        "AS",
+        "ASH",
+        "ASSISTANCE",
+        "ASSISTANCE****",
+        "Account",
+        "BE",
+        "Clywedog",
+        "Court",
+        "Court,",
+        "Customer",
+        "Customer,",
+        "DO",
+        "Dear",
+        "EMAIL",
+        "EMAIL:",
+        "EXT",
+        "Estate",
+        "Estate,",
+        "FAQ",
+        "INBOX",
+        "IS",
+        "If",
+        "Industrial",
+        "Invoice",
+        "LL13",
+        "Ltd",
+        "Ltd,",
+        "Ltd.",
+        "METHODS",
+        "MONITORED",
+        "Monthly",
+        "NOT",
+        "OF",
+        "ONE",
+        "PLEASE",
+        "Please",
+        "QUERY",
+        "QUERY.",
+        "REPLY",
+        "REQUIRE",
+        "RESOLVE",
+        "Road",
+        "SHOULD",
+        "Services",
+        "South",
+        "South,",
+        "THE",
+        "THIS",
+        "TO",
+        "Thank",
+        "Think",
+        "UNABLE",
+        "USE",
+        "Unit",
+        "WE",
+        "WILL",
+        "Waste",
+        "Wilkinson",
+        "Wrexham",
+        "Wrexham,",
+        "YOU",
+        "YOUR",
+        "You",
+        "Your",
+        "Zone",
+        "Zone.",
+        "[EXT]",
+        "accepting",
+        "access",
+        "account",
+        "also",
+        "and",
+        "answers",
+        "are",
+        "ashwasteservices",
+        "assistance",
+        "available",
+        "aware",
+        "be",
+        "before",
+        "below",
+        "below.",
+        "below:",
+        "by",
+        "can",
+        "click",
+        "click.",
+        "co",
+        "collections",
+        "collections,",
+        "common",
+        "contact",
+        "details",
+        "documentation",
+        "doing",
+        "e",
+        "e-mail:",
+        "enquiries",
+        "enquiries@ashwasteservices.co.uk",
+        "environment",
+        "feel",
+        "find",
+        "for",
+        "free",
+        "get",
+        "having",
+        "historical",
+        "in",
+        "into",
+        "invoice",
+        "invoice,",
+        "invoices",
+        "is",
+        "issues",
+        "link",
+        "link.",
+        "log",
+        "mail",
+        "make",
+        "may",
+        "methods",
+        "more",
+        "more.",
+        "much",
+        "much,",
+        "new",
+        "not",
+        "now",
+        "on",
+        "online",
+        "our",
+        "part",
+        "payments",
+        "payments,",
+        "please",
+        "post",
+        "post:",
+        "protecting",
+        "queries",
+        "queries.",
+        "scheduled",
+        "section",
+        "tel",
+        "tel:",
+        "that",
+        "the",
+        "this",
+        "to",
+        "uk",
+        "us",
+        "using",
+        "via",
+        "view",
+        "view.",
+        "viewing",
+        "visit",
+        "where",
+        "www",
+        "www.ashwasteservices.co.uk",
+        "you",
+        "your",
+        "\u2013"
+      ]
+    }
+  }
+}

@@ -6,24 +6,27 @@ import re
 import tempfile
 import traceback
 from datetime import datetime
+from hashlib import sha256
 from ipaddress import IPv4Address, ip_address
 from urllib.parse import urlparse
 
 import eml_parser
 import extract_msg
+from assemblyline.common import forge
 from assemblyline.odm import DOMAIN_ONLY_REGEX, EMAIL_REGEX, FULL_URI, IP_ONLY_REGEX, IP_REGEX
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.request import ServiceRequest
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultKeyValueSection, ResultSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
 from assemblyline_v4_service.common.utils import extract_passwords
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 from mailparser.utils import msgconvert
 from multidecoder.decoders.network import EMAIL_RE, find_domains, find_emails, find_ips, find_urls
 
 from emlparser.outlookmsgfile import load as msg2eml
 
 NETWORK_IOC_TYPES = ["uri", "email", "domain"]
+IDENTIFY = forge.get_identify(use_cache=os.environ.get("PRIVILEGED", "false").lower() == "true")
 
 
 class EmlParser(ServiceBase):
@@ -226,6 +229,50 @@ class EmlParser(ServiceBase):
                     attachment_path, attachment_name, "Attachment", safelist_interface=self.api_interface
                 ):
                     attachments_added.append(attachment_name)
+
+                # If attachment is an HTML file, perform further inspection
+                if IDENTIFY.fileinfo(attachment_path)["type"] == "code/html":
+                    document = open(attachment_path).read()
+
+                    # Check to see if there's any "defang_" prefixed tags
+                    # Reference: https://github.com/robmueller/html-defang
+                    if "<!--defang_" not in document:
+                        break
+
+                    # Find all comments
+                    enable_brackets = True
+                    for i in BeautifulSoup(document).find_all(string=lambda t: isinstance(t, Comment)):
+                        if "*SC*" in i:
+                            # Ignore comments with these lines
+                            continue
+                        defanged_i = i.replace("defang_", "")
+                        if enable_brackets:
+                            defanged_i = f"<{defanged_i}>"
+                        else:
+                            defanged_i = f"{defanged_i}"
+
+                        if defanged_i == "<script>":
+                            enable_brackets = False
+                        elif defanged_i == "/script":
+                            enable_brackets = True
+                            defanged_i = f"<{defanged_i}>"
+
+                        document = document.replace(f"<!--{i}-->", defanged_i)
+                    # Strip "defang_" from any remaining defanged-prefixed tags that weren't commented
+                    document = document.replace("defang_", "")
+                    refanged_fp = os.path.join(self.working_directory, f"{attachment_name}_refanged.html")
+                    with open(refanged_fp, "w") as fp:
+                        fp.write(document)
+                    request.add_extracted(refanged_fp, os.path.basename(refanged_fp), "refanged HTML email body")
+
+                    # Extract any scripts for further analysis
+                    for script in BeautifulSoup(document).select("script"):
+                        if script.text:
+                            js_sha256 = sha256(script.text.encode()).hexdigest()
+                            js_fp = os.path.join(self.working_directory, f"{attachment_name}_{js_sha256}.js")
+                            with open(js_fp, "w") as fp:
+                                fp.write(script.text)
+                            request.add_extracted(js_fp, os.path.basename(js_fp), "Extracted JS from HTML body")
             except MaxExtractedExceeded:
                 self.log.warning(
                     "Extract limit reached on attachments: "
