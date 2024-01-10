@@ -5,26 +5,28 @@ import os
 import re
 import tempfile
 import traceback
-import uuid
 from datetime import datetime
+from hashlib import sha256
 from ipaddress import IPv4Address, ip_address
 from urllib.parse import urlparse
 
 import eml_parser
 import extract_msg
+from assemblyline.common import forge
 from assemblyline.odm import DOMAIN_ONLY_REGEX, EMAIL_REGEX, FULL_URI, IP_ONLY_REGEX, IP_REGEX
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.request import ServiceRequest
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultKeyValueSection, ResultSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
 from assemblyline_v4_service.common.utils import extract_passwords
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 from mailparser.utils import msgconvert
 from multidecoder.decoders.network import EMAIL_RE, find_domains, find_emails, find_ips, find_urls
 
 from emlparser.outlookmsgfile import load as msg2eml
 
 NETWORK_IOC_TYPES = ["uri", "email", "domain"]
+IDENTIFY = forge.get_identify(use_cache=os.environ.get("PRIVILEGED", "false").lower() == "true")
 
 
 class EmlParser(ServiceBase):
@@ -59,7 +61,9 @@ class EmlParser(ServiceBase):
 
     def handle_outlook(self, request: ServiceRequest) -> None:
         try:
-            msg = extract_msg.openMsg(request.file_path, errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL)
+            msg: extract_msg.msg_classes.msg.MSGFile = extract_msg.openMsg(
+                request.file_path, errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL
+            )
         except (
             NotImplementedError,
             extract_msg.exceptions.InvalidFileFormatError,
@@ -207,8 +211,13 @@ class EmlParser(ServiceBase):
         attachments_added = []
         for attachment_index, attachment in enumerate(msg.attachments):
             try:
-                _, attachment_path = attachment.save(customPath=self.working_directory, extractEmbedded=True)
+                save_type, attachment_path = attachment.save(
+                    customPath=self.working_directory, extractEmbedded=True, skipNotImplemented=True
+                )
             except Exception:
+                continue
+
+            if save_type is extract_msg.constants.SaveType.NONE:
                 continue
 
             attachment_name = attachment.getFilename()
@@ -220,6 +229,50 @@ class EmlParser(ServiceBase):
                     attachment_path, attachment_name, "Attachment", safelist_interface=self.api_interface
                 ):
                     attachments_added.append(attachment_name)
+
+                # If attachment is an HTML file, perform further inspection
+                if IDENTIFY.fileinfo(attachment_path)["type"] == "code/html":
+                    document = open(attachment_path).read()
+
+                    # Check to see if there's any "defang_" prefixed tags
+                    # Reference: https://github.com/robmueller/html-defang
+                    if "<!--defang_" not in document:
+                        break
+
+                    # Find all comments
+                    enable_brackets = True
+                    for i in BeautifulSoup(document).find_all(string=lambda t: isinstance(t, Comment)):
+                        if "*SC*" in i:
+                            # Ignore comments with these lines
+                            continue
+                        defanged_i = i.replace("defang_", "")
+                        if enable_brackets:
+                            defanged_i = f"<{defanged_i}>"
+                        else:
+                            defanged_i = f"{defanged_i}"
+
+                        if defanged_i == "<script>":
+                            enable_brackets = False
+                        elif defanged_i == "/script":
+                            enable_brackets = True
+                            defanged_i = f"<{defanged_i}>"
+
+                        document = document.replace(f"<!--{i}-->", defanged_i)
+                    # Strip "defang_" from any remaining defanged-prefixed tags that weren't commented
+                    document = document.replace("defang_", "")
+                    defanged_fp = os.path.join(self.working_directory, f"{attachment_name}_defanged.html")
+                    with open(defanged_fp, "w") as fp:
+                        fp.write(document)
+                    request.add_extracted(defanged_fp, os.path.basename(defanged_fp), "defanged HTML")
+
+                    # Extract any scripts for further analysis
+                    for script in BeautifulSoup(document).select("script"):
+                        if script.text:
+                            js_sha256 = sha256(script.text.encode()).hexdigest()
+                            js_fp = os.path.join(self.working_directory, f"{attachment_name}_{js_sha256}.js")
+                            with open(js_fp, "w") as fp:
+                                fp.write(script.text)
+                            request.add_extracted(js_fp, os.path.basename(js_fp), "Extracted JS from HTML body")
             except MaxExtractedExceeded:
                 self.log.warning(
                     "Extract limit reached on attachments: "
@@ -227,15 +280,30 @@ class EmlParser(ServiceBase):
                 )
                 break
 
-        if msg.body:
+        body = None
+        try:
+            body = msg.body
+            if body is not None:
+                body = body.encode()
+        except UnicodeDecodeError:
+            # Do our best to find some kind of body
+            try:
+                body = body.htmlBody
+            except Exception:
+                try:
+                    body = body.rtfBody
+                except Exception:
+                    pass
+
+        if body:
             # Extract IOCs from body
-            [attributes_section.add_tag("network.static.ip", x.value) for x in find_ips(msg.body.encode())]
-            [attributes_section.add_tag("network.static.domain", x.value) for x in find_domains(msg.body.encode())]
-            [attributes_section.add_tag("network.static.uri", x.value) for x in find_urls(msg.body.encode())]
-            [attributes_section.add_tag("network.email.address", x.value) for x in find_emails(msg.body.encode())]
+            [attributes_section.add_tag("network.static.ip", x.value) for x in find_ips(body)]
+            [attributes_section.add_tag("network.static.domain", x.value) for x in find_domains(body)]
+            [attributes_section.add_tag("network.static.uri", x.value) for x in find_urls(body)]
+            [attributes_section.add_tag("network.email.address", x.value) for x in find_emails(body)]
             if request.get_param("extract_body_text"):
-                with tempfile.NamedTemporaryFile(dir=self.working_directory, delete=False) as tmp_f:
-                    tmp_f.write(msg.body)
+                with tempfile.NamedTemporaryFile(dir=self.working_directory, mode="wb", delete=False) as tmp_f:
+                    tmp_f.write(body)
                 request.add_extracted(
                     tmp_f.name, "email_body", "Extracted email body", safelist_interface=self.api_interface
                 )
@@ -252,9 +320,9 @@ class EmlParser(ServiceBase):
             elif hasattr(msg, "subject") and msg.subject:
                 body_words.update(extract_passwords(msg.subject))
 
-            if msg.body:
+            if body:
                 try:
-                    body_words.update(extract_passwords(msg.body))
+                    body_words.update(extract_passwords(body.decode()))
                     request.temp_submission_data["email_body"] = sorted(list(body_words))
                 except UnicodeDecodeError:
                     # Couldn't decode the body correctly. We could get the bytes manually and decode what we can.
