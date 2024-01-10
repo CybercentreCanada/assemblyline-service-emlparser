@@ -235,6 +235,7 @@ class EmlParser(ServiceBase):
                     document = open(attachment_path).read()
 
                     # Check to see if there's any "defang_" prefixed tags
+                    # Reference: https://github.com/robmueller/html-defang
                     if "<!--defang_" not in document:
                         break
 
