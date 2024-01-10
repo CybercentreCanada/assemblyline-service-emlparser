@@ -260,10 +260,10 @@ class EmlParser(ServiceBase):
                         document = document.replace(f"<!--{i}-->", defanged_i)
                     # Strip "defang_" from any remaining defanged-prefixed tags that weren't commented
                     document = document.replace("defang_", "")
-                    defanged_fp = os.path.join(self.working_directory, f"{attachment_name}_defanged.html")
-                    with open(defanged_fp, "w") as fp:
+                    refanged_fp = os.path.join(self.working_directory, f"{attachment_name}_refanged.html")
+                    with open(refanged_fp, "w") as fp:
                         fp.write(document)
-                    request.add_extracted(defanged_fp, os.path.basename(defanged_fp), "defanged HTML")
+                    request.add_extracted(refanged_fp, os.path.basename(refanged_fp), "refanged HTML email body")
 
                     # Extract any scripts for further analysis
                     for script in BeautifulSoup(document).select("script"):
