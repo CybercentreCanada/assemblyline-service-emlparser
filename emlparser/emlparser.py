@@ -221,7 +221,7 @@ class EmlParser(ServiceBase):
                 continue
 
             attachment_name = attachment.getFilename()
-            if attachment_name.startswith("UnknownFilename"):
+            if not attachment_name or attachment_name.startswith("UnknownFilename"):
                 attachment_name = f"UnknownFilename_{attachment_index}"
 
             try:
@@ -231,7 +231,7 @@ class EmlParser(ServiceBase):
                     attachments_added.append(attachment_name)
 
                 # If attachment is an HTML file, perform further inspection
-                if IDENTIFY.fileinfo(attachment_path)["type"] == "code/html":
+                if IDENTIFY.fileinfo(attachment_path, generate_hashes=False)["type"] == "code/html":
                     document = open(attachment_path).read()
 
                     # Check to see if there's any "defang_" prefixed tags
@@ -281,9 +281,11 @@ class EmlParser(ServiceBase):
                 break
 
         body = None
+        # TODO: In the future, msg.detectedBodies will return an enum value
+        # which confirms which body types are directly present on the file
         try:
             body = msg.body
-            if body is not None:
+            if body is not None and not isinstance(body, bytes):
                 body = body.encode()
         except UnicodeDecodeError:
             # Do our best to find some kind of body
