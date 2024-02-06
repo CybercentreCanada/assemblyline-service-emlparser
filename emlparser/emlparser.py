@@ -496,6 +496,24 @@ class EmlParser(ServiceBase):
                 parsed_eml = parser.decode_email_bytes(content_str)
                 exception_handled = True
 
+            if (
+                not exception_handled
+                and isinstance(e, ValueError)
+                and str(e) == "invalid arguments; address parts cannot contain CR or LF"
+            ):
+                for address_field in [b"\nTo:", b"\nCC:", b"\nFrom:"]:
+                    to_start_index = content_str.index(address_field)
+                    to_end_index = re.search(rb"\n\S", content_str[to_start_index + len(address_field) :]).start()
+                    content_str = (
+                        content_str[:to_start_index]
+                        + content_str[to_start_index : to_start_index + len(address_field) + to_end_index].replace(
+                            b"=0D=0A", b""
+                        )
+                        + content_str[to_start_index + len(address_field) + to_end_index :]
+                    )
+                parsed_eml = parser.decode_email_bytes(content_str)
+                exception_handled = True
+
             if not exception_handled and request.file_type == "code/html":
                 # Conversion of HTML → EML failed, likely because of malformed content
                 return

@@ -1,0 +1,131 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 0,
+    "sections": [
+      {
+        "auto_collapse": false,
+        "body": {
+          "cc": [
+            "\"C, C\" <C.C@CC.com>, \"CCCC, CCCCCCC (CCCCC CCCC, CC CCCCCC CCCCCC.)\" <CC@CC.com>"
+          ],
+          "content-type": [
+            "message/rfc822",
+            "text/plain"
+          ],
+          "date": [
+            "1970-01-01T00:00:00+00:00"
+          ],
+          "from": [
+            "From <from@from.com>"
+          ],
+          "mime-version": [
+            "1.0"
+          ],
+          "subject": [
+            "ABC"
+          ],
+          "to": [
+            "\"TOTOTOTO, TOTO TO. (TO/TO=2TO./TO t TO TO TO (TO) #291M (TO TO TOT OTO & TO (TO)/TOTOTO))\" <to@to.com>"
+          ]
+        },
+        "body_config": {},
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "email": {
+              "address": [
+                "from@from.com",
+                "to@to.com",
+                "c.c@cc.com",
+                "cc@cc.com"
+              ],
+              "date": [
+                "1970-01-01 00:00:00+00:00"
+              ],
+              "subject": [
+                "ABC"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Headers",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "part-000",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Extracted Attachments:",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [
+      {
+        "name": "part-000",
+        "sha256": "d7168d1e4ed181ad478596407cb2581cb2971c26dc2cf2fbec9173b22cc36760"
+      }
+    ],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [],
+    "tags": {
+      "network.email.address": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "c.c@cc.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "cc@cc.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "from@from.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "to@to.com"
+        }
+      ],
+      "network.email.date": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "1970-01-01 00:00:00+00:00"
+        }
+      ],
+      "network.email.subject": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "ABC"
+        }
+      ]
+    },
+    "temp_submission_data": {
+      "email_body": [
+        "ABC",
+        "Test",
+        "message"
+      ]
+    }
+  }
+}
