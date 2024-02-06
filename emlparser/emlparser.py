@@ -232,7 +232,10 @@ class EmlParser(ServiceBase):
 
                 # If attachment is an HTML file, perform further inspection
                 if IDENTIFY.fileinfo(attachment_path, generate_hashes=False)["type"] == "code/html":
-                    document = open(attachment_path).read()
+                    try:
+                        document = open(attachment_path, encoding="UTF-8").read()
+                    except UnicodeDecodeError:
+                        document = open(attachment_path, encoding="cp1252").read()
 
                     # Check to see if there's any "defang_" prefixed tags
                     # Reference: https://github.com/robmueller/html-defang
