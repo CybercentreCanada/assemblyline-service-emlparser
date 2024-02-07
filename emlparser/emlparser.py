@@ -70,7 +70,11 @@ class EmlParser(ServiceBase):
             extract_msg.exceptions.StandardViolationError,
             extract_msg.exceptions.UnrecognizedMSGTypeError,
             extract_msg.exceptions.UnknownCodepageError,
+            OSError,
         ) as e1:
+            if isinstance(e1, OSError) and str(e1) != "incomplete OLE sector":
+                raise
+
             # If we can't use extract-msg, rely on converting to eml
             self.log.warning(e1, exc_info=True)
             try:
@@ -83,6 +87,7 @@ class EmlParser(ServiceBase):
                     content_str = f.read()
             self.handle_eml(request, content_str)
             return
+
         headers_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
 
         headers = {}
@@ -569,6 +574,12 @@ class EmlParser(ServiceBase):
                 raise e
 
         header = parsed_eml["header"]
+        if str(header["date"]).strip() in [
+            "1970-01-01T00:00:00",
+            "Thu, 01 Jan 1970 00:00:00 +0000",
+            "1970-01-01 00:00:00+00:00",
+        ]:
+            header.pop("date")
 
         all_iocs = {}
         [all_iocs.setdefault(t, set()) for t in NETWORK_IOC_TYPES]
@@ -600,7 +611,8 @@ class EmlParser(ServiceBase):
                 if re.match(EMAIL_REGEX, to.strip())
             ]
 
-            kv_section.add_tag("network.email.date", str(header["date"]).strip())
+            if "date" in header:
+                kv_section.add_tag("network.email.date", str(header["date"]).strip())
 
             subject = header["subject"].strip() if header.get("subject", None) else None
             if subject:
@@ -680,15 +692,13 @@ class EmlParser(ServiceBase):
             header.update(extra_header)
 
             # Convert to common format
-            header["date"] = [self.json_serial(header["date"])]
+            if "date" in header:
+                header["date"] = [self.json_serial(header["date"])]
 
             # Replace with aggregated date(s) if any available
             if header_agg.get("Date"):
                 # Replace
-                if any(
-                    default_date in header["date"]
-                    for default_date in ["1970-01-01T00:00:00", "Thu, 01 Jan 1970 00:00:00 +0000"]
-                ):
+                if "date" not in header:
                     header["date"] = list(header_agg["Date"])
                 # Append
                 else:
