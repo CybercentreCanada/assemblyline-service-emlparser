@@ -12,9 +12,6 @@
           "content-type": [
             "text/plain; charset=\"utf-8\""
           ],
-          "date": [
-            "1970-01-01T00:00:00+00:00"
-          ],
           "mime-version": [
             "1.0"
           ],
@@ -32,9 +29,6 @@
         "tags": {
           "network": {
             "email": {
-              "date": [
-                "1970-01-01 00:00:00+00:00"
-              ],
               "subject": [
                 "TWC - Master Tasks"
               ]
@@ -53,13 +47,6 @@
   "results": {
     "heuristics": [],
     "tags": {
-      "network.email.date": [
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "1970-01-01 00:00:00+00:00"
-        }
-      ],
       "network.email.subject": [
         {
           "heur_id": null,

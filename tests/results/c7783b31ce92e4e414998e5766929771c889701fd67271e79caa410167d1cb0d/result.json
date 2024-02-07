@@ -13,9 +13,6 @@
             "message/rfc822",
             "text/plain"
           ],
-          "date": [
-            "1970-01-01T00:00:00+00:00"
-          ],
           "from": [
             "From <from@from.com>"
           ],
@@ -43,9 +40,6 @@
                 "to@to.com",
                 "c.c@cc.com",
                 "cc@cc.com"
-              ],
-              "date": [
-                "1970-01-01 00:00:00+00:00"
               ],
               "subject": [
                 "ABC"
@@ -103,13 +97,6 @@
           "heur_id": null,
           "signatures": [],
           "value": "to@to.com"
-        }
-      ],
-      "network.email.date": [
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "1970-01-01 00:00:00+00:00"
         }
       ],
       "network.email.subject": [

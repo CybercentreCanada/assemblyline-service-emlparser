@@ -6,9 +6,6 @@
       {
         "auto_collapse": false,
         "body": {
-          "date": [
-            "1970-01-01T00:00:00+00:00"
-          ],
           "from": [
             "Sender McSender <sender@gmail.com>"
           ],
@@ -33,9 +30,6 @@
             "email": {
               "address": [
                 "sender@gmail.com"
-              ],
-              "date": [
-                "1970-01-01 00:00:00+00:00"
               ],
               "subject": [
                 "Subject"
@@ -107,13 +101,6 @@
           "heur_id": null,
           "signatures": [],
           "value": "sender@gmail.com"
-        }
-      ],
-      "network.email.date": [
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "1970-01-01 00:00:00+00:00"
         }
       ],
       "network.email.subject": [

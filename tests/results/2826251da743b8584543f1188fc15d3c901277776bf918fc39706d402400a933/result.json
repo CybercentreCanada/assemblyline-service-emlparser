@@ -12,9 +12,6 @@
           "content-type": [
             "text/html; charset=\"utf-8\""
           ],
-          "date": [
-            "1970-01-01T00:00:00+00:00"
-          ],
           "from": [
             "\"\ufffd\u0011Pr\ufffd\ufffd\u0440\ufffdp\u043a\u0405\u043d\u043e Internet @\ufffdplo\ufffd\ufffdr 13\""
           ],
@@ -33,15 +30,7 @@
         "depth": 0,
         "heuristic": null,
         "promote_to": null,
-        "tags": {
-          "network": {
-            "email": {
-              "date": [
-                "1970-01-01 00:00:00+00:00"
-              ]
-            }
-          }
-        },
+        "tags": {},
         "title_text": "Email Headers",
         "zeroize_on_tag_safe": false
       },
@@ -108,13 +97,6 @@
           "heur_id": null,
           "signatures": [],
           "value": "taro@reddithub.com"
-        }
-      ],
-      "network.email.date": [
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "1970-01-01 00:00:00+00:00"
         }
       ],
       "network.static.domain": [
