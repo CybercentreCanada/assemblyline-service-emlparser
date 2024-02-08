@@ -3,6 +3,7 @@ import email
 import json
 import os
 import re
+import shutil
 import tempfile
 import traceback
 from datetime import datetime
@@ -13,6 +14,7 @@ from urllib.parse import urlparse
 import eml_parser
 import extract_msg
 from assemblyline.common import forge
+from assemblyline.common.str_utils import safe_str
 from assemblyline.odm import DOMAIN_ONLY_REGEX, EMAIL_REGEX, FULL_URI, IP_ONLY_REGEX, IP_REGEX
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.request import ServiceRequest
@@ -228,6 +230,12 @@ class EmlParser(ServiceBase):
             attachment_name = attachment.getFilename()
             if not attachment_name or attachment_name.startswith("UnknownFilename"):
                 attachment_name = f"UnknownFilename_{attachment_index}"
+
+            # Since IDENTIFY.fileinfo() is calling safe_str, we need to make sure it'll work.
+            # This could be removed if we decide to remove the call to safe_str in IDENTIFY.fileinfo().
+            if safe_str(attachment_path) != attachment_path:
+                shutil.move(attachment_path, safe_str(attachment_path))
+                attachment_path = safe_str(attachment_path)
 
             try:
                 if request.add_extracted(
@@ -510,13 +518,15 @@ class EmlParser(ServiceBase):
                 and str(e) == "invalid arguments; address parts cannot contain CR or LF"
             ):
                 for address_field in [b"\nTo:", b"\nCC:", b"\nFrom:"]:
+                    if address_field not in content_str:
+                        continue
                     to_start_index = content_str.index(address_field)
                     to_end_index = re.search(rb"\n\S", content_str[to_start_index + len(address_field) :]).start()
                     content_str = (
                         content_str[:to_start_index]
-                        + content_str[to_start_index : to_start_index + len(address_field) + to_end_index].replace(
-                            b"=0D=0A", b""
-                        )
+                        + content_str[to_start_index : to_start_index + len(address_field) + to_end_index]
+                        .replace(b"=0D", b"")
+                        .replace(b"=0A", b"")
                         + content_str[to_start_index + len(address_field) + to_end_index :]
                     )
                 parsed_eml = parser.decode_email_bytes(content_str)
