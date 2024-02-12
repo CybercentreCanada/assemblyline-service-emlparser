@@ -73,9 +73,17 @@ class EmlParser(ServiceBase):
             extract_msg.exceptions.UnrecognizedMSGTypeError,
             extract_msg.exceptions.UnknownCodepageError,
             OSError,
+            IndexError,
         ) as e1:
             if isinstance(e1, OSError) and str(e1) != "incomplete OLE sector":
                 raise
+
+            if isinstance(e1, IndexError) and str(e1) == "tuple index out of range":
+                tb = traceback.format_exc()
+                # Found some very corrupted MessageSigned that are triggering this error with attachments
+                # We'll just extract the information we can as an eml if it is the case
+                if "entry['guid'] = guids[entry['guid_index']]" not in tb:
+                    raise
 
             # If we can't use extract-msg, rely on converting to eml
             self.log.warning(e1, exc_info=True)
