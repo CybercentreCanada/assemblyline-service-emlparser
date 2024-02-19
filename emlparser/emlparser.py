@@ -61,20 +61,44 @@ class EmlParser(ServiceBase):
         elif request.file_type == "document/email":
             self.handle_eml(request, request.file_contents)
 
-    def handle_outlook(self, request: ServiceRequest) -> None:
+    def get_outlook_msg(self, request: ServiceRequest, overrideEncoding=None) -> extract_msg.msg_classes.msg.MSGFile:
         try:
             msg: extract_msg.msg_classes.msg.MSGFile = extract_msg.openMsg(
-                request.file_path, errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL
+                request.file_path,
+                overrideEncoding=overrideEncoding,
+                errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL,
             )
+            # Recipients parsing is only triggered when accessed, and some files were using
+            # the wrong encoding. We access it here to trigger the UnicodeDecodeError and
+            # try again with cp1252 in case it works.
+            msg.recipients
+            return msg
         except (
             NotImplementedError,
             extract_msg.exceptions.InvalidFileFormatError,
             extract_msg.exceptions.StandardViolationError,
             extract_msg.exceptions.UnrecognizedMSGTypeError,
+            extract_msg.exceptions.UnsupportedMSGTypeError,
             extract_msg.exceptions.UnknownCodepageError,
             OSError,
             IndexError,
+            UnicodeDecodeError,
         ) as e1:
+            if isinstance(e1, UnicodeDecodeError) and overrideEncoding is None:
+                previous_string_encoding = msg.stringEncoding
+                msg = self.get_outlook_msg(request, overrideEncoding="cp1252")
+                msg.recipients
+                if msg:
+                    ResultSection(
+                        "Wrong String Encoding Stored",
+                        parent=request.result,
+                        body=(
+                            f"String encoding {previous_string_encoding} was specified in outlook file, "
+                            "but cp1252 was needed."
+                        ),
+                    )
+                return msg
+
             if isinstance(e1, OSError) and str(e1) != "incomplete OLE sector":
                 raise
 
@@ -96,6 +120,10 @@ class EmlParser(ServiceBase):
                 with open(converted_path, "rb") as f:
                     content_str = f.read()
             self.handle_eml(request, content_str)
+
+    def handle_outlook(self, request: ServiceRequest) -> None:
+        msg: extract_msg.msg_classes.msg.MSGFile = self.get_outlook_msg(request)
+        if msg is None:
             return
 
         headers_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
@@ -159,6 +187,7 @@ class EmlParser(ServiceBase):
             "rtfEncapInjectableHeader",
             "rtfPlainInjectableHeader",
             "sideEffects",
+            "taskOrdinal",
             "treePath",
         ]
         attributes_section = ResultKeyValueSection("Email Attributes", parent=request.result)

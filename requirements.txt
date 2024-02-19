@@ -1,6 +1,6 @@
 compoundfiles
 compressed-rtf
-extract-msg==0.46.2
+extract-msg==0.47.0
 mail-parser
 bs4
 lxml
