@@ -9,6 +9,9 @@
           "content-type": [
             "multipart/report; boundary=\"8f5bafa4-5334-4c85-9e6e-026098737c13\""
           ],
+          "date": [
+            "['Sun, 01 Jan 2023 12:12:12 +0000']"
+          ],
           "from": [
             "from@from.com"
           ],
@@ -34,6 +37,9 @@
               "address": [
                 "from@from.com",
                 "to@to.com"
+              ],
+              "date": [
+                "2023-01-01 12:12:12+00:00"
               ],
               "subject": [
                 "ABC"
@@ -81,6 +87,13 @@
           "heur_id": null,
           "signatures": [],
           "value": "to@to.com"
+        }
+      ],
+      "network.email.date": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2023-01-01 12:12:12+00:00"
         }
       ],
       "network.email.subject": [

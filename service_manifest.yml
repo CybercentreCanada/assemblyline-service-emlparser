@@ -15,7 +15,7 @@ disable_cache: false
 enabled: true
 is_external: false
 licence_count: 0
-
+privileged: true
 uses_temp_submission_data: true
 
 config:
