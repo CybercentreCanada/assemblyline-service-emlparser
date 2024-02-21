@@ -264,7 +264,7 @@ class EmlParser(ServiceBase):
                     parent=request.result,
                     body=(
                         f"0 attachments were found, {len(attachments)} raw "
-                        f"attachment{'s' if len(attachments) > 1 else ''} were processed instead."
+                        f"attachment{'s were' if len(attachments) > 1 else ' was'} processed instead."
                     ),
                 )
 
