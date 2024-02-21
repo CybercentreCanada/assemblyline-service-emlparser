@@ -182,11 +182,13 @@ class EmlParser(ServiceBase):
             "namedProperties",
             "path",
             "props",
+            "rawAttachments",
             "recipients",
             "rtfBody",
             "rtfEncapInjectableHeader",
             "rtfPlainInjectableHeader",
             "sideEffects",
+            "signedBody",
             "taskOrdinal",
             "treePath",
         ]
@@ -253,7 +255,20 @@ class EmlParser(ServiceBase):
                 pass
 
         attachments_added = []
-        for attachment_index, attachment in enumerate(msg.attachments):
+        attachments = msg.attachments
+        if not attachments and hasattr(msg, "rawAttachments"):
+            attachments = msg.rawAttachments
+            if attachments:
+                ResultSection(
+                    "Attachments extraction mismatch",
+                    parent=request.result,
+                    body=(
+                        f"0 attachments were found, {len(attachments)} raw "
+                        f"attachment{'s' if len(attachments) > 1 else ''} were processed instead."
+                    ),
+                )
+
+        for attachment_index, attachment in enumerate(attachments):
             try:
                 save_type, attachment_path = attachment.save(
                     customPath=self.working_directory, extractEmbedded=True, skipNotImplemented=True
@@ -328,8 +343,7 @@ class EmlParser(ServiceBase):
                             request.add_extracted(js_fp, os.path.basename(js_fp), "Extracted JS from HTML body")
             except MaxExtractedExceeded:
                 self.log.warning(
-                    "Extract limit reached on attachments: "
-                    f"{len(msg.attachments) - len(attachments_added)} not added"
+                    "Extract limit reached on attachments: " f"{len(attachments) - len(attachments_added)} not added"
                 )
                 break
 
