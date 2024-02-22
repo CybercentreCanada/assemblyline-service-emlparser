@@ -1,13 +1,13 @@
 ARG branch=latest
-FROM cccs/assemblyline-v4-service-base:$branch AS base
+FROM cccs/assemblyline-v4-service-base:$branch
 
+# Set service to be run
 ENV SERVICE_PATH emlparser.emlparser.EmlParser
 
 # Switch to root user
 USER root
 
 # Install apt dependencies
-RUN echo 'deb http://deb.debian.org/debian buster-backports main' >> /etc/apt/sources.list
 COPY pkglist.txt pkglist.txt
 RUN apt-get update && grep -vE '^#' pkglist.txt | xargs apt-get install -y && rm -rf /var/lib/apt/lists/*
 
@@ -18,12 +18,12 @@ USER assemblyline
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir --user --requirement requirements.txt && rm -rf ~/.cache/pip
 
-# Clone Emlparser service code
+# Copy service code
 WORKDIR /opt/al_service
 COPY . .
 
 # Patch version in manifest
-ARG version=4.2.0.dev1
+ARG version=4.5.0.dev1
 USER root
 RUN sed -i -e "s/\$SERVICE_TAG/$version/g" service_manifest.yml
 
