@@ -627,6 +627,27 @@ class EmlParser(ServiceBase):
                 parsed_eml = parser.decode_email_bytes(content_str)
                 exception_handled = True
 
+            if (
+                not exception_handled
+                and isinstance(e, TypeError)
+                and str(e) == "expected string or buffer"
+                and "workaround_bug_27257" in tb
+            ):
+                for address_field in [b"\nTo:", b"\nCC:", b"\nFrom:"]:
+                    if address_field not in content_str:
+                        continue
+                    to_start_index = content_str.index(address_field)
+                    to_end_index = re.search(rb"\n\S", content_str[to_start_index + len(address_field) :]).start()
+                    content_str = (
+                        content_str[: to_start_index + len(address_field)]
+                        + content_str[
+                            to_start_index + len(address_field) : to_start_index + len(address_field) + to_end_index
+                        ].replace(b":", b"")
+                        + content_str[to_start_index + len(address_field) + to_end_index :]
+                    )
+                parsed_eml = parser.decode_email_bytes(content_str)
+                exception_handled = True
+
             if not exception_handled and all(term in tb for term in ["if value[0] == '>':", "get_angle_addr"]):
                 # An email was detected but is incomplete
                 return

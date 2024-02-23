@@ -1,0 +1,90 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 0,
+    "sections": [
+      {
+        "auto_collapse": false,
+        "body": {
+          "from": [
+            "Some Guy <someguy@someplace.com>"
+          ],
+          "sent": [
+            "Friday, February 10, 2024 00:00 AM"
+          ],
+          "subject": [
+            "Some subject"
+          ],
+          "to": [
+            "To1, To1 - CEO Company1 <to1@c.com>, To2 - Accentu\u00e9 Company1 <to2@c.com>"
+          ]
+        },
+        "body_config": {},
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "email": {
+              "address": [
+                "someguy@someplace.com",
+                "to1@c.com",
+                "to2@c.com"
+              ],
+              "subject": [
+                "Some subject"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Headers",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [],
+    "tags": {
+      "network.email.address": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "someguy@someplace.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "to1@c.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "to2@c.com"
+        }
+      ],
+      "network.email.subject": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "Some subject"
+        }
+      ]
+    },
+    "temp_submission_data": {
+      "email_body": [
+        "Blah",
+        "Some",
+        "some",
+        "subject",
+        "text",
+        "text."
+      ]
+    }
+  }
+}
