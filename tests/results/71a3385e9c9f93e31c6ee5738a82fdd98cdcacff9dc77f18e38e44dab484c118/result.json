@@ -35,7 +35,7 @@
       {
         "auto_collapse": false,
         "body": {
-          "appointmentAuxilaryFlags": "<AppointmentAuxilaryFlag.0: 0>",
+          "appointmentAuxilaryFlags": "<AppointmentAuxilaryFlag: 0>",
           "appointmentColor": "<AppointmentColor.NONE: 0>",
           "appointmentCounterProposal": "False",
           "appointmentDuration": "30",
@@ -61,7 +61,7 @@
           "currentVersion": "165387",
           "currentVersionName": "'16.0'",
           "defaultFolderName": "'2023-04-21_2220 test POC CVE-2023-23397 against a patched Outlook'",
-          "detectedBodies": "<BodyTypes.RTF|PLAIN: 3>",
+          "detectedBodies": "<BodyTypes.PLAIN|RTF: 3>",
           "fInvited": "False",
           "headerInit": "True",
           "iconIndex": "<IconIndex.SINGLE_INSTANCE_MEETING: 1026>",

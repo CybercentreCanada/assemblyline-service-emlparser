@@ -95,7 +95,7 @@
           "classified": "False",
           "crlf": "'\\r\\n'",
           "defaultFolderName": "'2022-12-14_2130 Hemos realizado un pago a tu cuenta'",
-          "detectedBodies": "<BodyTypes.RTF|PLAIN: 3>",
+          "detectedBodies": "<BodyTypes.PLAIN|RTF: 3>",
           "headerInit": "True",
           "importance": "<Importance.MEDIUM: 1>",
           "insecureFeatures": "<InsecureFeatures.NONE: 0>",

@@ -104,7 +104,7 @@
           "classified": "False",
           "crlf": "'\\r\\n'",
           "defaultFolderName": "'2022-12-21_1413 FW ELSTO Drives & Controls invoice 493682'",
-          "detectedBodies": "<BodyTypes.RTF|PLAIN: 3>",
+          "detectedBodies": "<BodyTypes.PLAIN|RTF: 3>",
           "headerInit": "True",
           "importance": "<Importance.MEDIUM: 1>",
           "inReplyTo": "'<824988934.74307.1671631686612@mib-daemon-engine-8cfd895b6-hspqq>'",

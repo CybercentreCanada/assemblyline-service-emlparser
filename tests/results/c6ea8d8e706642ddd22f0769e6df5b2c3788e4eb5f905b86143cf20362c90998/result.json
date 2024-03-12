@@ -7,20 +7,23 @@
         "auto_collapse": false,
         "body": {
           "content-type": [
-            "message/rfc822",
-            "text/plain"
+            "multipart/alternative; boundary=\"_000_0000000000000000000000000000000000000000000000000000000_\""
+          ],
+          "date": [
+            "['Sat, 10 Feb 2024 00:00:00 -0000']"
+          ],
+          "defect": [
+            "",
+            ""
           ],
           "from": [
-            "From <from@from.com>"
-          ],
-          "mime-version": [
-            "1.0"
+            "SomeStuff <someguy@someplace.com>"
           ],
           "subject": [
             "ABC"
           ],
           "to": [
-            "\"TOTOTOTO, TOTO TO. (TO/TO=2TO./TOt TO TO TO  (TO) #291M (TOTO TOT OTO &  TO (TO)/TOTOTO))\" <to@to.com>"
+            "undisclosed-recipients:;"
           ]
         },
         "body_config": {},
@@ -33,8 +36,10 @@
           "network": {
             "email": {
               "address": [
-                "from@from.com",
-                "to@to.com"
+                "someguy@someplace.com"
+              ],
+              "date": [
+                "2024-02-10 00:00:00+00:00"
               ],
               "subject": [
                 "ABC"
@@ -47,7 +52,7 @@
       },
       {
         "auto_collapse": false,
-        "body": "part-000",
+        "body": null,
         "body_config": {},
         "body_format": "TEXT",
         "classification": "TLP:C",
@@ -61,12 +66,7 @@
     ]
   },
   "files": {
-    "extracted": [
-      {
-        "name": "part-000",
-        "sha256": "d7168d1e4ed181ad478596407cb2581cb2971c26dc2cf2fbec9173b22cc36760"
-      }
-    ],
+    "extracted": [],
     "supplementary": []
   },
   "results": {
@@ -76,12 +76,14 @@
         {
           "heur_id": null,
           "signatures": [],
-          "value": "from@from.com"
-        },
+          "value": "someguy@someplace.com"
+        }
+      ],
+      "network.email.date": [
         {
           "heur_id": null,
           "signatures": [],
-          "value": "to@to.com"
+          "value": "2024-02-10 00:00:00+00:00"
         }
       ],
       "network.email.subject": [
@@ -94,9 +96,7 @@
     },
     "temp_submission_data": {
       "email_body": [
-        "ABC",
-        "Test",
-        "message"
+        "ABC"
       ]
     }
   }

@@ -7,7 +7,7 @@
         "auto_collapse": false,
         "body": {
           "cc": [
-            "\"C, C\" <C.C@CC.com>, \"CCCC, CCCCCCC (CCCCC CCCC, CC CCCCCC CCCCCC.)\" <CC@CC.com>"
+            "\"C, C\" <C.C@CC.com>, \"CCCC, CCCCCCC (CCCCC CCCC, CC  CCCCCCCCCCCC.)\" <CC@CC.com>"
           ],
           "content-type": [
             "message/rfc822",
@@ -23,7 +23,7 @@
             "ABC"
           ],
           "to": [
-            "\"TOTOTOTO, TOTO TO. (TO/TO=2TO./TO t TO TO TO (TO) #291M (TO TO TOT OTO & TO (TO)/TOTOTO))\" <to@to.com>"
+            "\"TOTOTOTO, TOTO TO. (TO/TO=2TO./TOt TO TO TO  (TO) #291M (TOTO TOT OTO & TO (TO)/TOTOTO) )\" <to@to.com>"
           ]
         },
         "body_config": {},

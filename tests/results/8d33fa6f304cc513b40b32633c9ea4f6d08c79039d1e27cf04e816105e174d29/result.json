@@ -104,7 +104,7 @@
           "classified": "False",
           "crlf": "'\\r\\n'",
           "defaultFolderName": "'2023-05-04_0035 Salary Amendment Policy for Employees on Spinks-Law on ThursdayMay2023 0335 AM'",
-          "detectedBodies": "<BodyTypes.RTF|PLAIN: 3>",
+          "detectedBodies": "<BodyTypes.PLAIN|RTF: 3>",
           "headerInit": "True",
           "importance": "<Importance.MEDIUM: 1>",
           "insecureFeatures": "<InsecureFeatures.NONE: 0>",

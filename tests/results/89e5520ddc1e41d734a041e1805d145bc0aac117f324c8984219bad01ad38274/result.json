@@ -148,7 +148,7 @@
           "currentVersion": "165413",
           "currentVersionName": "'16.0'",
           "defaultFolderName": "'2023-12-13_1314 [EXT] Invoice (Account 6125)'",
-          "detectedBodies": "<BodyTypes.RTF|PLAIN: 3>",
+          "detectedBodies": "<BodyTypes.PLAIN|RTF: 3>",
           "headerInit": "True",
           "importance": "<Importance.MEDIUM: 1>",
           "insecureFeatures": "<InsecureFeatures.NONE: 0>",

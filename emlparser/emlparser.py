@@ -1,5 +1,6 @@
 import base64
 import email
+import email.header
 import json
 import os
 import re
@@ -15,7 +16,7 @@ import eml_parser
 import extract_msg
 from assemblyline.common import forge
 from assemblyline.common.str_utils import safe_str
-from assemblyline.odm import DOMAIN_ONLY_REGEX, EMAIL_REGEX, FULL_URI, IP_ONLY_REGEX, IP_REGEX
+from assemblyline.odm import EMAIL_REGEX, FULL_URI, IP, IP_ONLY_REGEX, IP_REGEX, URI, Domain
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.request import ServiceRequest
 from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultKeyValueSection, ResultSection
@@ -29,6 +30,17 @@ from emlparser.outlookmsgfile import load as msg2eml
 
 NETWORK_IOC_TYPES = ["uri", "email", "domain"]
 IDENTIFY = forge.get_identify(use_cache=os.environ.get("PRIVILEGED", "false").lower() == "true")
+IP_VALIDATOR = IP()
+DOMAIN_VALIDATOR = Domain()
+URI_VALIDATOR = URI()
+
+
+def tag_is_valid(validator, value) -> bool:
+    try:
+        validator.check(value)
+    except ValueError:
+        return False
+    return True
 
 
 class EmlParser(ServiceBase):
@@ -568,16 +580,36 @@ class EmlParser(ServiceBase):
                 and isinstance(e, ValueError)
                 and str(e) == "invalid arguments; address parts cannot contain CR or LF"
             ):
-                for address_field in [b"\nTo:", b"\nCC:", b"\nFrom:"]:
-                    if address_field not in content_str:
+                for address_field in [b"To:", b"CC:", b"From:"]:
+                    if content_str[: len(address_field)] == address_field:
+                        to_start_index = 0
+                    elif b"\n" + address_field in content_str:
+                        to_start_index = content_str.index(b"\n" + address_field) + 1
+                    else:
                         continue
-                    to_start_index = content_str.index(address_field)
                     to_end_index = re.search(rb"\n\S", content_str[to_start_index + len(address_field) :]).start()
+
+                    email_header = email.header.decode_header(
+                        content_str[
+                            to_start_index + len(address_field) : to_start_index + len(address_field) + to_end_index
+                        ].decode()
+                    )
+
+                    email_header = [
+                        (
+                            (x[0] if isinstance(x[0], bytes) else x[0].encode())
+                            .replace(b"\r\n", b"")
+                            .replace(b"\n", b""),
+                            x[1],
+                        )
+                        for x in email_header
+                    ]
+
                     content_str = (
                         content_str[:to_start_index]
-                        + content_str[to_start_index : to_start_index + len(address_field) + to_end_index]
-                        .replace(b"=0D", b"")
-                        .replace(b"=0A", b"")
+                        + address_field
+                        + b" "
+                        + email.header.make_header(email_header, header_name=address_field[1:-1]).encode().encode()
                         + content_str[to_start_index + len(address_field) + to_end_index :]
                     )
                 parsed_eml = parser.decode_email_bytes(content_str)
@@ -751,7 +783,7 @@ class EmlParser(ServiceBase):
             if all_iocs["domain"]:
                 domain_section = ResultSection("Domains Found:")
                 for domain in sorted(all_iocs["domain"]):
-                    if not re.match(DOMAIN_ONLY_REGEX, domain):
+                    if not tag_is_valid(DOMAIN_VALIDATOR, domain):
                         continue
                     domain_section.add_line(domain)
                     domain_section.add_tag("network.static.domain", domain)
@@ -806,9 +838,17 @@ class EmlParser(ServiceBase):
                 )
 
                 # Look for network IOCs in this block and tag them
-                [kv_section.add_tag("network.static.domain", x.value) for x in find_domains(persisted_urls_block)]
-                [kv_section.add_tag("network.static.ip", x.value) for x in find_ips(persisted_urls_block)]
-                [kv_section.add_tag("network.static.uri", x.value) for x in find_urls(persisted_urls_block)]
+                for x in find_domains(persisted_urls_block):
+                    if tag_is_valid(DOMAIN_VALIDATOR, x):
+                        kv_section.add_tag("network.static.domain", x.value)
+
+                for x in find_ips(persisted_urls_block):
+                    if tag_is_valid(IP_VALIDATOR, x):
+                        kv_section.add_tag("network.static.ip", x.value)
+
+                for x in find_urls(persisted_urls_block):
+                    if tag_is_valid(URI_VALIDATOR, x):
+                        kv_section.add_tag("network.static.uri", x.value)
 
             attachments_added = []
             if "attachment" in parsed_eml:

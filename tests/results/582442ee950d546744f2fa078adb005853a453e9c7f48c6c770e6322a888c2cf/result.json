@@ -74,7 +74,7 @@
           "classified": "False",
           "crlf": "'\\n'",
           "defaultFolderName": "'2022-12-29_1235 Ticaret'",
-          "detectedBodies": "<BodyTypes.RTF|PLAIN: 3>",
+          "detectedBodies": "<BodyTypes.PLAIN|RTF: 3>",
           "headerInit": "True",
           "importance": "<Importance.MEDIUM: 1>",
           "insecureFeatures": "<InsecureFeatures.NONE: 0>",
