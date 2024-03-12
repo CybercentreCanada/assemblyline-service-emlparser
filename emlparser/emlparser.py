@@ -839,15 +839,15 @@ class EmlParser(ServiceBase):
 
                 # Look for network IOCs in this block and tag them
                 for x in find_domains(persisted_urls_block):
-                    if tag_is_valid(DOMAIN_VALIDATOR, x):
+                    if tag_is_valid(DOMAIN_VALIDATOR, x.value.decode()):
                         kv_section.add_tag("network.static.domain", x.value)
 
                 for x in find_ips(persisted_urls_block):
-                    if tag_is_valid(IP_VALIDATOR, x):
+                    if tag_is_valid(IP_VALIDATOR, x.value.decode()):
                         kv_section.add_tag("network.static.ip", x.value)
 
                 for x in find_urls(persisted_urls_block):
-                    if tag_is_valid(URI_VALIDATOR, x):
+                    if tag_is_valid(URI_VALIDATOR, x.value.decode()):
                         kv_section.add_tag("network.static.uri", x.value)
 
             attachments_added = []
