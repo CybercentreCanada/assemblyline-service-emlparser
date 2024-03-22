@@ -25,6 +25,7 @@ from assemblyline_v4_service.common.utils import extract_passwords
 from bs4 import BeautifulSoup, Comment
 from mailparser.utils import msgconvert
 from multidecoder.decoders.network import EMAIL_RE, find_domains, find_emails, find_ips, find_urls
+from olefile.olefile import OleFileError
 
 from emlparser.outlookmsgfile import load as msg2eml
 
@@ -75,7 +76,8 @@ class EmlParser(ServiceBase):
 
     def get_outlook_msg(self, request: ServiceRequest, overrideEncoding=None) -> extract_msg.msg_classes.msg.MSGFile:
         try:
-            msg: extract_msg.msg_classes.msg.MSGFile = extract_msg.openMsg(
+            msg: extract_msg.msg_classes.msg.MSGFile = None
+            msg = extract_msg.openMsg(
                 request.file_path,
                 overrideEncoding=overrideEncoding,
                 errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL,
@@ -95,9 +97,20 @@ class EmlParser(ServiceBase):
             OSError,
             IndexError,
             UnicodeDecodeError,
+            OleFileError,
         ) as e1:
             if isinstance(e1, UnicodeDecodeError) and overrideEncoding is None:
-                previous_string_encoding = msg.stringEncoding
+                if msg is None:
+                    try:
+                        previous_string_encoding = extract_msg.msg_classes.msg.MSGFile(
+                            request.file_path,
+                            overrideEncoding=overrideEncoding,
+                            errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL,
+                        ).stringEncoding
+                    except Exception:
+                        raise e1
+                else:
+                    previous_string_encoding = msg.stringEncoding
                 msg = self.get_outlook_msg(request, overrideEncoding="cp1252")
                 msg.recipients
                 if msg:
@@ -111,7 +124,10 @@ class EmlParser(ServiceBase):
                     )
                 return msg
 
-            if isinstance(e1, OSError) and str(e1) != "incomplete OLE sector":
+            # OleFileError is an OSError, we can try to parse it to eml
+            if isinstance(e1, OleFileError):
+                pass
+            elif isinstance(e1, OSError) and str(e1) != "incomplete OLE sector":
                 raise
 
             if isinstance(e1, IndexError) and str(e1) == "tuple index out of range":
