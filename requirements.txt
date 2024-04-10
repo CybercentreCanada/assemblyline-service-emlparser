@@ -6,3 +6,4 @@ bs4
 lxml
 eml-parser
 multidecoder>=1.0.0,<2
+chardet

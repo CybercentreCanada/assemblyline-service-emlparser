@@ -111,15 +111,24 @@ class EmlParser(ServiceBase):
                         raise e1
                 else:
                     previous_string_encoding = msg.stringEncoding
-                msg = self.get_outlook_msg(request, overrideEncoding="cp1252")
-                msg.recipients
+
+                required_encoding = None
+                try:
+                    msg = self.get_outlook_msg(request, overrideEncoding="cp1252")
+                    msg.recipients
+                    required_encoding = "cp1252"
+                except Exception:
+                    msg = self.get_outlook_msg(request, overrideEncoding="chardet")
+                    msg.recipients
+                    required_encoding = "chardet"
+
                 if msg:
                     ResultSection(
                         "Wrong String Encoding Stored",
                         parent=request.result,
                         body=(
-                            f"String encoding {previous_string_encoding} was specified in outlook file, "
-                            "but cp1252 was needed."
+                            f"String encoding {previous_string_encoding} was specified in outlook file "
+                            f"but {required_encoding} was needed for {msg.stringEncoding}."
                         ),
                     )
                 return msg
