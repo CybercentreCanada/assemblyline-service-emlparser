@@ -16,10 +16,10 @@ import eml_parser
 import extract_msg
 from assemblyline.common import forge
 from assemblyline.common.str_utils import safe_str
-from assemblyline.odm import EMAIL_REGEX, FULL_URI, IP, IP_ONLY_REGEX, IP_REGEX, URI, Domain
+from assemblyline.odm import EMAIL_REGEX, FULL_URI, IP, IP_ONLY_REGEX, IP_REGEX, URI, Domain, DOMAIN_REGEX
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.request import ServiceRequest
-from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultKeyValueSection, ResultSection
+from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultKeyValueSection, ResultSection, ResultMultiSection, TableRow, TextSectionBody, TableSectionBody, KVSectionBody, ResultTableSection
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
 from assemblyline_v4_service.common.utils import extract_passwords
 from bs4 import BeautifulSoup, Comment
@@ -27,6 +27,8 @@ from mailparser.utils import msgconvert
 from multidecoder.decoders.network import EMAIL_RE, find_domains, find_emails, find_ips, find_urls
 from olefile.olefile import OleFileError
 
+from emlparser.headers.parser import EmailHeaders
+from emlparser.headers.validation import HeaderValidatorResponse, SpoofValidator, SpfHeaderValidation, HeaderValidatorResponseKind
 from emlparser.outlookmsgfile import load as msg2eml
 
 NETWORK_IOC_TYPES = ["uri", "email", "domain"]
@@ -750,6 +752,8 @@ class EmlParser(ServiceBase):
                 if re.match(EMAIL_REGEX, to.strip())
             ]
 
+            self.build_email_header_validation_section(header)
+
             if "date" in header:
                 kv_section.add_tag("network.email.date", str(header["date"]).strip())
 
@@ -913,3 +917,96 @@ class EmlParser(ServiceBase):
 
         else:
             self.log.warning("emlParser could not parse EML; no useful information in result's headers")
+
+    def build_email_header_validation_section(self, header: dict) -> ResultSection:
+        validation_section = ResultSection("Email Headers Validation")
+
+        spf_section = ResultTableSection("SPF Validation")
+        mx_section = ResultMultiSection("Sender MX Record Validation")
+        general_sender_section = ResultMultiSection("General Sender Validation")
+
+        parsed_headers = EmailHeaders(
+            sender=header["sender"].strip() if header.get("sender", None) else None,
+            recipient=header["from"].strip() if header.get("from", None) else None,
+            reply_to=header["reply-to"].strip() if header.get("reply-to", None) else None,
+            return_path=header["return-path"].strip() if header.get("return-path", None) else None,
+            received=header["header"]["received"] if header["header"].get("received") else [],
+            received_spf=header["header"]["received-spf"] if header["header"].get("received-spf") else [],
+        )
+        results = SpoofValidator(headers=parsed_headers).get_validation_results()
+
+        general_sender_kv_data = {}
+        mx_section.add_tag("network.static.domain", parsed_headers.received[-1].domain)
+
+        for result in results:
+            validation_section.add_line(result.kind.name)
+            match result.kind:
+                case HeaderValidatorResponseKind.MX_DOMAIN_FROMDOMAIN_NOT_FOUND:
+                    mx_section.add_section_part(TextSectionBody(f"Unable to extract fromdomain from headers"))
+                case HeaderValidatorResponseKind.MX_DOMAIN_NOT_MATCHING:
+                    mx_section.add_tag("network.static.domain", result.data['domain'])
+                    mx_section.add_section_part(TextSectionBody("Received domain not found in MX DNS records"))
+                    self.add_mx_records_to_section(mx_section, result, parsed_headers)
+                    mx_section.set_heuristic(5)
+                case HeaderValidatorResponseKind.MX_DOMAIN_RECORD_MISSING:
+                    mx_section.add_section_part(TextSectionBody(f"MX domain not found for {result.data}"))
+                    mx_section.set_heuristic(4)
+                case HeaderValidatorResponseKind.MX_DOMAIN_VALID:
+                    mx_section.add_tag("network.static.domain", result.data['domain'])
+                    mx_section.add_section_part(TextSectionBody("Received domain found in MX DNS records"))
+                    self.add_mx_records_to_section(mx_section, result, parsed_headers)
+                case HeaderValidatorResponseKind.FROM_SENDER_DIFFER:
+                    general_sender_kv_data["from"] = parsed_headers._from.address
+                    general_sender_kv_data["sender"] = parsed_headers.sender.address
+                    general_sender_section.add_section_part(TextSectionBody("From and Sender headers differ"))
+                    general_sender_section.set_heuristic(6)
+                case HeaderValidatorResponseKind.FROM_REPLY_TO_DIFFER:
+                    general_sender_kv_data["from"] = parsed_headers._from.address
+                    general_sender_kv_data["reply-to"] = parsed_headers.reply_to.address
+                    general_sender_section.add_section_part(TextSectionBody("From and Reply-To headers differ"))
+                    general_sender_section.set_heuristic(7)
+                case HeaderValidatorResponseKind.FROM_RETURN_PATH_DIFFER:
+                    general_sender_kv_data["from"] = parsed_headers._from.address
+                    general_sender_kv_data["return-path"] = parsed_headers.return_path.address
+                    general_sender_section.add_section_part(TextSectionBody("From and Return-Path headers differ"))
+                    general_sender_section.set_heuristic(8)
+                case kind if kind in SpfHeaderValidation.ACTION_RESULT_MAPPING.values():
+                    spf_section.add_tag("network.static.domain", result.data.domain)
+                    spf_section.add_row(TableRow(
+                        action=result.data.action,
+                        domain=result.data.domain,
+                        info=result.data.info,
+                        additional=result.data.additional
+                    ))
+
+                    if kind in SpfHeaderValidation.FAIL_RESPNSE_KINDS and not spf_section.heuristic:
+                        spf_section.set_heuristic(3)
+
+        if spf_section.section_body.body:
+            validation_section.add_subsection(spf_section)
+
+        if mx_section.section_body.body:
+            validation_section.add_subsection(mx_section)
+
+        if len(general_sender_kv_data) > 0:
+            kv = KVSectionBody()
+            kv.update_items(general_sender_kv_data)
+            general_sender_section.add_section_part(kv)
+            validation_section.add_subsection(general_sender_section)
+
+        return validation_section
+
+    def add_mx_records_to_multi_section(self, mx_section: ResultMultiSection, result: HeaderValidatorResponse, parsed_headers: EmailHeaders):
+        mx_kv_section = KVSectionBody()
+        mx_kv_section.set_item("From/Sender domain", result.data['domain'])
+        mx_kv_section.set_item("Last Received Domain (expected)", parsed_headers.received[-1].domain)
+        mx_section.add_section_part(mx_kv_section)
+
+        mx_section.add_section_part(TextSectionBody("MX record domains of From/Sender domain"))
+        mx_table_section = TableSectionBody()
+        for rdata in sorted(result.data['mx'], key=lambda data: int(data.preference)):
+            mx_table_section.add_row(TableRow(exchange=str(rdata.exchange), preference=str(rdata.preference)))
+            match = re.search(DOMAIN_REGEX, str(rdata.exchange))
+            if match:
+                mx_section.add_tag("network.static.domain", match.group(0))
+        mx_section.add_section_part(mx_table_section)

@@ -1,0 +1,165 @@
+from unittest import TestCase
+from typing import List
+
+from emlparser.headers.parser import EmailHeaders
+from emlparser.headers.validation import GeneralHeaderValidation, HeaderValidatorResponse, HeaderValidatorResponseKind, SpfHeaderValidation
+
+
+_any_email_address = "test@email.address"
+_any_received = """Received: from ID.prod.exchangelabs.com (2000:1000:500:f7::10) by
+ ID2.prod.exchangelabs.com with HTTPS; Sun, 20 Aug 2023 06:50:56
+ +0000"""
+_fail_received_spf = """Fail (protection.outlook.com: domain of redacted.co.com does
+ not designate 88.99.11.22 as permitted sender)
+ receiver=protection.outlook.com; client-ip=11.22.33.11;
+ helo=redacted.co.com;"""
+_softfail_received_spf = """SoftFail (protection.outlook.com: domain of transitioning
+ newsletters.cbc.ca discourages use of 44.33.66.123 as permitted sender)"""
+_none_received_spf = """None (protection.outlook.com: redacted.net does not designate
+ permitted sender hosts)"""
+_neutral_received_spf = """Neutral (ETC-PAR-2.canada.net.pk: 111.123.77.22 is neither
+ permitted nor denied by domain of info@redacted.com)"""
+_permerror_received_spf = """PermError (protection.outlook.com: domain of
+ redacted.com used an invalid SPF mechanism)"""
+_temperror_received_spf = """TempError (protection.outlook.com: error in processing during
+ lookup of redacted.ca: DNS Timeout)"""
+_pass_received_spf = """pass (google.com: domain of return@redacted.ca designates 13.2.31.1 as permitted sender) client-ip=13.2.31.1;"""
+
+def _build_email_headers(
+    sender: str = _any_email_address,
+    _from: str = _any_email_address,
+    reply_to: str = _any_email_address,
+    return_path: str = _any_email_address,
+    received: List[str] = [],
+    received_spf: List[str] = [],
+) -> EmailHeaders:
+    headers = EmailHeaders(
+        sender=sender,
+        _from=_from,
+        reply_to=reply_to,
+        return_path=return_path,
+        received=received,
+        received_spf=received_spf
+    )
+    return headers
+
+def assert_kind_in_responses(kind: HeaderValidatorResponseKind, responses: List[HeaderValidatorResponse]):
+    response_kinds = [response.kind for response in responses]
+    assert kind in response_kinds
+
+class TestGeneralHeaderValidation(TestCase):
+    def test_given_valid_headers_when_calling_validate_then_results_is_empty(self):
+        headers = _build_email_headers()
+
+        results = GeneralHeaderValidation().validate(headers=headers)
+
+        self.assertEqual(results, [])
+
+    def test_given_no_from_address_when_calling_validate_then_results_contains_missing_from_response(self):
+        headers = _build_email_headers(_from="")
+
+        results = GeneralHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.MISSING_FROM, results)
+
+    def test_given_differing_sender_and_recipient_when_calling_validate_then_results_contains_from_sender_differ_response(self):
+        headers = _build_email_headers(sender="different@email.address")
+
+        results = GeneralHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.FROM_SENDER_DIFFER, results)
+
+    def test_given_differing_reply_to_and_recipient_when_calling_validate_then_results_contains_from_reply_to_differ_response(self):
+        headers = _build_email_headers(reply_to="different@email.address")
+
+        results = GeneralHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.FROM_REPLY_TO_DIFFER, results)
+
+    def test_given_differing_return_path_and_recipient_when_calling_validate_then_results_contains_from_return_path_differ_response(self):
+        headers = _build_email_headers(return_path="different@email.address")
+
+        results = GeneralHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.FROM_RETURN_PATH_DIFFER, results)
+
+    def test_given_all_are_different_when_calling_validate_then_results_contains_all_responses(self):
+        headers = _build_email_headers(
+            sender="sender@email.address",
+            reply_to="reply.to@email.address",
+            return_path="return.path@email.address"
+        )
+
+        results = GeneralHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.FROM_SENDER_DIFFER, results)
+        assert_kind_in_responses(HeaderValidatorResponseKind.FROM_REPLY_TO_DIFFER, results)
+        assert_kind_in_responses(HeaderValidatorResponseKind.FROM_RETURN_PATH_DIFFER, results)
+
+class TestSpfHeaderValidation(TestCase):
+    def test_given_no_received_spf_when_calling_validate_then_results_is_empty(self):
+        headers = _build_email_headers(received_spf=[])
+
+        results = SpfHeaderValidation().validate(headers=headers)
+
+        self.assertEqual(results, [])
+
+    def test_given_fail_received_spf_when_calling_validate_then_results_contains_fail_spf_response(self):
+        headers = _build_email_headers(received_spf=[_fail_received_spf])
+
+        results = SpfHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.FAIL_SPF, results)
+
+
+    def test_given_softfail_received_spf_when_calling_validate_then_results_contains_softfail_spf_response(self):
+        headers = _build_email_headers(received_spf=[_softfail_received_spf])
+
+        results = SpfHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.SOFTFAIL_SPF, results)
+
+    def test_given_none_received_spf_when_calling_validate_then_results_contains_none_spf_response(self):
+        headers = _build_email_headers(received_spf=[_none_received_spf])
+
+        results = SpfHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.NONE_SPF, results)
+
+    def test_given_neutral_received_spf_when_calling_validate_then_results_contains_neutral_spf_response(self):
+        headers = _build_email_headers(received_spf=[_neutral_received_spf])
+
+        results = SpfHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.NEUTRAL_SPF, results)
+
+    def test_given_permerror_received_spf_when_calling_validate_then_results_contains_permerror_spf_response(self):
+        headers = _build_email_headers(received_spf=[_permerror_received_spf])
+
+        results = SpfHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.PERMERROR_SPF, results)
+
+    def test_given_temperror_received_spf_when_calling_validate_then_results_contains_temperror_spf_response(self):
+        headers = _build_email_headers(received_spf=[_temperror_received_spf])
+
+        results = SpfHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.TEMPERROR_SPF, results)
+
+    def test_given_pass_received_spf_when_calling_validate_then_results_contains_pass_spf_response(self):
+        headers = _build_email_headers(received_spf=[_pass_received_spf])
+
+        results = SpfHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.PASS_SPF, results)
+
+    def test_given_multiple_received_spf_when_calling_validate_then_results_contains_multiple_responses(self):
+        headers = _build_email_headers(received_spf=[_pass_received_spf, _softfail_received_spf, _permerror_received_spf, _none_received_spf])
+
+        results = SpfHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.PASS_SPF, results)
+        assert_kind_in_responses(HeaderValidatorResponseKind.SOFTFAIL_SPF, results)
+        assert_kind_in_responses(HeaderValidatorResponseKind.PERMERROR_SPF, results)
+        assert_kind_in_responses(HeaderValidatorResponseKind.NONE_SPF, results)
