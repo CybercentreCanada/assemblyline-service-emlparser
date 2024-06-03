@@ -5,8 +5,10 @@ import dns.resolver
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import List
+from dataclasses import dataclass
+from typing import Any, Optional
 
-from .parser import EmailHeaders
+from emlparser.headers.parser import EmailHeaders, DnsResolver
 
 
 class HeaderValidatorResponseKind(Enum):
@@ -29,8 +31,6 @@ class HeaderValidatorResponseKind(Enum):
     MX_DOMAIN_FROMDOMAIN_NOT_FOUND=17
     MX_DOMAIN_VALID=18
 
-from dataclasses import dataclass
-from typing import Any, Optional
 
 @dataclass
 class HeaderValidatorResponse:
@@ -59,16 +59,19 @@ class GeneralHeaderValidation(HeaderValidator):
 
         return responses
 
+
 class MxHeaderValidation(HeaderValidator):
+    def __init__(self, dns_resolver: DnsResolver):
+        self._dns_resolver = dns_resolver
+
     def validate(self, headers: EmailHeaders) -> List[HeaderValidatorResponse]:
         fromdomain = None
 
-        if headers.sender.address != "":
-            match = re.search(r"(\w+\.\w+)$", headers.sender.address)
-            if not match:
-                logging.error("Sender header regex didn't match")
-            else:
-                fromdomain = match.group(1)
+        match = re.search(r"(\w+\.\w+)$", headers.sender.address)
+        if not match:
+            logging.error("Sender header regex didn't match")
+        else:
+            fromdomain = match.group(1)
 
         if not fromdomain:
             match = re.search(r"(\w+\.\w+)$", headers._from.address)
@@ -80,7 +83,7 @@ class MxHeaderValidation(HeaderValidator):
         if not fromdomain:
             return [HeaderValidatorResponse(kind=HeaderValidatorResponseKind.MX_DOMAIN_FROMDOMAIN_NOT_FOUND)]
 
-        mx = dns.resolver.query(fromdomain, 'MX')
+        mx = self._dns_resolver.query(fromdomain, 'MX')
 
         if not mx:
             return [HeaderValidatorResponse(kind=HeaderValidatorResponseKind.MX_DOMAIN_RECORD_MISSING, data=fromdomain)]
@@ -99,8 +102,8 @@ class MxHeaderValidation(HeaderValidator):
 
 class SpfHeaderValidation(HeaderValidator):
     ACTION_RESULT_MAPPING = {
-        'fail': HeaderValidatorResponseKind.FAIL_SPF, # ~
-        'softfail': HeaderValidatorResponseKind.SOFTFAIL_SPF, # -
+        'fail': HeaderValidatorResponseKind.FAIL_SPF,
+        'softfail': HeaderValidatorResponseKind.SOFTFAIL_SPF,
         'none': HeaderValidatorResponseKind.NONE_SPF,
         'neutral': HeaderValidatorResponseKind.NEUTRAL_SPF,
         'permerror': HeaderValidatorResponseKind.PERMERROR_SPF,
@@ -127,7 +130,7 @@ class SpoofValidator:
         self.headers = headers
         self.validators: List[HeaderValidator] = [
             GeneralHeaderValidation(),
-            MxHeaderValidation(),
+            MxHeaderValidation(dns_resolver=DnsResolver()),
             SpfHeaderValidation()
         ]
 

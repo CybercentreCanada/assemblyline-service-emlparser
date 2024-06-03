@@ -3,12 +3,22 @@ import email
 import re
 import logging
 
+import dns.rdata
+import dns.rdatatype
 import dns.resolver
 import dns.reversename
 
 from email.utils import parseaddr
 from typing import List, Optional, Union
 from dataclasses import dataclass
+
+
+class DnsResolver:
+    def reverse_ip_lookup(self, address: str) -> str:
+        return str(dns.reversename.from_address(address)).strip(".")
+
+    def query(self, qname: str, rdtype: dns.rdatatype.RdataType) -> dns.resolver.Answer:
+        return dns.resolver.query(qname, rdtype)
 
 
 @dataclass
@@ -39,7 +49,7 @@ class Received:
     domain: str
 
     @staticmethod
-    def parse(raw_received: str) -> Optional["Received"]:
+    def parse(raw_received: str, dns_resolver: DnsResolver) -> Optional["Received"]:
         match = re.search(r"by\s+(\S*?)(?:\s+\(.*?\))?\s+", raw_received)
         if not match:
             logging.error("Received header regex didn't match")
@@ -54,7 +64,7 @@ class Received:
         bydomain = match.group(1)
         match = re.search(r"\.\d+$", bydomain)
         if match:
-            bydomain = str(dns.reversename.from_address(bydomain)).strip('.')
+            bydomain = dns_resolver.reverse_ip_lookup(bydomain)
 
         return Received(
             domain=bydomain,
@@ -69,7 +79,8 @@ class EmailHeaders:
         reply_to: Optional[str],
         return_path: Optional[str],
         received: Optional[List[str]],
-        received_spf: Optional[List[str]]
+        received_spf: Optional[List[str]],
+        dns_resolver: DnsResolver,
     ):
         self.sender = Sender.from_str(sender)
         self._from = Sender.from_str(_from)
@@ -83,7 +94,7 @@ class EmailHeaders:
 
         self.received: List[Received] = []
         for raw in (received or []):
-            if parsed := Received.parse(raw):
+            if parsed := Received.parse(raw, dns_resolver):
                 self.received.append(parsed)
 
 @dataclass

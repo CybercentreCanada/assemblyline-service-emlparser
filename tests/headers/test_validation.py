@@ -1,8 +1,10 @@
 from unittest import TestCase
+from unittest.mock import MagicMock
 from typing import List
+from dataclasses import dataclass
 
-from emlparser.headers.parser import EmailHeaders
-from emlparser.headers.validation import GeneralHeaderValidation, HeaderValidatorResponse, HeaderValidatorResponseKind, SpfHeaderValidation
+from emlparser.headers.parser import EmailHeaders, DnsResolver
+from emlparser.headers.validation import GeneralHeaderValidation, HeaderValidatorResponse, HeaderValidatorResponseKind, SpfHeaderValidation, MxHeaderValidation
 
 
 _any_email_address = "test@email.address"
@@ -25,27 +27,37 @@ _temperror_received_spf = """TempError (protection.outlook.com: error in process
  lookup of redacted.ca: DNS Timeout)"""
 _pass_received_spf = """pass (google.com: domain of return@redacted.ca designates 13.2.31.1 as permitted sender) client-ip=13.2.31.1;"""
 
+
+@dataclass
+class TestMxRdata:
+    exchange: str
+
+
 def _build_email_headers(
     sender: str = _any_email_address,
     _from: str = _any_email_address,
     reply_to: str = _any_email_address,
     return_path: str = _any_email_address,
-    received: List[str] = [],
-    received_spf: List[str] = [],
+    received: List[str] = None,
+    received_spf: List[str] = None,
+    dns_resolver: DnsResolver = None,
 ) -> EmailHeaders:
     headers = EmailHeaders(
         sender=sender,
         _from=_from,
         reply_to=reply_to,
         return_path=return_path,
-        received=received,
-        received_spf=received_spf
+        received=received or [],
+        received_spf=received_spf or [],
+        dns_resolver=dns_resolver or DnsResolver()
     )
     return headers
+
 
 def assert_kind_in_responses(kind: HeaderValidatorResponseKind, responses: List[HeaderValidatorResponse]):
     response_kinds = [response.kind for response in responses]
     assert kind in response_kinds
+
 
 class TestGeneralHeaderValidation(TestCase):
     def test_given_valid_headers_when_calling_validate_then_results_is_empty(self):
@@ -163,3 +175,53 @@ class TestSpfHeaderValidation(TestCase):
         assert_kind_in_responses(HeaderValidatorResponseKind.SOFTFAIL_SPF, results)
         assert_kind_in_responses(HeaderValidatorResponseKind.PERMERROR_SPF, results)
         assert_kind_in_responses(HeaderValidatorResponseKind.NONE_SPF, results)
+
+
+class TestMxHeaderValidation(TestCase):
+    def test_given_empty_sender_and_from_when_calling_validate_then_results_contains_fromdomain_not_found(self):
+        dns_resolver = DnsResolver()
+        dns_resolver.query = MagicMock(return_value=None)
+        headers = _build_email_headers(received=[_any_received], sender="", _from="")
+
+        results = MxHeaderValidation(dns_resolver=DnsResolver()).validate(headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.MX_DOMAIN_FROMDOMAIN_NOT_FOUND, results)
+        dns_resolver.query.assert_not_called()
+
+    def test_given_valid_sender_when_calling_validate_then_results_contains_mx_domain_record_missing(self):
+        dns_resolver = DnsResolver()
+        dns_resolver.query = MagicMock(return_value=None)
+        headers = _build_email_headers(received=[_any_received], sender="sender@test.com")
+
+        results = MxHeaderValidation(dns_resolver=dns_resolver).validate(headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.MX_DOMAIN_RECORD_MISSING, results)
+        self.assertEqual(results[0].data, "test.com")
+        dns_resolver.query.assert_called_once_with("test.com", "MX")
+
+    def test_given_valid_sender_and_non_matching_mx_records_calling_validate_then_results_contains_not_matching_mx_domain(self):
+        query_response = [TestMxRdata(exchange="test.com.")]
+        dns_resolver = DnsResolver()
+        dns_resolver.query = MagicMock(return_value=query_response)
+        headers = _build_email_headers(received=[_any_received], sender="sender@test.com")
+
+        results = MxHeaderValidation(dns_resolver=dns_resolver).validate(headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.MX_DOMAIN_NOT_MATCHING, results)
+        self.assertEqual(results[0].data["mx"], query_response)
+        self.assertEqual(results[0].data["domain"], "test.com")
+        dns_resolver.query.assert_called_once_with("test.com", "MX")
+
+    def test_given_valid_from_and_mx_records_calling_validate_then_results_contains_valid_mx_domain(self):
+        query_response = [TestMxRdata(exchange="exchangelabs.com.")]
+        dns_resolver = DnsResolver()
+        dns_resolver.query = MagicMock(return_value=query_response)
+        headers = _build_email_headers(received=[_any_received], sender="", _from="from@example.com")
+
+        results = MxHeaderValidation(dns_resolver=dns_resolver).validate(headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.MX_DOMAIN_VALID, results)
+        self.assertEqual(results[0].data["mx"], query_response)
+        self.assertEqual(results[0].data["domain"], "example.com")
+        self.assertEqual(results[0].data["exchange"], "exchangelabs.com.")
+        dns_resolver.query.assert_called_once_with("example.com", "MX")
