@@ -118,7 +118,7 @@ class Sender:
                 address = data[0]
 
         return Sender(
-            name=name,
+            name=name.strip(),
             address=address.lstrip("<").rstrip(">")
         )
 
