@@ -199,6 +199,7 @@ class EmlParser(ServiceBase):
         headers_section.set_body(json.dumps(headers, default=self.json_serial))
 
         validation_section = self.build_email_header_validation_section(
+            subject=headers.get("Subject"),
             sender=headers.get("Sender"),
             _from=headers.get("From"),
             reply_to=headers.get("Reply-To"),
@@ -766,6 +767,7 @@ class EmlParser(ServiceBase):
 
             parsed_headers = email.message_from_bytes(content_str)
             validation_section = self.build_email_header_validation_section(
+                subject=parsed_headers.get("subject"),
                 sender=parsed_headers.get("sender"),
                 _from=parsed_headers.get("from"),
                 reply_to=parsed_headers.get("reply-to"),
@@ -941,6 +943,7 @@ class EmlParser(ServiceBase):
 
     def build_email_header_validation_section(
         self,
+        subject: str,
         sender: Optional[str],
         _from: Optional[str],
         reply_to: Optional[str],
@@ -955,6 +958,7 @@ class EmlParser(ServiceBase):
         general_sender_section = ResultMultiSection("General Sender Validation")
 
         parsed_headers = EmailHeaders(
+            subject=subject,
             sender=sender,
             _from=_from,
             reply_to=reply_to,
@@ -1006,6 +1010,11 @@ class EmlParser(ServiceBase):
                     section.set_item("from address", parsed_headers._from.address)
                     section.set_item("from display name", parsed_headers._from.name)
                     section.set_heuristic(9)
+                    general_sender_section.add_subsection(section)
+                case HeaderValidatorResponseKind.UNCOMMON_CHARACTERS_SUBJECT:
+                    section = ResultKeyValueSection("Subject contains non standard characters")
+                    section.set_item("subject", parsed_headers.subject)
+                    section.set_heuristic(10)
                     general_sender_section.add_subsection(section)
                 case kind if kind in SpfHeaderValidation.ACTION_RESULT_MAPPING.values():
                     spf_section.add_tag("network.static.domain", result.data.domain)

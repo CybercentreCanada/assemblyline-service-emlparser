@@ -7,6 +7,7 @@ from emlparser.headers.parser import EmailHeaders, DnsResolver
 from emlparser.headers.validation import GeneralHeaderValidation, HeaderValidatorResponse, HeaderValidatorResponseKind, SpfHeaderValidation, MxHeaderValidation
 
 
+_any_subject = "A test subject"
 _any_email_address = "test@email.address"
 _any_received = """from ID.prod.exchangelabs.com (2000:1000:500:f7::10) by
  ID2.prod.exchangelabs.com with HTTPS; Sun, 20 Aug 2023 06:50:56
@@ -34,6 +35,7 @@ class TestMxRdata:
 
 
 def _build_email_headers(
+    subject: str = _any_subject,
     sender: str = _any_email_address,
     _from: str = _any_email_address,
     reply_to: str = _any_email_address,
@@ -42,7 +44,8 @@ def _build_email_headers(
     received_spf: List[str] = None,
     dns_resolver: DnsResolver = None,
 ) -> EmailHeaders:
-    headers = EmailHeaders(
+    return EmailHeaders(
+        subject=subject,
         sender=sender,
         _from=_from,
         reply_to=reply_to,
@@ -51,7 +54,6 @@ def _build_email_headers(
         received_spf=received_spf or [],
         dns_resolver=dns_resolver or DnsResolver()
     )
-    return headers
 
 
 def assert_kind_in_responses(kind: HeaderValidatorResponseKind, responses: List[HeaderValidatorResponse]):
@@ -97,11 +99,31 @@ class TestGeneralHeaderValidation(TestCase):
 
     def test_given_differ_display_name_and_email_within_from_header_when_calling_validate_then_results_contains_email_display_name_differ_response(self):
         headers = _build_email_headers(_from="test@spoof.ca <test@real.ca>")
-        print(headers._from)
 
         results = GeneralHeaderValidation().validate(headers=headers)
 
         assert_kind_in_responses(HeaderValidatorResponseKind.EMAIL_DISPLAY_NAME_DIFFER, results)
+
+    def test_given_emojis_in_subject_when_calling_validate_then_results_contains_uncommon_characters_subject_response(self):
+        headers = _build_email_headers(subject="🇨🇦 Welcome to Canada. Accept this money 🤑")
+
+        results = GeneralHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.UNCOMMON_CHARACTERS_SUBJECT, results)
+
+    def test_given_uncommon_chars_in_subject_when_calling_validate_then_results_contains_uncommon_characters_subject_response(self):
+        headers = _build_email_headers(subject="Get your b𝒾tcoin")
+
+        results = GeneralHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.UNCOMMON_CHARACTERS_SUBJECT, results)
+
+    def test_given_valid_subject_when_calling_validate_then_results_do_contains_uncommon_characters_subject_response(self):
+        headers = _build_email_headers(subject="Présentation de cybersécurité le 14 mars 2022! | Cybersecurity presentation on March 14, 2022?")
+
+        results = GeneralHeaderValidation().validate(headers=headers)
+
+        self.assertEqual(results, [])
 
     def test_given_all_are_different_when_calling_validate_then_results_contains_all_responses(self):
         headers = _build_email_headers(

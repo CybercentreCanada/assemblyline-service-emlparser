@@ -70,21 +70,27 @@ heuristics:
 
   - heur_id: 7
     name: From and Reply-To headers differ
-    score: 50
+    score: 10
     filetype: ".*"
     description: Email addresses of the From and Reply-To headers differ, indicating potential spoofing
 
   - heur_id: 8
     name: From and Return-Path headers differ
-    score: 50
+    score: 10
     filetype: ".*"
     description: Email addresses of the From and Return-Path headers differ, indicating potential spoofing
 
   - heur_id: 9
     name: From name and email differ
-    score: 50
+    score: 10
     filetype: ".*"
     description: Display name of the From header is present and is different than the email address of From header
+
+  - heur_id: 10
+    name: Subject contains non standard characters
+    score: 10
+    filetype: ".*"
+    description: Subject of email contains non alphanumeric/symbols indicating possible evasion of spam filters and email analysis tools
 
 docker_config:
   image: ${REGISTRY}cccs/assemblyline-service-emlparser:$SERVICE_TAG

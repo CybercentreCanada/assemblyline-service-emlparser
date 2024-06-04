@@ -93,6 +93,13 @@ class TestSenderParser(TestCase):
 
 
 class TestEmailHeaders(TestCase):
+    def test_given_subject_when_parsing_then_subject_saved(self):
+        subject = "passed subject"
+
+        headers = self._build_email_headers(subject=subject)
+
+        self.assertEqual(headers.subject, subject)
+
     @patch("emlparser.headers.parser.Sender.parse")
     def test_given_sender_when_parsing_then_sender_parser_called_with_sender(self, mocked_sender_parse):
         sender = "any sender data"
@@ -152,6 +159,7 @@ class TestEmailHeaders(TestCase):
 
     def _build_email_headers(
         self,
+        subject: str = "a test subject",
         sender: Optional[str] = None,
         _from: Optional[str] = None,
         reply_to: Optional[str] = None,
@@ -161,6 +169,7 @@ class TestEmailHeaders(TestCase):
         dns_resolver: Optional[DnsResolver] = None,
     ):
         return EmailHeaders(
+            subject=subject,
             sender=sender,
             _from=_from,
             reply_to=reply_to,

@@ -73,6 +73,7 @@ class Received:
 class EmailHeaders:
     def __init__(
         self,
+        subject: str,
         sender: Optional[str],
         _from: Optional[str],
         reply_to: Optional[str],
@@ -81,6 +82,7 @@ class EmailHeaders:
         received_spf: Optional[List[str]],
         dns_resolver: DnsResolver,
     ):
+        self.subject = _string_clean(subject)
         self.sender = Sender.parse(sender)
         self._from = Sender.parse(_from)
         self.reply_to = Sender.parse(reply_to)

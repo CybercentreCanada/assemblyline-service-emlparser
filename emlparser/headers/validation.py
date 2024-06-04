@@ -11,6 +11,7 @@ from assemblyline.odm import Email
 from emlparser.headers.parser import EmailHeaders, DnsResolver
 
 EMAIL_VALIDATOR = Email()
+COMMON_CHARACTERS = re.compile(r"^[a-z\s\d\.\*\-\(\)\[\]\&\^\%\=\+\?\!\,\|\\\/àâçéèêëîïôûùüÿñæœ]*$", flags=re.IGNORECASE)
 
 
 class HeaderValidatorResponseKind(Enum):
@@ -22,6 +23,7 @@ class HeaderValidatorResponseKind(Enum):
     SENDER_HEADER_PARSING_ISSUE = auto()
     FROM_HEADER_PARSING_ISSUE = auto()
     EMAIL_DISPLAY_NAME_DIFFER = auto()
+    UNCOMMON_CHARACTERS_SUBJECT = auto()
     MX_DOMAIN_RECORD_MISSING = auto()
     MX_DOMAIN_NOT_MATCHING = auto()
     MX_DOMAIN_FROMDOMAIN_NOT_FOUND=auto()
@@ -61,6 +63,8 @@ class GeneralHeaderValidation(HeaderValidator):
             responses.append(HeaderValidatorResponse(kind=HeaderValidatorResponseKind.FROM_RETURN_PATH_DIFFER))
         if headers._from.name and (name_email := EMAIL_VALIDATOR.check(headers._from.name)) and name_email != headers._from.address:
             responses.append(HeaderValidatorResponse(kind=HeaderValidatorResponseKind.EMAIL_DISPLAY_NAME_DIFFER))
+        if not COMMON_CHARACTERS.match(headers.subject):
+            responses.append(HeaderValidatorResponse(kind=HeaderValidatorResponseKind.UNCOMMON_CHARACTERS_SUBJECT))
 
         return responses
 
