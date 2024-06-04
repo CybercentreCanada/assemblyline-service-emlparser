@@ -1,5 +1,6 @@
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
+from typing import Optional, List
 
 from emlparser.headers.parser import ReceivedSpf, Received, EmailHeaders, Sender, DnsResolver
 
@@ -89,3 +90,82 @@ class TestSenderParser(TestCase):
 
         self.assertEqual(results.name, "Test Name of User")
         self.assertEqual(results.address, "email@test.com")
+
+
+class TestEmailHeaders(TestCase):
+    @patch("emlparser.headers.parser.Sender.parse")
+    def test_given_sender_when_parsing_then_sender_parser_called_with_sender(self, mocked_sender_parse):
+        sender = "any sender data"
+
+        self._build_email_headers(sender=sender)
+
+        mocked_sender_parse.assert_any_call(sender)
+
+    @patch("emlparser.headers.parser.Sender.parse")
+    def test_given_from_when_parsing_then_sender_parser_called_with_from(self, mocked_sender_parse):
+        _from = "any from data"
+
+        self._build_email_headers(sender=_from)
+
+        mocked_sender_parse.assert_any_call(_from)
+
+    @patch("emlparser.headers.parser.Sender.parse")
+    def test_given_reply_to_when_parsing_then_sender_parser_called_with_reply_to(self, mocked_sender_parse):
+        reply_to = "any reply_to data"
+
+        self._build_email_headers(sender=reply_to)
+
+        mocked_sender_parse.assert_any_call(reply_to)
+
+    @patch("emlparser.headers.parser.Sender.parse")
+    def test_given_return_path_when_parsing_then_sender_parser_called_with_return_path(self, mocked_sender_parse):
+        return_path = "any return_path data"
+
+        self._build_email_headers(sender=return_path)
+
+        mocked_sender_parse.assert_any_call(return_path)
+
+    @patch("emlparser.headers.parser.ReceivedSpf.parse")
+    def test_given_received_spf_when_parsing_then_received_spf_parser_called_n_times_with_received_spf_data(self, mocked_sender_parse):
+        received_spf = [
+            "any received_spf data",
+            "another different received_spf data"
+        ]
+
+        self._build_email_headers(received_spf=received_spf)
+
+        mocked_sender_parse.assert_any_call(received_spf[0])
+        mocked_sender_parse.assert_any_call(received_spf[1])
+
+    @patch("emlparser.headers.parser.Received.parse")
+    def test_given_received_when_parsing_then_received_parser_called_n_times_with_received_data(self, mocked_sender_parse):
+        received = [
+            "any received data",
+            "another different received data"
+        ]
+        dns_resolver = DnsResolver()
+
+        self._build_email_headers(received=received, dns_resolver=dns_resolver)
+
+        mocked_sender_parse.assert_any_call(received[0], dns_resolver)
+        mocked_sender_parse.assert_any_call(received[1], dns_resolver)
+
+    def _build_email_headers(
+        self,
+        sender: Optional[str] = None,
+        _from: Optional[str] = None,
+        reply_to: Optional[str] = None,
+        return_path: Optional[str] = None,
+        received: Optional[List[str]] = None,
+        received_spf: Optional[List[str]] = None,
+        dns_resolver: Optional[DnsResolver] = None,
+    ):
+        return EmailHeaders(
+            sender=sender,
+            _from=_from,
+            reply_to=reply_to,
+            return_path=return_path,
+            received=received,
+            received_spf=received_spf,
+            dns_resolver=dns_resolver or DnsResolver()
+        )
