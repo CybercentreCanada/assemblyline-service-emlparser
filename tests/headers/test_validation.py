@@ -8,7 +8,7 @@ from emlparser.headers.validation import GeneralHeaderValidation, HeaderValidato
 
 
 _any_email_address = "test@email.address"
-_any_received = """Received: from ID.prod.exchangelabs.com (2000:1000:500:f7::10) by
+_any_received = """from ID.prod.exchangelabs.com (2000:1000:500:f7::10) by
  ID2.prod.exchangelabs.com with HTTPS; Sun, 20 Aug 2023 06:50:56
  +0000"""
 _fail_received_spf = """Fail (protection.outlook.com: domain of redacted.co.com does

@@ -82,10 +82,10 @@ class EmailHeaders:
         received_spf: Optional[List[str]],
         dns_resolver: DnsResolver,
     ):
-        self.sender = Sender.from_str(sender)
-        self._from = Sender.from_str(_from)
-        self.reply_to = Sender.from_str(reply_to)
-        self.return_path = Sender.from_str(return_path)
+        self.sender = Sender.parse(sender)
+        self._from = Sender.parse(_from)
+        self.reply_to = Sender.parse(reply_to)
+        self.return_path = Sender.parse(return_path)
 
         self.received_spf: List[ReceivedSpf] = []
         for raw in (received_spf or []):
@@ -103,7 +103,7 @@ class Sender:
     address: str
 
     @staticmethod
-    def from_str(data: Optional[str]) -> "Sender":
+    def parse(data: Optional[str]) -> "Sender":
         (name, address) = parseaddr(_string_clean(data))
 
         return Sender(
