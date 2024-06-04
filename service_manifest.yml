@@ -80,6 +80,12 @@ heuristics:
     filetype: ".*"
     description: Email addresses of the From and Return-Path headers differ, indicating potential spoofing
 
+  - heur_id: 9
+    name: From name and email differ
+    score: 50
+    filetype: ".*"
+    description: Display name of the From header is present and is different than the email address of From header
+
 docker_config:
   image: ${REGISTRY}cccs/assemblyline-service-emlparser:$SERVICE_TAG
   cpu_cores: 1

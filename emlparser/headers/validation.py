@@ -1,35 +1,38 @@
 import re
 import logging
-import dns.resolver
 
 from abc import ABC, abstractmethod
-from enum import Enum
+from enum import Enum, auto
 from typing import List
 from dataclasses import dataclass
 from typing import Any, Optional
 
+from assemblyline.odm import Email
 from emlparser.headers.parser import EmailHeaders, DnsResolver
+
+EMAIL_VALIDATOR = Email()
 
 
 class HeaderValidatorResponseKind(Enum):
-    MISSING_FROM = 1
-    FROM_SENDER_DIFFER = 2
-    FROM_REPLY_TO_DIFFER = 3
-    FROM_RETURN_PATH_DIFFER = 4
-    RECEIVED_HEADER_PARSING_ISSUE = 5
-    SENDER_HEADER_PARSING_ISSUE = 6
-    FROM_HEADER_PARSING_ISSUE = 7
-    MX_DOMAIN_RECORD_MISSING = 8
-    MX_DOMAIN_NOT_MATCHING = 9
-    FAIL_SPF = 10
-    SOFTFAIL_SPF = 11
-    NONE_SPF = 12
-    NEUTRAL_SPF = 13
-    PERMERROR_SPF = 14
-    TEMPERROR_SPF = 15
-    PASS_SPF = 16
-    MX_DOMAIN_FROMDOMAIN_NOT_FOUND=17
-    MX_DOMAIN_VALID=18
+    MISSING_FROM = auto()
+    FROM_SENDER_DIFFER = auto()
+    FROM_REPLY_TO_DIFFER = auto()
+    FROM_RETURN_PATH_DIFFER = auto()
+    RECEIVED_HEADER_PARSING_ISSUE = auto()
+    SENDER_HEADER_PARSING_ISSUE = auto()
+    FROM_HEADER_PARSING_ISSUE = auto()
+    EMAIL_DISPLAY_NAME_DIFFER = auto()
+    MX_DOMAIN_RECORD_MISSING = auto()
+    MX_DOMAIN_NOT_MATCHING = auto()
+    MX_DOMAIN_FROMDOMAIN_NOT_FOUND=auto()
+    MX_DOMAIN_VALID=auto()
+    FAIL_SPF = auto()
+    SOFTFAIL_SPF = auto()
+    NONE_SPF = auto()
+    NEUTRAL_SPF = auto()
+    PERMERROR_SPF = auto()
+    TEMPERROR_SPF = auto()
+    PASS_SPF = auto()
 
 
 @dataclass
@@ -56,6 +59,8 @@ class GeneralHeaderValidation(HeaderValidator):
             responses.append(HeaderValidatorResponse(kind=HeaderValidatorResponseKind.FROM_REPLY_TO_DIFFER))
         if headers.return_path.address and headers._from.address != headers.return_path.address:
             responses.append(HeaderValidatorResponse(kind=HeaderValidatorResponseKind.FROM_RETURN_PATH_DIFFER))
+        if headers._from.name and (name_email := EMAIL_VALIDATOR.check(headers._from.name)) and name_email != headers._from.address:
+            responses.append(HeaderValidatorResponse(kind=HeaderValidatorResponseKind.EMAIL_DISPLAY_NAME_DIFFER))
 
         return responses
 

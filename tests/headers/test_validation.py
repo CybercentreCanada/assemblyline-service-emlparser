@@ -95,6 +95,14 @@ class TestGeneralHeaderValidation(TestCase):
 
         assert_kind_in_responses(HeaderValidatorResponseKind.FROM_RETURN_PATH_DIFFER, results)
 
+    def test_given_differ_display_name_and_email_within_from_header_when_calling_validate_then_results_contains_email_display_name_differ_response(self):
+        headers = _build_email_headers(_from="test@spoof.ca <test@real.ca>")
+        print(headers._from)
+
+        results = GeneralHeaderValidation().validate(headers=headers)
+
+        assert_kind_in_responses(HeaderValidatorResponseKind.EMAIL_DISPLAY_NAME_DIFFER, results)
+
     def test_given_all_are_different_when_calling_validate_then_results_contains_all_responses(self):
         headers = _build_email_headers(
             sender="sender@email.address",

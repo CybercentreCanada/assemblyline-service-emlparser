@@ -956,20 +956,25 @@ class EmlParser(ServiceBase):
                     mx_section.add_section_part(TextSectionBody("Received domain found in MX DNS records"))
                     self.add_mx_records_to_section(mx_section, result, parsed_headers)
                 case HeaderValidatorResponseKind.FROM_SENDER_DIFFER:
-                    general_sender_kv_data["from"] = parsed_headers._from.address
-                    general_sender_kv_data["sender"] = parsed_headers.sender.address
+                    general_sender_kv_data["from address"] = parsed_headers._from.address
+                    general_sender_kv_data["sender address"] = parsed_headers.sender.address
                     general_sender_section.add_section_part(TextSectionBody("From and Sender headers differ"))
                     general_sender_section.set_heuristic(6)
                 case HeaderValidatorResponseKind.FROM_REPLY_TO_DIFFER:
-                    general_sender_kv_data["from"] = parsed_headers._from.address
-                    general_sender_kv_data["reply-to"] = parsed_headers.reply_to.address
+                    general_sender_kv_data["from address"] = parsed_headers._from.address
+                    general_sender_kv_data["reply-to address"] = parsed_headers.reply_to.address
                     general_sender_section.add_section_part(TextSectionBody("From and Reply-To headers differ"))
                     general_sender_section.set_heuristic(7)
                 case HeaderValidatorResponseKind.FROM_RETURN_PATH_DIFFER:
-                    general_sender_kv_data["from"] = parsed_headers._from.address
-                    general_sender_kv_data["return-path"] = parsed_headers.return_path.address
+                    general_sender_kv_data["from address"] = parsed_headers._from.address
+                    general_sender_kv_data["return-path address"] = parsed_headers.return_path.address
                     general_sender_section.add_section_part(TextSectionBody("From and Return-Path headers differ"))
                     general_sender_section.set_heuristic(8)
+                case HeaderValidatorResponseKind.EMAIL_DISPLAY_NAME_DIFFER:
+                    general_sender_kv_data["from address"] = parsed_headers._from.address
+                    general_sender_kv_data["from display name"] = parsed_headers._from.name
+                    general_sender_section.add_section_part(TextSectionBody("From display name header is an email and is a different email address of the From header"))
+                    general_sender_section.set_heuristic(9)
                 case kind if kind in SpfHeaderValidation.ACTION_RESULT_MAPPING.values():
                     spf_section.add_tag("network.static.domain", result.data.domain)
                     spf_section.add_row(TableRow(

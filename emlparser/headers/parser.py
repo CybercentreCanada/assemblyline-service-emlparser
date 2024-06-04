@@ -8,7 +8,6 @@ import dns.rdatatype
 import dns.resolver
 import dns.reversename
 
-from email.utils import parseaddr
 from typing import List, Optional, Union
 from dataclasses import dataclass
 
@@ -104,11 +103,23 @@ class Sender:
 
     @staticmethod
     def parse(data: Optional[str]) -> "Sender":
-        (name, address) = parseaddr(_string_clean(data))
+        clean_data = _string_clean(data)
+
+        name = ""
+        address = ""
+
+        if clean_data:
+            data = clean_data.strip().rsplit(" ", 1)
+
+            if len(data) > 1:
+                name = data[0]
+                address = data[1]
+            else:
+                address = data[0]
 
         return Sender(
             name=name,
-            address=address
+            address=address.lstrip("<").rstrip(">")
         )
 
 
