@@ -11,6 +11,7 @@ from datetime import datetime
 from hashlib import sha256
 from ipaddress import IPv4Address, ip_address
 from urllib.parse import urlparse
+from typing import Optional, List
 
 import eml_parser
 import extract_msg
@@ -195,6 +196,16 @@ class EmlParser(ServiceBase):
             headers.pop("date", None)
 
         headers_section.set_body(json.dumps(headers, default=self.json_serial))
+
+        validation_section = self.build_email_header_validation_section(
+            sender=headers.get("Sender"),
+            _from=headers.get("From"),
+            reply_to=headers.get("Reply-To"),
+            return_path=headers.get("Return-Path"),
+            received=headers.get("Received"),
+            received_spf=headers.get("Received-Spf"),
+        )
+        request.result.add_section(validation_section)
 
         attributes_to_skip = [
             "attachments",
@@ -752,7 +763,15 @@ class EmlParser(ServiceBase):
                 if re.match(EMAIL_REGEX, to.strip())
             ]
 
-            self.build_email_header_validation_section(header)
+            validation_section = self.build_email_header_validation_section(
+                sender=header.get("sender"),
+                _from=header.get("from"),
+                reply_to=header.get("reply-to"),
+                return_path=header.get("return-path"),
+                received=header["header"].get("received"),
+                received_spf=header["header"].get("received-spf"),
+            )
+            request.result.add_section(validation_section)
 
             if "date" in header:
                 kv_section.add_tag("network.email.date", str(header["date"]).strip())
@@ -918,7 +937,15 @@ class EmlParser(ServiceBase):
         else:
             self.log.warning("emlParser could not parse EML; no useful information in result's headers")
 
-    def build_email_header_validation_section(self, header: dict) -> ResultSection:
+    def build_email_header_validation_section(
+        self,
+        sender: Optional[str],
+        _from: Optional[str],
+        reply_to: Optional[str],
+        return_path: Optional[str],
+        received: Optional[List[str]],
+        received_spf: Optional[List[str]]
+    ) -> ResultSection:
         validation_section = ResultSection("Email Headers Validation")
 
         spf_section = ResultTableSection("SPF Validation")
@@ -926,12 +953,12 @@ class EmlParser(ServiceBase):
         general_sender_section = ResultMultiSection("General Sender Validation")
 
         parsed_headers = EmailHeaders(
-            sender=header["sender"].strip() if header.get("sender", None) else None,
-            recipient=header["from"].strip() if header.get("from", None) else None,
-            reply_to=header["reply-to"].strip() if header.get("reply-to", None) else None,
-            return_path=header["return-path"].strip() if header.get("return-path", None) else None,
-            received=header["header"]["received"] if header["header"].get("received") else [],
-            received_spf=header["header"]["received-spf"] if header["header"].get("received-spf") else [],
+            sender=sender,
+            _from=_from,
+            reply_to=reply_to,
+            return_path=return_path,
+            received=received,
+            received_spf=received_spf,
         )
         results = SpoofValidator(headers=parsed_headers).get_validation_results()
 
