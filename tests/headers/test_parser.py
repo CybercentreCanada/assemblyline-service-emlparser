@@ -91,6 +91,18 @@ class TestSenderParser(TestCase):
         self.assertEqual(results.name, "Test Name of User")
         self.assertEqual(results.address, "email@test.com")
 
+    def test_given_email_address_and_quoted_name_when_parsing_then_return_sender_with_name_and_name_populated(self):
+        results = Sender.parse(' "Alex Tester"   <email@test.com>')
+
+        self.assertEqual(results.name, "Alex Tester")
+        self.assertEqual(results.address, "email@test.com")
+
+    def test_given_email_address_and_email_name_when_parsing_then_return_sender_with_name_and_name_populated(self):
+        results = Sender.parse(" another@test.com   <email@test.com>")
+
+        self.assertEqual(results.name, "another@test.com")
+        self.assertEqual(results.address, "email@test.com")
+
 
 class TestEmailHeaders(TestCase):
     def test_given_subject_when_parsing_then_subject_saved(self):

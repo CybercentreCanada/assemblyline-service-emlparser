@@ -204,8 +204,8 @@ class EmlParser(ServiceBase):
             _from=headers.get("From"),
             reply_to=headers.get("Reply-To"),
             return_path=headers.get("Return-Path"),
-            received=headers.get("Received"),
-            received_spf=headers.get("Received-Spf"),
+            received=msg.header.get_all("Received"),
+            received_spf=msg.header.get_all("Received-SPF"),
         )
         request.result.add_section(validation_section)
 
@@ -767,7 +767,7 @@ class EmlParser(ServiceBase):
 
             parsed_headers = email.message_from_bytes(content_str)
             validation_section = self.build_email_header_validation_section(
-                subject=parsed_headers.get("subject"),
+                subject=header.get("subject"),
                 sender=parsed_headers.get("sender"),
                 _from=parsed_headers.get("from"),
                 reply_to=parsed_headers.get("reply-to"),
@@ -969,13 +969,12 @@ class EmlParser(ServiceBase):
         )
         results = SpoofValidator(headers=parsed_headers).get_validation_results()
 
-        mx_section.add_tag("network.static.domain", parsed_headers.received[-1].domain)
-
         for result in results:
             match result.kind:
                 case HeaderValidatorResponseKind.MX_DOMAIN_FROMDOMAIN_NOT_FOUND:
                     mx_section.add_section_part(TextSectionBody(f"Unable to extract fromdomain from headers"))
                 case HeaderValidatorResponseKind.MX_DOMAIN_NOT_MATCHING:
+                    mx_section.add_tag("network.static.domain", parsed_headers.received[-1].domain)
                     mx_section.add_tag("network.static.domain", result.data['domain'])
                     mx_section.add_section_part(TextSectionBody("Received domain not found in MX DNS records"))
                     self.add_mx_records_to_multi_section(mx_section, result, parsed_headers)
@@ -984,6 +983,7 @@ class EmlParser(ServiceBase):
                     mx_section.add_section_part(TextSectionBody(f"MX domain not found for {result.data}"))
                     mx_section.set_heuristic(4)
                 case HeaderValidatorResponseKind.MX_DOMAIN_VALID:
+                    mx_section.add_tag("network.static.domain", parsed_headers.received[-1].domain)
                     mx_section.add_tag("network.static.domain", result.data['domain'])
                     mx_section.add_section_part(TextSectionBody("Received domain found in MX DNS records"))
                     self.add_mx_records_to_multi_section(mx_section, result, parsed_headers)

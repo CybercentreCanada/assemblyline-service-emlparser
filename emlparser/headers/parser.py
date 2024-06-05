@@ -98,6 +98,7 @@ class EmailHeaders:
             if parsed := Received.parse(raw, dns_resolver):
                 self.received.append(parsed)
 
+
 @dataclass
 class Sender:
     name: str
@@ -120,7 +121,7 @@ class Sender:
                 address = data[0]
 
         return Sender(
-            name=name.strip(),
+            name=name.strip().strip('"'),
             address=address.lstrip("<").rstrip(">")
         )
 

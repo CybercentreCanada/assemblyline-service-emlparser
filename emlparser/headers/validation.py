@@ -61,8 +61,11 @@ class GeneralHeaderValidation(HeaderValidator):
             responses.append(HeaderValidatorResponse(kind=HeaderValidatorResponseKind.FROM_REPLY_TO_DIFFER))
         if headers.return_path.address and headers._from.address != headers.return_path.address:
             responses.append(HeaderValidatorResponse(kind=HeaderValidatorResponseKind.FROM_RETURN_PATH_DIFFER))
-        if headers._from.name and (name_email := EMAIL_VALIDATOR.check(headers._from.name)) and name_email != headers._from.address:
-            responses.append(HeaderValidatorResponse(kind=HeaderValidatorResponseKind.EMAIL_DISPLAY_NAME_DIFFER))
+        try:
+            if headers._from.name and (name_email := EMAIL_VALIDATOR.check(headers._from.name)) and name_email != headers._from.address:
+                responses.append(HeaderValidatorResponse(kind=HeaderValidatorResponseKind.EMAIL_DISPLAY_NAME_DIFFER))
+        except ValueError:
+            pass
         if not COMMON_CHARACTERS.match(headers.subject):
             responses.append(HeaderValidatorResponse(kind=HeaderValidatorResponseKind.UNCOMMON_CHARACTERS_SUBJECT))
 
@@ -74,6 +77,9 @@ class MxHeaderValidation(HeaderValidator):
         self._dns_resolver = dns_resolver
 
     def validate(self, headers: EmailHeaders) -> List[HeaderValidatorResponse]:
+        if len(headers.received) == 0:
+            return []
+
         fromdomain = None
 
         match = re.search(r"(\w+\.\w+)$", headers.sender.address)

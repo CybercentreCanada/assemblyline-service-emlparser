@@ -102,6 +102,13 @@ class TestGeneralHeaderValidation(TestCase):
 
         results = GeneralHeaderValidation().validate(headers=headers)
 
+        self.assertEqual(results, [])
+
+    def test_given_differ_display_name_and_email_dwithin_from_header_when_calling_validate_then_results_contains_email_display_name_differ_response(self):
+        headers = _build_email_headers(_from='	"Leo Opitz" <buero@julestois.com>')
+
+        results = GeneralHeaderValidation().validate(headers=headers)
+
         assert_kind_in_responses(HeaderValidatorResponseKind.EMAIL_DISPLAY_NAME_DIFFER, results)
 
     def test_given_emojis_in_subject_when_calling_validate_then_results_contains_uncommon_characters_subject_response(self):
