@@ -86,12 +86,6 @@ heuristics:
     filetype: ".*"
     description: Display name of the From header is present and is different than the email address of From header
 
-  - heur_id: 10
-    name: Subject contains non standard characters
-    score: 10
-    filetype: ".*"
-    description: Subject of email contains non alphanumeric/symbols indicating possible evasion of spam filters and email analysis tools
-
 docker_config:
   image: ${REGISTRY}cccs/assemblyline-service-emlparser:$SERVICE_TAG
   cpu_cores: 1

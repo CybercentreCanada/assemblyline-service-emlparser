@@ -61,6 +61,11 @@ def assert_kind_in_responses(kind: HeaderValidatorResponseKind, responses: List[
     assert kind in response_kinds
 
 
+def assert_kind_not_in_responses(kind: HeaderValidatorResponseKind, responses: List[HeaderValidatorResponse]):
+    response_kinds = [response.kind for response in responses]
+    assert kind not in response_kinds
+
+
 class TestGeneralHeaderValidation(TestCase):
     def test_given_valid_headers_when_calling_validate_then_results_is_empty(self):
         headers = _build_email_headers()
@@ -102,35 +107,14 @@ class TestGeneralHeaderValidation(TestCase):
 
         results = GeneralHeaderValidation().validate(headers=headers)
 
-        self.assertEqual(results, [])
+        assert_kind_in_responses(HeaderValidatorResponseKind.EMAIL_DISPLAY_NAME_DIFFER, results)
 
-    def test_given_differ_display_name_and_email_dwithin_from_header_when_calling_validate_then_results_contains_email_display_name_differ_response(self):
+    def test_given_differ_display_name_is_not_an_email_within_from_header_when_calling_validate_then_results_does_not_contain_email_display_name_differ_response(self):
         headers = _build_email_headers(_from='	"Leo Opitz" <buero@julestois.com>')
 
         results = GeneralHeaderValidation().validate(headers=headers)
 
-        assert_kind_in_responses(HeaderValidatorResponseKind.EMAIL_DISPLAY_NAME_DIFFER, results)
-
-    def test_given_emojis_in_subject_when_calling_validate_then_results_contains_uncommon_characters_subject_response(self):
-        headers = _build_email_headers(subject="🇨🇦 Welcome to Canada. Accept this money 🤑")
-
-        results = GeneralHeaderValidation().validate(headers=headers)
-
-        assert_kind_in_responses(HeaderValidatorResponseKind.UNCOMMON_CHARACTERS_SUBJECT, results)
-
-    def test_given_uncommon_chars_in_subject_when_calling_validate_then_results_contains_uncommon_characters_subject_response(self):
-        headers = _build_email_headers(subject="Get your b𝒾tcoin")
-
-        results = GeneralHeaderValidation().validate(headers=headers)
-
-        assert_kind_in_responses(HeaderValidatorResponseKind.UNCOMMON_CHARACTERS_SUBJECT, results)
-
-    def test_given_valid_subject_when_calling_validate_then_results_do_contains_uncommon_characters_subject_response(self):
-        headers = _build_email_headers(subject="Présentation de cybersécurité le 14 mars 2022! | Cybersecurity presentation on March 14, 2022?")
-
-        results = GeneralHeaderValidation().validate(headers=headers)
-
-        self.assertEqual(results, [])
+        assert_kind_not_in_responses(HeaderValidatorResponseKind.EMAIL_DISPLAY_NAME_DIFFER, results)
 
     def test_given_all_are_different_when_calling_validate_then_results_contains_all_responses(self):
         headers = _build_email_headers(
