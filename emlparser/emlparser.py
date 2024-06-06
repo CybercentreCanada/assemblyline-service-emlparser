@@ -1011,11 +1011,6 @@ class EmlParser(ServiceBase):
                     section.set_item("from display name", parsed_headers._from.name)
                     section.set_heuristic(9)
                     general_sender_section.add_subsection(section)
-                case HeaderValidatorResponseKind.UNCOMMON_CHARACTERS_SUBJECT:
-                    section = ResultKeyValueSection("Subject contains non standard characters")
-                    section.set_item("subject", parsed_headers.subject)
-                    section.set_heuristic(10)
-                    general_sender_section.add_subsection(section)
                 case kind if kind in SpfHeaderValidation.ACTION_RESULT_MAPPING.values():
                     spf_section.add_tag("network.static.domain", result.data.domain)
                     spf_section.add_row(TableRow(

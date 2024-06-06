@@ -13,11 +13,17 @@ from dataclasses import dataclass
 
 
 class DnsResolver:
-    def reverse_ip_lookup(self, address: str) -> str:
-        return str(dns.reversename.from_address(address)).strip(".")
+    def reverse_ip_lookup(self, address: str) -> Optional[str]:
+        try:
+            return str(dns.reversename.from_address(address)).strip(".")
+        except Exception:
+            return None
 
-    def query(self, qname: str, rdtype: dns.rdatatype.RdataType) -> dns.resolver.Answer:
-        return dns.resolver.query(qname, rdtype)
+    def query(self, qname: str, rdtype: dns.rdatatype.RdataType) -> Optional[dns.resolver.Answer]:
+        try:
+            return dns.resolver.query(qname, rdtype)
+        except Exception:
+            return None
 
 
 @dataclass
