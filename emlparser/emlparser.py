@@ -334,14 +334,11 @@ class EmlParser(ServiceBase):
 
                 # If attachment is an HTML file, perform further inspection
                 if IDENTIFY.fileinfo(attachment_path, generate_hashes=False)["type"] == "code/html":
-                    try:
-                        document = open(attachment_path, encoding="UTF-8").read()
-                    except UnicodeDecodeError:
-                        document = open(attachment_path, encoding="cp1252").read()
+                    document = open(attachment_path, "rb").read()
 
                     # Check to see if there's any "defang_" prefixed tags
                     # Reference: https://github.com/robmueller/html-defang
-                    if "<!--defang_" not in document:
+                    if b"<!--defang_" not in document:
                         break
 
                     # Find all comments
@@ -350,23 +347,23 @@ class EmlParser(ServiceBase):
                         if "*SC*" in i:
                             # Ignore comments with these lines
                             continue
-                        defanged_i = i.replace("defang_", "")
+                        defanged_i = i.replace("defang_", "").encode()
                         if enable_brackets:
-                            defanged_i = f"<{defanged_i}>"
+                            defanged_i = b"<" + defanged_i + b">"
                         else:
-                            defanged_i = f"{defanged_i}"
+                            defanged_i = defanged_i
 
-                        if defanged_i == "<script>":
+                        if defanged_i == b"<script>":
                             enable_brackets = False
-                        elif defanged_i == "/script":
+                        elif defanged_i == b"/script":
                             enable_brackets = True
-                            defanged_i = f"<{defanged_i}>"
+                            defanged_i = b"<" + defanged_i + b">"
 
-                        document = document.replace(f"<!--{i}-->", defanged_i)
+                        document = document.replace(b"<!--" + i.encode() + b"-->", defanged_i)
                     # Strip "defang_" from any remaining defanged-prefixed tags that weren't commented
-                    document = document.replace("defang_", "")
+                    document = document.replace(b"defang_", b"")
                     refanged_fp = os.path.join(self.working_directory, f"{attachment_name}_refanged.html")
-                    with open(refanged_fp, "w") as fp:
+                    with open(refanged_fp, "wb") as fp:
                         fp.write(document)
                     request.add_extracted(refanged_fp, os.path.basename(refanged_fp), "refanged HTML email body")
 
