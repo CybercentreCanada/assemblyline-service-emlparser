@@ -551,6 +551,7 @@ class EmlParser(ServiceBase):
                                 if i < len(header_offset_map) - 1
                                 else div.text[offset:]
                             )
+                            value = value.replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
 
                             if header_name == "Subject":
                                 subject = value
@@ -848,16 +849,17 @@ class EmlParser(ServiceBase):
 
             # Merge X-MS-Exchange-Organization-Persisted-Urls headers into one block
             if header.get("x-ms-exchange-organization-persisted-urls-chunkcount"):
-                persisted_urls_block = (
-                    "".join(
-                        [
-                            header[f"x-ms-exchange-organization-persisted-urls-{i}"][0]
-                            for i in range(int(header["x-ms-exchange-organization-persisted-urls-chunkcount"][0]))
-                        ]
-                    )
-                    .strip()
-                    .encode()
-                )
+                missing_persisted_urls_chunks = 0
+                persisted_urls_block = ""
+                block_count = int(header["x-ms-exchange-organization-persisted-urls-chunkcount"][0])
+                for i in range(block_count):
+                    if f"x-ms-exchange-organization-persisted-urls-{i}" in header:
+                        persisted_urls_block = "".join(
+                            [persisted_urls_block, header[f"x-ms-exchange-organization-persisted-urls-{i}"][0]]
+                        )
+                    else:
+                        missing_persisted_urls_chunks += 1
+                persisted_urls_block = persisted_urls_block.strip().encode()
 
                 # Look for network IOCs in this block and tag them
                 for x in find_domains(persisted_urls_block):
@@ -871,6 +873,14 @@ class EmlParser(ServiceBase):
                 for x in find_urls(persisted_urls_block):
                     if tag_is_valid(URI_VALIDATOR, x.value.decode()):
                         kv_section.add_tag("network.static.uri", x.value)
+
+                if missing_persisted_urls_chunks != 0:
+                    missing_persisted_urls_chunks_section = ResultSection("Missing Persisted URLs chunks")
+                    block_found = block_count - missing_persisted_urls_chunks
+                    missing_persisted_urls_chunks_section.add_line(
+                        f"Persisted URLs block found: {block_found}/{block_count} ({block_found/block_count*100:.0f}%)"
+                    )
+                    request.result.add_section(missing_persisted_urls_chunks_section)
 
             attachments_added = []
             if "attachment" in parsed_eml:
@@ -892,9 +902,10 @@ class EmlParser(ServiceBase):
                             f"{len(attachment) - len(attachments_added)} not added"
                         )
                         break
-                ResultSection(
-                    "Extracted Attachments:", body="\n".join([x for x in attachments_added]), parent=request.result
-                )
+                if attachments_added:
+                    ResultSection(
+                        "Extracted Attachments:", body="\n".join([x for x in attachments_added]), parent=request.result
+                    )
 
             if request.get_param("save_emlparser_output"):
                 fd, temp_path = tempfile.mkstemp(dir=self.working_directory)
