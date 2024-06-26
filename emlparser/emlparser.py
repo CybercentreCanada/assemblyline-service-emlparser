@@ -731,6 +731,15 @@ class EmlParser(ServiceBase):
                         f.write(body["content"])
                         os.close(fd)
                     request.add_extracted(path, "body_" + str(body_counter), "Body text")
+
+                # De-duplicate domains that were found that are email domains
+                # Let's assume that if the number of domain string occurrences matches the number of occurrences with '@' as a prefix, then it must be an email domain and so it should be filtered from being tagged as a network domain
+                body["domain"] = [
+                    domain
+                    for domain in list(body.get("domain", []))
+                    if content_str.count(domain.encode()) != content_str.count(f"@{domain}".encode())
+                ]
+
                 for ioc_type in NETWORK_IOC_TYPES:
                     all_iocs[ioc_type] = all_iocs[ioc_type].union(set(body.get(ioc_type, [])))
             # Words in the email body, used by extract to guess passwords
