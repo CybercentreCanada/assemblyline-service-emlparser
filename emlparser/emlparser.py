@@ -82,6 +82,8 @@ class EmlParser(ServiceBase):
                 overrideEncoding=overrideEncoding,
                 errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL,
             )
+            if msg is None:
+                return None
             # Recipients parsing is only triggered when accessed, and some files were using
             # the wrong encoding. We access it here to trigger the UnicodeDecodeError and
             # try again with cp1252 in case it works.
@@ -118,9 +120,19 @@ class EmlParser(ServiceBase):
                     msg.recipients
                     required_encoding = "cp1252"
                 except Exception:
-                    msg = self.get_outlook_msg(request, overrideEncoding="chardet")
-                    msg.recipients
-                    required_encoding = "chardet"
+                    try:
+                        msg = self.get_outlook_msg(request, overrideEncoding="chardet")
+                        msg.recipients
+                        required_encoding = "chardet"
+                    except Exception:
+                        ResultSection(
+                            "Couldn't decode unicode",
+                            parent=request.result,
+                            body=(
+                                f"String encoding {previous_string_encoding} was specified in outlook file "
+                                "but chardet was not able to find the right character set."
+                            ),
+                        )
 
                 if msg:
                     ResultSection(
@@ -146,8 +158,13 @@ class EmlParser(ServiceBase):
                 if "entry['guid'] = guids[entry['guid_index']]" not in tb:
                     raise
 
-            # If we can't use extract-msg, rely on converting to eml
+            # We haven't found a solution to the error
             self.log.warning(e1, exc_info=True)
+
+    def handle_outlook(self, request: ServiceRequest) -> None:
+        msg: extract_msg.msg_classes.msg.MSGFile = self.get_outlook_msg(request)
+        if msg is None:
+            # If we can't use extract-msg, rely on converting to eml
             try:
                 content_str = msg2eml(request.file_path).as_bytes()
             except Exception as e2:
@@ -157,10 +174,6 @@ class EmlParser(ServiceBase):
                 with open(converted_path, "rb") as f:
                     content_str = f.read()
             self.handle_eml(request, content_str)
-
-    def handle_outlook(self, request: ServiceRequest) -> None:
-        msg: extract_msg.msg_classes.msg.MSGFile = self.get_outlook_msg(request)
-        if msg is None:
             return
 
         headers_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
