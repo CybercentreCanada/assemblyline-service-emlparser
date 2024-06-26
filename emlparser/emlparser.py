@@ -27,8 +27,6 @@ from mailparser.utils import msgconvert
 from multidecoder.decoders.network import EMAIL_RE, find_domains, find_emails, find_ips, find_urls
 from olefile.olefile import OleFileError
 
-from emlparser.outlookmsgfile import load as msg2eml
-
 NETWORK_IOC_TYPES = ["uri", "email", "domain"]
 IDENTIFY = forge.get_identify(use_cache=os.environ.get("PRIVILEGED", "false").lower() == "true")
 IP_VALIDATOR = IP()
@@ -165,14 +163,10 @@ class EmlParser(ServiceBase):
         msg: extract_msg.msg_classes.msg.MSGFile = self.get_outlook_msg(request)
         if msg is None:
             # If we can't use extract-msg, rely on converting to eml
-            try:
-                content_str = msg2eml(request.file_path).as_bytes()
-            except Exception as e2:
-                self.log.warning(e2, exc_info=True)
-                # Try using mailparser to convert
-                converted_path, _ = msgconvert(request.file_path)
-                with open(converted_path, "rb") as f:
-                    content_str = f.read()
+            converted_path, _ = msgconvert(request.file_path)
+            with open(converted_path, "rb") as f:
+                content_str = f.read()
+            os.remove(converted_path)
             self.handle_eml(request, content_str)
             return
 
