@@ -11,17 +11,28 @@ import traceback
 from datetime import datetime
 from hashlib import sha256
 from ipaddress import IPv4Address, ip_address
+from typing import List, Optional
 from urllib.parse import urlparse
-from typing import Optional, List
 
 import eml_parser
 import extract_msg
 from assemblyline.common import forge
 from assemblyline.common.str_utils import safe_str
-from assemblyline.odm import EMAIL_REGEX, FULL_URI, IP, IP_ONLY_REGEX, IP_REGEX, URI, Domain, DOMAIN_REGEX
+from assemblyline.odm import DOMAIN_REGEX, EMAIL_REGEX, FULL_URI, IP, IP_ONLY_REGEX, IP_REGEX, URI, Domain
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.request import ServiceRequest
-from assemblyline_v4_service.common.result import BODY_FORMAT, Result, ResultKeyValueSection, ResultSection, ResultMultiSection, TableRow, TextSectionBody, TableSectionBody, KVSectionBody, ResultTableSection
+from assemblyline_v4_service.common.result import (
+    BODY_FORMAT,
+    KVSectionBody,
+    Result,
+    ResultKeyValueSection,
+    ResultMultiSection,
+    ResultSection,
+    ResultTableSection,
+    TableRow,
+    TableSectionBody,
+    TextSectionBody,
+)
 from assemblyline_v4_service.common.task import MaxExtractedExceeded
 from assemblyline_v4_service.common.utils import extract_passwords
 from bs4 import BeautifulSoup, Comment
@@ -30,7 +41,12 @@ from multidecoder.decoders.network import EMAIL_RE, find_domains, find_emails, f
 from olefile.olefile import OleFileError
 
 from emlparser.headers.parser import DnsResolver, EmailHeaders
-from emlparser.headers.validation import HeaderValidatorResponse, SpoofValidator, SpfHeaderValidation, HeaderValidatorResponseKind
+from emlparser.headers.validation import (
+    HeaderValidatorResponse,
+    HeaderValidatorResponseKind,
+    SpfHeaderValidation,
+    SpoofValidator,
+)
 from emlparser.outlookmsgfile import load as msg2eml
 
 NETWORK_IOC_TYPES = ["uri", "email", "domain"]
@@ -949,7 +965,7 @@ class EmlParser(ServiceBase):
         reply_to: Optional[str],
         return_path: Optional[str],
         received: Optional[List[str]],
-        received_spf: Optional[List[str]]
+        received_spf: Optional[List[str]],
     ) -> ResultSection:
         validation_section = ResultSection("Email Headers Validation")
 
@@ -965,7 +981,7 @@ class EmlParser(ServiceBase):
             return_path=return_path,
             received=received,
             received_spf=received_spf,
-            dns_resolver=DnsResolver()
+            dns_resolver=DnsResolver(),
         )
         results = SpoofValidator(headers=parsed_headers).get_validation_results()
 
@@ -975,7 +991,7 @@ class EmlParser(ServiceBase):
                     mx_section.add_section_part(TextSectionBody(f"Unable to extract fromdomain from headers"))
                 case HeaderValidatorResponseKind.MX_DOMAIN_NOT_MATCHING:
                     mx_section.add_tag("network.static.domain", parsed_headers.received[-1].domain)
-                    mx_section.add_tag("network.static.domain", result.data['domain'])
+                    mx_section.add_tag("network.static.domain", result.data["domain"])
                     mx_section.add_section_part(TextSectionBody("Received domain not found in MX DNS records"))
                     self.add_mx_records_to_multi_section(mx_section, result, parsed_headers)
                     mx_section.set_heuristic(5)
@@ -984,7 +1000,7 @@ class EmlParser(ServiceBase):
                     mx_section.set_heuristic(4)
                 case HeaderValidatorResponseKind.MX_DOMAIN_VALID:
                     mx_section.add_tag("network.static.domain", parsed_headers.received[-1].domain)
-                    mx_section.add_tag("network.static.domain", result.data['domain'])
+                    mx_section.add_tag("network.static.domain", result.data["domain"])
                     mx_section.add_section_part(TextSectionBody("Received domain found in MX DNS records"))
                     self.add_mx_records_to_multi_section(mx_section, result, parsed_headers)
                 case HeaderValidatorResponseKind.FROM_SENDER_DIFFER:
@@ -1006,19 +1022,23 @@ class EmlParser(ServiceBase):
                     section.set_heuristic(8)
                     general_sender_section.add_subsection(section)
                 case HeaderValidatorResponseKind.EMAIL_DISPLAY_NAME_DIFFER:
-                    section = ResultKeyValueSection("From display name header is an email and is a different email address of the From header")
+                    section = ResultKeyValueSection(
+                        "From display name header is an email and is a different email address of the From header"
+                    )
                     section.set_item("from address", parsed_headers._from.address)
                     section.set_item("from display name", parsed_headers._from.name)
                     section.set_heuristic(9)
                     general_sender_section.add_subsection(section)
                 case kind if kind in SpfHeaderValidation.ACTION_RESULT_MAPPING.values():
                     spf_section.add_tag("network.static.domain", result.data.domain)
-                    spf_section.add_row(TableRow(
-                        action=result.data.action,
-                        domain=result.data.domain,
-                        info=result.data.info,
-                        additional=result.data.additional
-                    ))
+                    spf_section.add_row(
+                        TableRow(
+                            action=result.data.action,
+                            domain=result.data.domain,
+                            info=result.data.info,
+                            additional=result.data.additional,
+                        )
+                    )
 
                     if kind in SpfHeaderValidation.FAIL_RESPNSE_KINDS and not spf_section.heuristic:
                         spf_section.set_heuristic(3)
@@ -1034,15 +1054,17 @@ class EmlParser(ServiceBase):
 
         return validation_section
 
-    def add_mx_records_to_multi_section(self, mx_section: ResultMultiSection, result: HeaderValidatorResponse, parsed_headers: EmailHeaders):
+    def add_mx_records_to_multi_section(
+        self, mx_section: ResultMultiSection, result: HeaderValidatorResponse, parsed_headers: EmailHeaders
+    ):
         mx_kv_section = KVSectionBody()
-        mx_kv_section.set_item("From/Sender domain", result.data['domain'])
+        mx_kv_section.set_item("From/Sender domain", result.data["domain"])
         mx_kv_section.set_item("Last Received Domain (expected)", parsed_headers.received[-1].domain)
         mx_section.add_section_part(mx_kv_section)
 
         mx_section.add_section_part(TextSectionBody("MX record domains of From/Sender domain"))
         mx_table_section = TableSectionBody()
-        for rdata in sorted(result.data['mx'], key=lambda data: int(data.preference)):
+        for rdata in sorted(result.data["mx"], key=lambda data: int(data.preference)):
             mx_table_section.add_row(TableRow(exchange=str(rdata.exchange), preference=str(rdata.preference)))
             match = re.search(DOMAIN_REGEX, str(rdata.exchange))
             if match:

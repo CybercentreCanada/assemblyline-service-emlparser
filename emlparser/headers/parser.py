@@ -1,15 +1,14 @@
-import sys
 import email
-import re
 import logging
+import re
+import sys
+from dataclasses import dataclass
+from typing import List, Optional, Union
 
 import dns.rdata
 import dns.rdatatype
 import dns.resolver
 import dns.reversename
-
-from typing import List, Optional, Union
-from dataclasses import dataclass
 
 
 class DnsResolver:
@@ -95,12 +94,12 @@ class EmailHeaders:
         self.return_path = Sender.parse(return_path)
 
         self.received_spf: List[ReceivedSpf] = []
-        for raw in (received_spf or []):
+        for raw in received_spf or []:
             if parsed := ReceivedSpf.parse(raw):
                 self.received_spf.append(parsed)
 
         self.received: List[Received] = []
-        for raw in (received or []):
+        for raw in received or []:
             if parsed := Received.parse(raw, dns_resolver):
                 self.received.append(parsed)
 
@@ -126,10 +125,7 @@ class Sender:
             else:
                 address = data[0]
 
-        return Sender(
-            name=name.strip().strip('"'),
-            address=address.lstrip("<").rstrip(">")
-        )
+        return Sender(name=name.strip().strip('"'), address=address.lstrip("<").rstrip(">"))
 
 
 # https://github.com/viper-framework/viper-modules/blob/00ee6cd2b2ad4ed278279ca9e383e48bc23a2555/emailparse.py#L39
@@ -137,10 +133,10 @@ def _string_clean(value: Union[str | bytes | email.header.Header | None]) -> str
     if value:
         if isinstance(value, bytes):
             if sys.version_info < (3, 4):
-                value = value.decode('utf-8', 'ignore')
+                value = value.decode("utf-8", "ignore")
             else:
-                value = value.decode('utf-8', 'backslashreplace')
+                value = value.decode("utf-8", "backslashreplace")
         elif isinstance(value, email.header.Header):
             value = str(value)
-        return re.sub('[\n\t\r]', '', str(value))
+        return re.sub("[\n\t\r]", "", str(value))
     return ""

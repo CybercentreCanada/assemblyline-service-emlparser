@@ -1,14 +1,13 @@
-import re
 import logging
-
+import re
 from abc import ABC, abstractmethod
-from enum import Enum, auto
-from typing import List
 from dataclasses import dataclass
-from typing import Any, Optional
+from enum import Enum, auto
+from typing import Any, List, Optional
 
 from assemblyline.odm import Email
-from emlparser.headers.parser import EmailHeaders, DnsResolver
+
+from emlparser.headers.parser import DnsResolver, EmailHeaders
 
 EMAIL_VALIDATOR = Email()
 
@@ -24,8 +23,8 @@ class HeaderValidatorResponseKind(Enum):
     EMAIL_DISPLAY_NAME_DIFFER = auto()
     MX_DOMAIN_RECORD_MISSING = auto()
     MX_DOMAIN_NOT_MATCHING = auto()
-    MX_DOMAIN_FROMDOMAIN_NOT_FOUND=auto()
-    MX_DOMAIN_VALID=auto()
+    MX_DOMAIN_FROMDOMAIN_NOT_FOUND = auto()
+    MX_DOMAIN_VALID = auto()
     FAIL_SPF = auto()
     SOFTFAIL_SPF = auto()
     NONE_SPF = auto()
@@ -43,15 +42,14 @@ class HeaderValidatorResponse:
 
 class HeaderValidator(ABC):
     @abstractmethod
-    def validate(self, headers: EmailHeaders) -> List[HeaderValidatorResponse]:
-        ...
+    def validate(self, headers: EmailHeaders) -> List[HeaderValidatorResponse]: ...
 
 
 class GeneralHeaderValidation(HeaderValidator):
     def validate(self, headers: EmailHeaders) -> List[HeaderValidatorResponse]:
         responses = []
 
-        if headers._from.address == '':
+        if headers._from.address == "":
             return [HeaderValidatorResponse(kind=HeaderValidatorResponseKind.MISSING_FROM)]
         if headers.sender.address and headers._from.address != headers.sender.address:
             responses.append(HeaderValidatorResponse(kind=HeaderValidatorResponseKind.FROM_SENDER_DIFFER))
@@ -60,7 +58,11 @@ class GeneralHeaderValidation(HeaderValidator):
         if headers.return_path.address and headers._from.address != headers.return_path.address:
             responses.append(HeaderValidatorResponse(kind=HeaderValidatorResponseKind.FROM_RETURN_PATH_DIFFER))
         try:
-            if headers._from.name and (name_email := EMAIL_VALIDATOR.check(headers._from.name)) and name_email != headers._from.address:
+            if (
+                headers._from.name
+                and (name_email := EMAIL_VALIDATOR.check(headers._from.name))
+                and name_email != headers._from.address
+            ):
                 responses.append(HeaderValidatorResponse(kind=HeaderValidatorResponseKind.EMAIL_DISPLAY_NAME_DIFFER))
         except ValueError:
             pass
@@ -94,7 +96,7 @@ class MxHeaderValidation(HeaderValidator):
         if not fromdomain:
             return [HeaderValidatorResponse(kind=HeaderValidatorResponseKind.MX_DOMAIN_FROMDOMAIN_NOT_FOUND)]
 
-        mx = self._dns_resolver.query(fromdomain, 'MX')
+        mx = self._dns_resolver.query(fromdomain, "MX")
 
         if not mx:
             return [HeaderValidatorResponse(kind=HeaderValidatorResponseKind.MX_DOMAIN_RECORD_MISSING, data=fromdomain)]
@@ -106,20 +108,29 @@ class MxHeaderValidation(HeaderValidator):
                 continue
 
             if headers.received[-1].domain in match.group(1):
-                return [HeaderValidatorResponse(kind=HeaderValidatorResponseKind.MX_DOMAIN_VALID, data={"exchange": rdata.exchange, "domain": fromdomain, "mx": mx})]
+                return [
+                    HeaderValidatorResponse(
+                        kind=HeaderValidatorResponseKind.MX_DOMAIN_VALID,
+                        data={"exchange": rdata.exchange, "domain": fromdomain, "mx": mx},
+                    )
+                ]
 
-        return [HeaderValidatorResponse(kind=HeaderValidatorResponseKind.MX_DOMAIN_NOT_MATCHING, data={"mx": mx, "domain": fromdomain})]
+        return [
+            HeaderValidatorResponse(
+                kind=HeaderValidatorResponseKind.MX_DOMAIN_NOT_MATCHING, data={"mx": mx, "domain": fromdomain}
+            )
+        ]
 
 
 class SpfHeaderValidation(HeaderValidator):
     ACTION_RESULT_MAPPING = {
-        'fail': HeaderValidatorResponseKind.FAIL_SPF,
-        'softfail': HeaderValidatorResponseKind.SOFTFAIL_SPF,
-        'none': HeaderValidatorResponseKind.NONE_SPF,
-        'neutral': HeaderValidatorResponseKind.NEUTRAL_SPF,
-        'permerror': HeaderValidatorResponseKind.PERMERROR_SPF,
-        'temperror': HeaderValidatorResponseKind.TEMPERROR_SPF,
-        'pass': HeaderValidatorResponseKind.PASS_SPF,
+        "fail": HeaderValidatorResponseKind.FAIL_SPF,
+        "softfail": HeaderValidatorResponseKind.SOFTFAIL_SPF,
+        "none": HeaderValidatorResponseKind.NONE_SPF,
+        "neutral": HeaderValidatorResponseKind.NEUTRAL_SPF,
+        "permerror": HeaderValidatorResponseKind.PERMERROR_SPF,
+        "temperror": HeaderValidatorResponseKind.TEMPERROR_SPF,
+        "pass": HeaderValidatorResponseKind.PASS_SPF,
     }
     FAIL_RESPNSE_KINDS = [
         HeaderValidatorResponseKind.FAIL_SPF,
@@ -130,7 +141,7 @@ class SpfHeaderValidation(HeaderValidator):
         responses = []
 
         for received_spf in headers.received_spf:
-            if (kind:= self.ACTION_RESULT_MAPPING.get(received_spf.action)) and kind not in responses:
+            if (kind := self.ACTION_RESULT_MAPPING.get(received_spf.action)) and kind not in responses:
                 responses.append(HeaderValidatorResponse(kind=kind, data=received_spf))
 
         return responses
@@ -142,7 +153,7 @@ class SpoofValidator:
         self.validators: List[HeaderValidator] = [
             GeneralHeaderValidation(),
             MxHeaderValidation(dns_resolver=DnsResolver()),
-            SpfHeaderValidation()
+            SpfHeaderValidation(),
         ]
 
     def get_validation_results(self) -> List[HeaderValidatorResponse]:
