@@ -49,7 +49,6 @@ from emlparser.headers.validation import (
     MxHeaderValidation,
     SpfHeaderValidation,
 )
-from emlparser.outlookmsgfile import load as msg2eml
 
 NETWORK_IOC_TYPES = ["uri", "email", "domain"]
 IDENTIFY = forge.get_identify(use_cache=os.environ.get("PRIVILEGED", "false").lower() == "true")
@@ -104,6 +103,8 @@ class EmlParser(ServiceBase):
                 overrideEncoding=overrideEncoding,
                 errorBehavior=extract_msg.enums.ErrorBehavior.SUPPRESS_ALL,
             )
+            if msg is None:
+                return None
             # Recipients parsing is only triggered when accessed, and some files were using
             # the wrong encoding. We access it here to trigger the UnicodeDecodeError and
             # try again with cp1252 in case it works.
@@ -140,9 +141,19 @@ class EmlParser(ServiceBase):
                     msg.recipients
                     required_encoding = "cp1252"
                 except Exception:
-                    msg = self.get_outlook_msg(request, overrideEncoding="chardet")
-                    msg.recipients
-                    required_encoding = "chardet"
+                    try:
+                        msg = self.get_outlook_msg(request, overrideEncoding="chardet")
+                        msg.recipients
+                        required_encoding = "chardet"
+                    except Exception:
+                        ResultSection(
+                            "Couldn't decode unicode",
+                            parent=request.result,
+                            body=(
+                                f"String encoding {previous_string_encoding} was specified in outlook file "
+                                "but chardet was not able to find the right character set."
+                            ),
+                        )
 
                 if msg:
                     ResultSection(
@@ -168,21 +179,18 @@ class EmlParser(ServiceBase):
                 if "entry['guid'] = guids[entry['guid_index']]" not in tb:
                     raise
 
-            # If we can't use extract-msg, rely on converting to eml
+            # We haven't found a solution to the error
             self.log.warning(e1, exc_info=True)
-            try:
-                content_str = msg2eml(request.file_path).as_bytes()
-            except Exception as e2:
-                self.log.warning(e2, exc_info=True)
-                # Try using mailparser to convert
-                converted_path, _ = msgconvert(request.file_path)
-                with open(converted_path, "rb") as f:
-                    content_str = f.read()
-            self.handle_eml(request, content_str)
 
     def handle_outlook(self, request: ServiceRequest) -> None:
         msg: extract_msg.msg_classes.msg.MSGFile = self.get_outlook_msg(request)
         if msg is None:
+            # If we can't use extract-msg, rely on converting to eml
+            converted_path, _ = msgconvert(request.file_path)
+            with open(converted_path, "rb") as f:
+                content_str = f.read()
+            os.remove(converted_path)
+            self.handle_eml(request, content_str)
             return
 
         headers_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
@@ -368,14 +376,11 @@ class EmlParser(ServiceBase):
 
                 # If attachment is an HTML file, perform further inspection
                 if IDENTIFY.fileinfo(attachment_path, generate_hashes=False)["type"] == "code/html":
-                    try:
-                        document = open(attachment_path, encoding="UTF-8").read()
-                    except UnicodeDecodeError:
-                        document = open(attachment_path, encoding="cp1252").read()
+                    document = open(attachment_path, "rb").read()
 
                     # Check to see if there's any "defang_" prefixed tags
                     # Reference: https://github.com/robmueller/html-defang
-                    if "<!--defang_" not in document:
+                    if b"<!--defang_" not in document:
                         break
 
                     # Find all comments
@@ -384,23 +389,23 @@ class EmlParser(ServiceBase):
                         if "*SC*" in i:
                             # Ignore comments with these lines
                             continue
-                        defanged_i = i.replace("defang_", "")
+                        defanged_i = i.replace("defang_", "").encode()
                         if enable_brackets:
-                            defanged_i = f"<{defanged_i}>"
+                            defanged_i = b"<" + defanged_i + b">"
                         else:
-                            defanged_i = f"{defanged_i}"
+                            defanged_i = defanged_i
 
-                        if defanged_i == "<script>":
+                        if defanged_i == b"<script>":
                             enable_brackets = False
-                        elif defanged_i == "/script":
+                        elif defanged_i == b"/script":
                             enable_brackets = True
-                            defanged_i = f"<{defanged_i}>"
+                            defanged_i = b"<" + defanged_i + b">"
 
-                        document = document.replace(f"<!--{i}-->", defanged_i)
+                        document = document.replace(b"<!--" + i.encode() + b"-->", defanged_i)
                     # Strip "defang_" from any remaining defanged-prefixed tags that weren't commented
-                    document = document.replace("defang_", "")
+                    document = document.replace(b"defang_", b"")
                     refanged_fp = os.path.join(self.working_directory, f"{attachment_name}_refanged.html")
-                    with open(refanged_fp, "w") as fp:
+                    with open(refanged_fp, "wb") as fp:
                         fp.write(document)
                     request.add_extracted(refanged_fp, os.path.basename(refanged_fp), "refanged HTML email body")
 
@@ -588,6 +593,7 @@ class EmlParser(ServiceBase):
                                 if i < len(header_offset_map) - 1
                                 else div.text[offset:]
                             )
+                            value = value.replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
 
                             if header_name == "Subject":
                                 subject = value
@@ -898,16 +904,17 @@ class EmlParser(ServiceBase):
 
             # Merge X-MS-Exchange-Organization-Persisted-Urls headers into one block
             if header.get("x-ms-exchange-organization-persisted-urls-chunkcount"):
-                persisted_urls_block = (
-                    "".join(
-                        [
-                            header[f"x-ms-exchange-organization-persisted-urls-{i}"][0]
-                            for i in range(int(header["x-ms-exchange-organization-persisted-urls-chunkcount"][0]))
-                        ]
-                    )
-                    .strip()
-                    .encode()
-                )
+                missing_persisted_urls_chunks = 0
+                persisted_urls_block = ""
+                block_count = int(header["x-ms-exchange-organization-persisted-urls-chunkcount"][0])
+                for i in range(block_count):
+                    if f"x-ms-exchange-organization-persisted-urls-{i}" in header:
+                        persisted_urls_block = "".join(
+                            [persisted_urls_block, header[f"x-ms-exchange-organization-persisted-urls-{i}"][0]]
+                        )
+                    else:
+                        missing_persisted_urls_chunks += 1
+                persisted_urls_block = persisted_urls_block.strip().encode()
 
                 # Look for network IOCs in this block and tag them
                 for x in find_domains(persisted_urls_block):
@@ -921,6 +928,14 @@ class EmlParser(ServiceBase):
                 for x in find_urls(persisted_urls_block):
                     if tag_is_valid(URI_VALIDATOR, x.value.decode()):
                         kv_section.add_tag("network.static.uri", x.value)
+
+                if missing_persisted_urls_chunks != 0:
+                    missing_persisted_urls_chunks_section = ResultSection("Missing Persisted URLs chunks")
+                    block_found = block_count - missing_persisted_urls_chunks
+                    missing_persisted_urls_chunks_section.add_line(
+                        f"Persisted URLs block found: {block_found}/{block_count} ({block_found/block_count*100:.0f}%)"
+                    )
+                    request.result.add_section(missing_persisted_urls_chunks_section)
 
             attachments_added = []
             if "attachment" in parsed_eml:
@@ -942,9 +957,10 @@ class EmlParser(ServiceBase):
                             f"{len(attachment) - len(attachments_added)} not added"
                         )
                         break
-                ResultSection(
-                    "Extracted Attachments:", body="\n".join([x for x in attachments_added]), parent=request.result
-                )
+                if attachments_added:
+                    ResultSection(
+                        "Extracted Attachments:", body="\n".join([x for x in attachments_added]), parent=request.result
+                    )
 
             if request.get_param("save_emlparser_output"):
                 fd, temp_path = tempfile.mkstemp(dir=self.working_directory)
