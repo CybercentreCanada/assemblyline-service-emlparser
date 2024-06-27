@@ -96,6 +96,54 @@
       },
       {
         "auto_collapse": false,
+        "body": null,
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Email Headers Validation",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": [
+          {
+            "action": "softfail",
+            "additional": "",
+            "domain": "protection.outlook.com",
+            "info": "domain of transitioning turningpointwareham.org discourages use of 213.255.209.53 as permitted sender"
+          }
+        ],
+        "body_config": {
+          "column_order": [
+            "action",
+            "domain",
+            "info",
+            "additional"
+          ]
+        },
+        "body_format": "TABLE",
+        "classification": "TLP:C",
+        "depth": 1,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "static": {
+              "domain": [
+                "protection.outlook.com"
+              ]
+            }
+          }
+        },
+        "title_text": "SPF Validation",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
         "body": {
           "areStringsUnicode": "True",
           "attachmentsDelayed": "False",
@@ -259,6 +307,11 @@
           "heur_id": null,
           "signatures": [],
           "value": "SJ0PR03CA0173.outlook.office365.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "protection.outlook.com"
         }
       ],
       "network.static.ip": [
