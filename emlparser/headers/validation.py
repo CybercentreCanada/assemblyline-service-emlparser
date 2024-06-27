@@ -42,7 +42,7 @@ class HeaderValidatorResponse:
 
 class HeaderValidator(ABC):
     @abstractmethod
-    def validate(self, headers: EmailHeaders) -> List[HeaderValidatorResponse]: ...
+    def validate(self, headers: EmailHeaders) -> List[HeaderValidatorResponse]: ...  # noqa: E704
 
 
 class GeneralHeaderValidation(HeaderValidator):
@@ -132,7 +132,7 @@ class SpfHeaderValidation(HeaderValidator):
         "temperror": HeaderValidatorResponseKind.TEMPERROR_SPF,
         "pass": HeaderValidatorResponseKind.PASS_SPF,
     }
-    FAIL_RESPNSE_KINDS = [
+    FAIL_RESPONSE_KINDS = [
         HeaderValidatorResponseKind.FAIL_SPF,
         HeaderValidatorResponseKind.SOFTFAIL_SPF,
     ]
@@ -145,21 +145,3 @@ class SpfHeaderValidation(HeaderValidator):
                 responses.append(HeaderValidatorResponse(kind=kind, data=received_spf))
 
         return responses
-
-
-class SpoofValidator:
-    def __init__(self, headers: EmailHeaders):
-        self.headers = headers
-        self.validators: List[HeaderValidator] = [
-            GeneralHeaderValidation(),
-            MxHeaderValidation(dns_resolver=DnsResolver()),
-            SpfHeaderValidation(),
-        ]
-
-    def get_validation_results(self) -> List[HeaderValidatorResponse]:
-        results = []
-
-        for validator in self.validators:
-            results.extend(validator.validate(self.headers))
-
-        return results

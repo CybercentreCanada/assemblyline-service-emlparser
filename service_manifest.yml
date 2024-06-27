@@ -44,48 +44,6 @@ heuristics:
     filetype: ".*"
     description: A CVE was detected.
 
-  - heur_id: 3
-    name: SPF validation failed
-    score: 500
-    filetype: ".*"
-    description: Received-Spf header was either fail or softfail
-
-  - heur_id: 4
-    name: DNS MX record missing
-    score: 50
-    filetype: ".*"
-    description: Unable to find MX DNS record for the related From/Sender domain
-
-  - heur_id: 5
-    name: DNS MX record mot matching
-    score: 500
-    filetype: ".*"
-    description: The MX DNS record domain does not match with the first Recevied domain hop
-
-  - heur_id: 6
-    name: From and Sender headers differ
-    score: 50
-    filetype: ".*"
-    description: Email addresses of the From and Sender headers differ, indicating potential spoofing
-
-  - heur_id: 7
-    name: From and Reply-To headers differ
-    score: 10
-    filetype: ".*"
-    description: Email addresses of the From and Reply-To headers differ, indicating potential spoofing
-
-  - heur_id: 8
-    name: From and Return-Path headers differ
-    score: 10
-    filetype: ".*"
-    description: Email addresses of the From and Return-Path headers differ, indicating potential spoofing
-
-  - heur_id: 9
-    name: From name and email differ
-    score: 10
-    filetype: ".*"
-    description: Display name of the From header is present and is different than the email address of From header
-
 docker_config:
   image: ${REGISTRY}cccs/assemblyline-service-emlparser:$SERVICE_TAG
   cpu_cores: 1

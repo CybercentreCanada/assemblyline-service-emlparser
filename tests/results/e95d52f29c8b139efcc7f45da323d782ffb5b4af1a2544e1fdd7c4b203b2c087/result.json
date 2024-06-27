@@ -203,6 +203,54 @@
       },
       {
         "auto_collapse": false,
+        "body": null,
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Email Headers Validation",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": [
+          {
+            "action": "pass",
+            "additional": "receiver=protection.outlook.com; client-ip=202.77.104.104; helo=mail.dynapackasia.co.id;",
+            "domain": "protection.outlook.com",
+            "info": "domain of dynapackasia.co.id designates 202.77.104.104 as permitted sender"
+          }
+        ],
+        "body_config": {
+          "column_order": [
+            "action",
+            "domain",
+            "info",
+            "additional"
+          ]
+        },
+        "body_format": "TABLE",
+        "classification": "TLP:C",
+        "depth": 1,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "static": {
+              "domain": [
+                "protection.outlook.com"
+              ]
+            }
+          }
+        },
+        "title_text": "SPF Validation",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
         "body": "http://aka.ms/LearnAboutSenderIdentification\nhttp://w2.KZN8H.connect-starz.com",
         "body_config": {},
         "body_format": "TEXT",
@@ -367,6 +415,11 @@
           "heur_id": null,
           "signatures": [],
           "value": "pazp264mb2413.frap264.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "protection.outlook.com"
         },
         {
           "heur_id": null,

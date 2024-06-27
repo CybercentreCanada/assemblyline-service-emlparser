@@ -42,10 +42,12 @@ from olefile.olefile import OleFileError
 
 from emlparser.headers.parser import DnsResolver, EmailHeaders
 from emlparser.headers.validation import (
+    GeneralHeaderValidation,
+    HeaderValidator,
     HeaderValidatorResponse,
     HeaderValidatorResponseKind,
+    MxHeaderValidation,
     SpfHeaderValidation,
-    SpoofValidator,
 )
 from emlparser.outlookmsgfile import load as msg2eml
 
@@ -223,7 +225,8 @@ class EmlParser(ServiceBase):
             received=msg.header.get_all("Received"),
             received_spf=msg.header.get_all("Received-SPF"),
         )
-        request.result.add_section(validation_section)
+        if validation_section.subsections:
+            request.result.add_section(validation_section)
 
         attributes_to_skip = [
             "attachments",
@@ -791,7 +794,8 @@ class EmlParser(ServiceBase):
                 received=parsed_headers.get_all("received"),
                 received_spf=parsed_headers.get_all("received-spf"),
             )
-            request.result.add_section(validation_section)
+            if validation_section.subsections:
+                request.result.add_section(validation_section)
 
             if "date" in header:
                 kv_section.add_tag("network.email.date", str(header["date"]).strip())
@@ -973,6 +977,16 @@ class EmlParser(ServiceBase):
         mx_section = ResultMultiSection("Sender MX Record Validation")
         general_sender_section = ResultMultiSection("General Sender Validation")
 
+        validators: List[HeaderValidator] = [
+            GeneralHeaderValidation(),
+            SpfHeaderValidation(),
+        ]
+
+        dns_resolver = None
+        if self.service_attributes.docker_config.allow_internet_access:
+            dns_resolver = DnsResolver()
+            validators.append(MxHeaderValidation(dns_resolver=dns_resolver))
+
         parsed_headers = EmailHeaders(
             subject=subject,
             sender=sender,
@@ -981,23 +995,24 @@ class EmlParser(ServiceBase):
             return_path=return_path,
             received=received,
             received_spf=received_spf,
-            dns_resolver=DnsResolver(),
+            dns_resolver=dns_resolver,
         )
-        results = SpoofValidator(headers=parsed_headers).get_validation_results()
+
+        results = []
+        for validator in validators:
+            results.extend(validator.validate(parsed_headers))
 
         for result in results:
             match result.kind:
                 case HeaderValidatorResponseKind.MX_DOMAIN_FROMDOMAIN_NOT_FOUND:
-                    mx_section.add_section_part(TextSectionBody(f"Unable to extract fromdomain from headers"))
+                    mx_section.add_section_part(TextSectionBody("Unable to extract fromdomain from headers"))
                 case HeaderValidatorResponseKind.MX_DOMAIN_NOT_MATCHING:
                     mx_section.add_tag("network.static.domain", parsed_headers.received[-1].domain)
                     mx_section.add_tag("network.static.domain", result.data["domain"])
                     mx_section.add_section_part(TextSectionBody("Received domain not found in MX DNS records"))
                     self.add_mx_records_to_multi_section(mx_section, result, parsed_headers)
-                    mx_section.set_heuristic(5)
                 case HeaderValidatorResponseKind.MX_DOMAIN_RECORD_MISSING:
                     mx_section.add_section_part(TextSectionBody(f"MX domain not found for {result.data}"))
-                    mx_section.set_heuristic(4)
                 case HeaderValidatorResponseKind.MX_DOMAIN_VALID:
                     mx_section.add_tag("network.static.domain", parsed_headers.received[-1].domain)
                     mx_section.add_tag("network.static.domain", result.data["domain"])
@@ -1007,19 +1022,16 @@ class EmlParser(ServiceBase):
                     section = ResultKeyValueSection("From and Sender headers differ")
                     section.set_item("from address", parsed_headers._from.address)
                     section.set_item("sender address", parsed_headers.sender.address)
-                    section.set_heuristic(6)
                     general_sender_section.add_subsection(section)
                 case HeaderValidatorResponseKind.FROM_REPLY_TO_DIFFER:
                     section = ResultKeyValueSection("From and Reply-To headers differ")
                     section.set_item("from address", parsed_headers._from.address)
                     section.set_item("reply-to address", parsed_headers.reply_to.address)
-                    section.set_heuristic(7)
                     general_sender_section.add_subsection(section)
                 case HeaderValidatorResponseKind.FROM_RETURN_PATH_DIFFER:
                     section = ResultKeyValueSection("From and Return-Path headers differ")
                     section.set_item("from address", parsed_headers._from.address)
                     section.set_item("return-path address", parsed_headers.return_path.address)
-                    section.set_heuristic(8)
                     general_sender_section.add_subsection(section)
                 case HeaderValidatorResponseKind.EMAIL_DISPLAY_NAME_DIFFER:
                     section = ResultKeyValueSection(
@@ -1027,7 +1039,6 @@ class EmlParser(ServiceBase):
                     )
                     section.set_item("from address", parsed_headers._from.address)
                     section.set_item("from display name", parsed_headers._from.name)
-                    section.set_heuristic(9)
                     general_sender_section.add_subsection(section)
                 case kind if kind in SpfHeaderValidation.ACTION_RESULT_MAPPING.values():
                     spf_section.add_tag("network.static.domain", result.data.domain)
@@ -1040,16 +1051,13 @@ class EmlParser(ServiceBase):
                         )
                     )
 
-                    if kind in SpfHeaderValidation.FAIL_RESPNSE_KINDS and not spf_section.heuristic:
-                        spf_section.set_heuristic(3)
-
-        if spf_section.section_body.body:
+        if spf_section.body:
             validation_section.add_subsection(spf_section)
 
-        if mx_section.section_body.body:
+        if mx_section.body:
             validation_section.add_subsection(mx_section)
 
-        if len(general_sender_section.subsections) > 0:
+        if general_sender_section.subsections:
             validation_section.add_subsection(general_sender_section)
 
         return validation_section

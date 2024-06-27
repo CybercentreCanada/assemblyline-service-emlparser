@@ -138,6 +138,111 @@
       },
       {
         "auto_collapse": false,
+        "body": null,
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Email Headers Validation",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": [
+          {
+            "action": "fail",
+            "additional": "receiver=protection.outlook.com; client-ip=172.96.137.144; helo=aec.edu.in;",
+            "domain": "protection.outlook.com",
+            "info": "domain of aec.edu.in does not designate 172.96.137.144 as permitted sender"
+          },
+          {
+            "action": "pass",
+            "additional": "receiver=protection.outlook.com; client-ip=40.107.22.62; helo=EUR05-AM6-obe.outbound.protection.outlook.com; pr=C",
+            "domain": "protection.outlook.com",
+            "info": "domain of ashwasteservices.co.uk designates 40.107.22.62 as permitted sender"
+          },
+          {
+            "action": "fail",
+            "additional": "receiver=protection.outlook.com; client-ip=148.253.171.42; helo=MANGROVE;",
+            "domain": "protection.outlook.com",
+            "info": "domain of ashwasteservices.co.uk does not designate 148.253.171.42 as permitted sender"
+          }
+        ],
+        "body_config": {
+          "column_order": [
+            "action",
+            "domain",
+            "info",
+            "additional"
+          ]
+        },
+        "body_format": "TABLE",
+        "classification": "TLP:C",
+        "depth": 1,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "static": {
+              "domain": [
+                "protection.outlook.com"
+              ]
+            }
+          }
+        },
+        "title_text": "SPF Validation",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": null,
+        "body_config": {},
+        "body_format": "MULTI",
+        "classification": "TLP:C",
+        "depth": 1,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "General Sender Validation",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": {
+          "from address": "info@aec.edu.in",
+          "reply-to address": "lcthusi@bereatech.co.za"
+        },
+        "body_config": {},
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "From and Reply-To headers differ",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": {
+          "from address": "info@aec.edu.in",
+          "return-path address": "returnz1ycuyjg6g34tue76873qkk9r21xycvqfh@aec.edu.in"
+        },
+        "body_config": {},
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "From and Return-Path headers differ",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
         "body": {
           "areStringsUnicode": "True",
           "attachmentsDelayed": "False",
@@ -391,6 +496,11 @@
           "heur_id": null,
           "signatures": [],
           "value": "cluster-a.mailcontrol.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "protection.outlook.com"
         },
         {
           "heur_id": null,

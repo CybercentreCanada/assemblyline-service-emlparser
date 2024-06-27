@@ -85,7 +85,7 @@ class EmailHeaders:
         return_path: Optional[str],
         received: Optional[List[str]],
         received_spf: Optional[List[str]],
-        dns_resolver: DnsResolver,
+        dns_resolver: DnsResolver = None,
     ):
         self.subject = _string_clean(subject)
         self.sender = Sender.parse(sender)
@@ -99,9 +99,10 @@ class EmailHeaders:
                 self.received_spf.append(parsed)
 
         self.received: List[Received] = []
-        for raw in received or []:
-            if parsed := Received.parse(raw, dns_resolver):
-                self.received.append(parsed)
+        if dns_resolver:
+            for raw in received or []:
+                if parsed := Received.parse(raw, dns_resolver):
+                    self.received.append(parsed)
 
 
 @dataclass
