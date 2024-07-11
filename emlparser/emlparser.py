@@ -708,6 +708,7 @@ class EmlParser(ServiceBase):
             UNEXPECTED_ADDR_ENDING = "at end of group display name but found"
             if not exception_handled and isinstance(e, IndexError) and UNEXPECTED_ADDR_ENDING in tb:
                 unexpected_addr_ending_text = re.search(f"{UNEXPECTED_ADDR_ENDING} '(.*)'\n", tb).group(1).encode()
+                content_str = content_str.replace(unexpected_addr_ending_text + b"\r\n", b"\r\n")
                 content_str = content_str.replace(unexpected_addr_ending_text + b"\n", b"\n")
                 parsed_eml = parser.decode_email_bytes(content_str)
                 exception_handled = True

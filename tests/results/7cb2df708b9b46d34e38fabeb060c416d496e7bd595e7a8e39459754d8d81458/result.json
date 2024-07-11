@@ -1,0 +1,85 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 0,
+    "sections": [
+      {
+        "auto_collapse": false,
+        "body": {
+          "from": [
+            "Someone@Somewhere.com"
+          ],
+          "sent": [
+            "July 9, 2024 1:01 PM"
+          ],
+          "subject": [
+            "This is the subject"
+          ],
+          "to": [
+            "\"Some other person\""
+          ]
+        },
+        "body_config": {},
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "email": {
+              "address": [
+                "someone@somewhere.com"
+              ],
+              "subject": [
+                "This is the subject"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Headers",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [],
+    "tags": {
+      "network.email.address": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "someone@somewhere.com"
+        }
+      ],
+      "network.email.subject": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "This is the subject"
+        }
+      ]
+    },
+    "temp_submission_data": {
+      "email_body": [
+        "Thanks",
+        "This",
+        "To",
+        "broken",
+        "dos",
+        "for",
+        "header",
+        "is",
+        "newlines",
+        "newlines...",
+        "subject",
+        "the",
+        "using"
+      ]
+    }
+  }
+}
