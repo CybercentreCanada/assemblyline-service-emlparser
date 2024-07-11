@@ -16,7 +16,7 @@ identify = forge.get_identify(use_cache=False)
 @pytest.fixture()
 def sample(request):
     sample_path = os.path.join("tests", "samples", request.param)
-    sha256_of_file = identify.fileinfo(sample_path, skip_fuzzy_hashes=True)["sha256"]
+    sha256_of_file = identify.fileinfo(sample_path, calculate_entropy=False, skip_fuzzy_hashes=True)["sha256"]
     shutil.copy(sample_path, os.path.join("/tmp", sha256_of_file))
     yield sha256_of_file
     os.remove(os.path.join("/tmp", sha256_of_file))
@@ -37,7 +37,7 @@ def create_service_task(sample):
             },
             "fileinfo": {
                 k: v
-                for k, v in identify.fileinfo(f"/tmp/{sample}", skip_fuzzy_hashes=True).items()
+                for k, v in identify.fileinfo(f"/tmp/{sample}", skip_fuzzy_hashes=True, calculate_entropy=False).items()
                 if k in fileinfo_keys
             },
             "filename": sample,

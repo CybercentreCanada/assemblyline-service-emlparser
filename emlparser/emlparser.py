@@ -561,6 +561,8 @@ class EmlParser(ServiceBase):
                                         if header in h:
                                             h_key = header[:-1]
 
+                                h_value = h_value.replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
+
                                 # Use the latest message's subject (this maintains FW, RE, etc.)
                                 if h_key == "Subject" and not subject:
                                     subject = h_value
