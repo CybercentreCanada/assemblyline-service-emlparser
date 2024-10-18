@@ -65,6 +65,15 @@ def tag_is_valid(validator, value) -> bool:
     return True
 
 
+def clean_uri_from_body(uri):
+    for invalid_uri_char in ['"', "'", "<", ">"]:
+        for u in uri.split(invalid_uri_char):
+            if re.match(FULL_URI, u):
+                uri = u
+                break
+    return uri
+
+
 class EmlParser(ServiceBase):
     def __init__(self, config=None):
         super().__init__(config)
@@ -777,7 +786,12 @@ class EmlParser(ServiceBase):
                         os.close(fd)
                     request.add_extracted(path, "body_" + str(body_counter), "Body text")
                 for ioc_type in NETWORK_IOC_TYPES:
-                    all_iocs[ioc_type] = all_iocs[ioc_type].union(set(body.get(ioc_type, [])))
+                    new_ioc = set(body.get(ioc_type, []))
+                    if not new_ioc:
+                        continue
+                    if ioc_type == "uri":
+                        new_ioc = set(map(clean_uri_from_body, new_ioc))
+                    all_iocs[ioc_type] = all_iocs[ioc_type].union(new_ioc)
             # Words in the email body, used by extract to guess passwords
             request.temp_submission_data["email_body"] = sorted(list(body_words))
 
@@ -845,14 +859,29 @@ class EmlParser(ServiceBase):
             if all_iocs["uri"]:
                 uri_section = ResultSection("URIs Found:", parent=request.result)
                 for uri in sorted(all_iocs["uri"]):
-                    for invalid_uri_char in ['"', "'", "<", ">"]:
-                        for u in uri.split(invalid_uri_char):
-                            if re.match(FULL_URI, u):
-                                uri = u
-                                break
                     try:
                         parsed_url = urlparse(uri)
                     except ValueError:
+                        continue
+                    # This should not be needed, but eml_parser is wrongly extracting some URI multiple time,
+                    # with some being only a subset of the real one. Example:
+                    # Real URI in html: https://site.com/webpage/%3EUID%3E111?header=h&amp;part=1.1&amp;f=data01.jpg
+                    # Other URI found: https://site.com/webpage/%3EUID%3E111?header=h&amp;part=1.1&amp;f=data0
+                    # Other URI found: https://site.com/webpage/%3EUID%3E111?header=h&amp;pa
+                    # Other URI found: https://site.com/webpage/%3EUID%3E111?he
+                    # Other URI found: https://site.com/webpage/%3EUID%3E1
+                    superseeding_uris = [u for u in all_iocs["uri"] if uri in u and uri != u]
+                    if (
+                        superseeding_uris
+                        and len(parsed_url.path)
+                        + len(parsed_url.params)
+                        + len(parsed_url.query)
+                        + len(parsed_url.fragment)
+                        # Arbitrary length. This just makes sure we're not skipping small URIs that
+                        # may have more chances to have a genuine superseeding uri in the bodies.
+                        > 10
+                    ):
+                        # Skipping that URI as a longer one looks to be present
                         continue
                     uri_section.add_line(uri)
                     uri_section.add_tag("network.static.uri", uri.strip())
