@@ -895,6 +895,26 @@ class EmlParser(ServiceBase):
                 for domain in sorted(all_iocs["domain"]):
                     if not tag_is_valid(DOMAIN_VALIDATOR, domain):
                         continue
+                    skip_domain = False
+                    # This should not be needed, but eml_parser is wrongly extracting some domain from email username.
+                    # Example: username.french@domain.com could extract username.fr as a domain.
+                    for eml_adr in all_iocs["email"]:
+                        if domain in eml_adr.split("@", 1)[0]:
+                            skip_domain = True
+                            break
+                    if skip_domain:
+                        continue
+                    # This should not be needed, but eml_parser is wrongly extracting some domain multiple time,
+                    # with some being only a subset of the real one. Example:
+                    # Real domain: abc.com
+                    # Other domain: bc.com
+                    for d in all_iocs["domain"]:
+                        # Make sure it's not simply a subdomain, where both domains would be valid
+                        if domain != d and d.endswith(domain) and d[-len(domain) - 1] != ".":
+                            skip_domain = True
+                            break
+                    if skip_domain:
+                        continue
                     domain_section.add_line(domain)
                     domain_section.add_tag("network.static.domain", domain)
                 if domain_section.body:
