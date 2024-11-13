@@ -75,6 +75,16 @@ def clean_uri_from_body(uri):
     return uri
 
 
+def domain_is_an_email_username(domain, all_emails):
+    # This should not be needed, but some domains are wrongly extracted from email usernames.
+    # Example: username.french@domain.com eml_parser could extract username.fr as a domain.
+    # Example: username.fr@domain.com eml_parser/MD could extract username.fr as a domain.
+    for eml_adr in all_emails:
+        if domain in eml_adr.split("@", 1)[0]:
+            return True
+    return False
+
+
 class EmlParser(ServiceBase):
     def __init__(self, config=None):
         super().__init__(config)
@@ -941,6 +951,8 @@ class EmlParser(ServiceBase):
             all_iocs["domain"] = [x for x in all_iocs["domain"] if x.lower() not in md_domains_lowercase]
             domain_section = ResultSection("Domains Found:", parent=request.result)
             for domain in sorted(md_iocs["domain"]):
+                if domain_is_an_email_username(domain, md_iocs["email"]):
+                    continue
                 domain_section.add_line(domain)
                 domain_section.add_tag("network.static.domain", domain)
 
@@ -949,19 +961,13 @@ class EmlParser(ServiceBase):
                 for domain in sorted(all_iocs["domain"]):
                     if not tag_is_valid(DOMAIN_VALIDATOR, domain):
                         continue
-                    skip_domain = False
-                    # This should not be needed, but eml_parser is wrongly extracting some domain from email username.
-                    # Example: username.french@domain.com could extract username.fr as a domain.
-                    for eml_adr in all_iocs["email"]:
-                        if domain in eml_adr.split("@", 1)[0]:
-                            skip_domain = True
-                            break
-                    if skip_domain:
+                    if domain_is_an_email_username(domain, md_iocs["email"].union(all_iocs["email"])):
                         continue
                     # This should not be needed, but eml_parser is wrongly extracting some domain multiple time,
                     # with some being only a subset of the real one. Example:
                     # Real domain: abc.com
                     # Other domain: bc.com
+                    skip_domain = False
                     for d in all_iocs["domain"]:
                         # Make sure it's not simply a subdomain, where both domains would be valid
                         if domain != d and d.endswith(domain) and d[-len(domain) - 1] != ".":
