@@ -84,7 +84,12 @@
     ]
   },
   "files": {
-    "extracted": [],
+    "extracted": [
+      {
+        "name": "body_0",
+        "sha256": "097e314cc7da42c0b3df89c2ed260c940c52ebc38eb81feedd9c7f7c96d5c0d3"
+      }
+    ],
     "supplementary": []
   },
   "results": {

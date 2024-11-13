@@ -18,7 +18,7 @@ import eml_parser
 import extract_msg
 from assemblyline.common import forge
 from assemblyline.common.str_utils import safe_str
-from assemblyline.odm import DOMAIN_REGEX, EMAIL_REGEX, FULL_URI, IP, IP_ONLY_REGEX, IP_REGEX, URI, Domain
+from assemblyline.odm import DOMAIN_REGEX, EMAIL_REGEX, FULL_URI, IP, IP_ONLY_REGEX, IP_REGEX, URI, Domain, Email
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.request import ServiceRequest
 from assemblyline_v4_service.common.result import (
@@ -55,6 +55,7 @@ IDENTIFY = forge.get_identify(use_cache=os.environ.get("PRIVILEGED", "false").lo
 IP_VALIDATOR = IP()
 DOMAIN_VALIDATOR = Domain()
 URI_VALIDATOR = URI()
+EMAIL_VALIDATOR = Email()
 
 
 def tag_is_valid(validator, value) -> bool:
@@ -772,92 +773,134 @@ class EmlParser(ServiceBase):
         ]:
             header.pop("date")
 
+        if not ("from" in header or "to" in header or parsed_eml.get("attachments")):
+            self.log.warning("emlParser could not parse EML; no useful information in result's headers")
+            return
+
         all_iocs = {}
         [all_iocs.setdefault(t, set()) for t in NETWORK_IOC_TYPES]
-        if "from" in header or "to" in header or parsed_eml.get("attachments"):
-            body_words = set(extract_passwords(header["subject"]))
-            for body_counter, body in enumerate(parsed_eml["body"]):
-                body_text = BeautifulSoup(body["content"]).text
-                body_words.update(extract_passwords(body_text))
-                if request.get_param("extract_body_text"):
-                    fd, path = tempfile.mkstemp(dir=self.working_directory)
-                    with open(path, "w") as f:
-                        f.write(body["content"])
-                        os.close(fd)
-                    request.add_extracted(path, "body_" + str(body_counter), "Body text")
-                for ioc_type in NETWORK_IOC_TYPES:
-                    new_ioc = set(body.get(ioc_type, []))
-                    if not new_ioc:
-                        continue
-                    if ioc_type == "uri":
-                        new_ioc = set(map(clean_uri_from_body, new_ioc))
-                    all_iocs[ioc_type] = all_iocs[ioc_type].union(new_ioc)
-            # Words in the email body, used by extract to guess passwords
-            request.temp_submission_data["email_body"] = sorted(list(body_words))
+        md_iocs = all_iocs.copy()
+        body_words = set(extract_passwords(header["subject"]))
+        for body_counter, body in enumerate(parsed_eml["body"]):
+            body_text = BeautifulSoup(body["content"]).text
+            body_words.update(extract_passwords(body_text))
+            # Always extract html so other modules can analyze it
+            if request.get_param("extract_body_text") or "html" in body.get("content_type", "unknown"):
+                fd, path = tempfile.mkstemp(dir=self.working_directory)
+                with open(path, "w") as f:
+                    f.write(body["content"])
+                    os.close(fd)
+                request.add_extracted(path, "body_" + str(body_counter), "Body text")
+            for ioc_type in NETWORK_IOC_TYPES:
+                # Process eml_parser extracted IOCs
+                new_ioc = set(body.get(ioc_type, []))
+                if not new_ioc:
+                    continue
+                if ioc_type == "uri":
+                    new_ioc = set(map(clean_uri_from_body, new_ioc))
+                all_iocs[ioc_type] = all_iocs[ioc_type].union(new_ioc)
 
-            kv_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
+                # Process MultiDecoder extracted IOCs
+                new_ioc = []
+                encoded_body_content = body["content"].encode()
+                if ioc_type == "domain":
+                    for x in find_domains(encoded_body_content):
+                        if tag_is_valid(DOMAIN_VALIDATOR, x.value.decode()):
+                            new_ioc.append(x.value.decode())
 
-            # Basic tags
-            from_addr = header["from"].strip() if header.get("from", None) else None
-            if from_addr and re.match(EMAIL_REGEX, from_addr):
-                kv_section.add_tag("network.email.address", from_addr)
+                if ioc_type == "email":
+                    for x in find_emails(encoded_body_content):
+                        if tag_is_valid(EMAIL_VALIDATOR, x.value.decode()):
+                            new_ioc.append(x.value.decode())
+
+                if ioc_type == "uri":
+                    for x in find_urls(encoded_body_content):
+                        if tag_is_valid(URI_VALIDATOR, x.value.decode()):
+                            new_ioc.append(x.value.decode())
+                md_iocs[ioc_type] = md_iocs[ioc_type].union(new_ioc)
+
+        # Words in the email body, used by Extract to guess passwords
+        request.temp_submission_data["email_body"] = sorted(list(body_words))
+
+        kv_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
+
+        # Basic tags
+        from_addr = header["from"].strip() if header.get("from", None) else None
+        if from_addr and re.match(EMAIL_REGEX, from_addr):
+            kv_section.add_tag("network.email.address", from_addr)
+        [
+            kv_section.add_tag("network.email.address", to.strip())
+            for to in header["to"]
+            if re.match(EMAIL_REGEX, to.strip())
+        ]
+
+        parsed_headers = email.message_from_bytes(content_str)
+        validation_section = self.build_email_header_validation_section(
+            subject=header.get("subject"),
+            sender=parsed_headers.get("sender"),
+            _from=parsed_headers.get("from"),
+            reply_to=parsed_headers.get("reply-to"),
+            return_path=parsed_headers.get("return-path"),
+            received=parsed_headers.get_all("received"),
+            received_spf=parsed_headers.get_all("received-spf"),
+        )
+        if validation_section.subsections:
+            request.result.add_section(validation_section)
+
+        if "date" in header:
+            kv_section.add_tag("network.email.date", str(header["date"]).strip())
+
+        subject = header["subject"].strip() if header.get("subject", None) else None
+        if subject:
+            kv_section.add_tag("network.email.subject", subject)
+
+        # Add CCs to body and tags
+        if "cc" in header:
             [
-                kv_section.add_tag("network.email.address", to.strip())
-                for to in header["to"]
-                if re.match(EMAIL_REGEX, to.strip())
+                kv_section.add_tag("network.email.address", cc.strip())
+                for cc in header["cc"]
+                if re.match(EMAIL_REGEX, cc.strip())
             ]
+        # Add Message ID to body and tags
+        if "message-id" in header["header"]:
+            kv_section.add_tag("network.email.msg_id", header["header"]["message-id"][0].strip().strip("<>"))
 
-            parsed_headers = email.message_from_bytes(content_str)
-            validation_section = self.build_email_header_validation_section(
-                subject=header.get("subject"),
-                sender=parsed_headers.get("sender"),
-                _from=parsed_headers.get("from"),
-                reply_to=parsed_headers.get("reply-to"),
-                return_path=parsed_headers.get("return-path"),
-                received=parsed_headers.get_all("received"),
-                received_spf=parsed_headers.get_all("received-spf"),
-            )
-            if validation_section.subsections:
-                request.result.add_section(validation_section)
+        # Add Tags for received IPs
+        if "received_ip" in header:
+            header["received_ip"] = sorted(header["received_ip"])
+            for ip in header["received_ip"]:
+                ip = ip.strip()
+                try:
+                    if isinstance(ip_address(ip), IPv4Address):
+                        kv_section.add_tag("network.static.ip", ip)
+                except ValueError:
+                    pass
 
-            if "date" in header:
-                kv_section.add_tag("network.email.date", str(header["date"]).strip())
+        # Add Tags for received Domains
+        if "received_domain" in header:
+            header["received_domain"] = sorted(header["received_domain"])
+            for dom in header["received_domain"]:
+                kv_section.add_tag("network.static.domain", dom.strip())
 
-            subject = header["subject"].strip() if header.get("subject", None) else None
-            if subject:
-                kv_section.add_tag("network.email.subject", subject)
+        # If we've found URIs, add them to a section
+        if all_iocs["uri"] or md_iocs["uri"]:
+            md_uris_lowercase = [x.lower() for x in md_iocs["uri"]]
+            all_iocs["uri"] = [x for x in all_iocs["uri"] if x.lower() not in md_uris_lowercase]
+            uri_section = ResultSection("URIs Found:", parent=request.result)
+            for uri in sorted(md_iocs["uri"]):
+                try:
+                    parsed_url = urlparse(uri)
+                except ValueError:
+                    continue
+                uri_section.add_line(uri)
+                uri_section.add_tag("network.static.uri", uri.strip())
+                if parsed_url.hostname and re.match(IP_ONLY_REGEX, parsed_url.hostname):
+                    uri_section.add_tag("network.static.ip", parsed_url.hostname)
+                else:
+                    uri_section.add_tag("network.static.domain", parsed_url.hostname)
 
-            # Add CCs to body and tags
-            if "cc" in header:
-                [
-                    kv_section.add_tag("network.email.address", cc.strip())
-                    for cc in header["cc"]
-                    if re.match(EMAIL_REGEX, cc.strip())
-                ]
-            # Add Message ID to body and tags
-            if "message-id" in header["header"]:
-                kv_section.add_tag("network.email.msg_id", header["header"]["message-id"][0].strip().strip("<>"))
-
-            # Add Tags for received IPs
-            if "received_ip" in header:
-                header["received_ip"] = sorted(header["received_ip"])
-                for ip in header["received_ip"]:
-                    ip = ip.strip()
-                    try:
-                        if isinstance(ip_address(ip), IPv4Address):
-                            kv_section.add_tag("network.static.ip", ip)
-                    except ValueError:
-                        pass
-
-            # Add Tags for received Domains
-            if "received_domain" in header:
-                header["received_domain"] = sorted(header["received_domain"])
-                for dom in header["received_domain"]:
-                    kv_section.add_tag("network.static.domain", dom.strip())
-
-            # If we've found URIs, add them to a section
             if all_iocs["uri"]:
-                uri_section = ResultSection("URIs Found:", parent=request.result)
+                emlp_uri_section = ResultSection("URIs Found by eml_parser:")
                 for uri in sorted(all_iocs["uri"]):
                     try:
                         parsed_url = urlparse(uri)
@@ -883,15 +926,26 @@ class EmlParser(ServiceBase):
                     ):
                         # Skipping that URI as a longer one looks to be present
                         continue
-                    uri_section.add_line(uri)
-                    uri_section.add_tag("network.static.uri", uri.strip())
+                    emlp_uri_section.add_line(uri)
+                    emlp_uri_section.add_tag("network.static.uri", uri.strip())
                     if parsed_url.hostname and re.match(IP_ONLY_REGEX, parsed_url.hostname):
-                        uri_section.add_tag("network.static.ip", parsed_url.hostname)
+                        emlp_uri_section.add_tag("network.static.ip", parsed_url.hostname)
                     else:
-                        uri_section.add_tag("network.static.domain", parsed_url.hostname)
-            # If we've found domains, add them to a section
+                        emlp_uri_section.add_tag("network.static.domain", parsed_url.hostname)
+                if emlp_uri_section.body:
+                    uri_section.add_subsection(emlp_uri_section)
+
+        # If we've found domains, add them to a section
+        if all_iocs["domain"] or md_iocs["domain"]:
+            md_domains_lowercase = [x.lower() for x in md_iocs["domain"]]
+            all_iocs["domain"] = [x for x in all_iocs["domain"] if x.lower() not in md_domains_lowercase]
+            domain_section = ResultSection("Domains Found:", parent=request.result)
+            for domain in sorted(md_iocs["domain"]):
+                domain_section.add_line(domain)
+                domain_section.add_tag("network.static.domain", domain)
+
             if all_iocs["domain"]:
-                domain_section = ResultSection("Domains Found:")
+                emlp_domain_section = ResultSection("Domains Found by eml_parser:")
                 for domain in sorted(all_iocs["domain"]):
                     if not tag_is_valid(DOMAIN_VALIDATOR, domain):
                         continue
@@ -915,119 +969,124 @@ class EmlParser(ServiceBase):
                             break
                     if skip_domain:
                         continue
-                    domain_section.add_line(domain)
-                    domain_section.add_tag("network.static.domain", domain)
-                if domain_section.body:
-                    request.result.add_section(domain_section)
-            # If we've found email addresses, add them to a section
+                    emlp_domain_section.add_line(domain)
+                    emlp_domain_section.add_tag("network.static.domain", domain)
+                if emlp_domain_section.body:
+                    domain_section.add_subsection(emlp_domain_section)
+
+        # If we've found email addresses, add them to a section
+        if all_iocs["email"] or md_iocs["email"]:
+            md_emails_lowercase = [x.lower() for x in md_iocs["email"]]
+            all_iocs["email"] = [x for x in all_iocs["email"] if x.lower() not in md_emails_lowercase]
+            email_section = ResultSection("Email Addresses Found:", parent=request.result)
+            for eml_adr in sorted(md_iocs["email"]):
+                email_section.add_line(eml_adr)
+                email_section.add_tag("network.email.address", eml_adr)
+
             if all_iocs["email"]:
-                email_section = ResultSection("Email Addresses Found:")
+                emlp_domain_section = ResultSection("Email Addresses Found by eml_parser:")
                 for eml_adr in sorted(all_iocs["email"]):
                     if not re.match(EMAIL_REGEX, eml_adr):
                         continue
-                    email_section.add_line(eml_adr)
-                    email_section.add_tag("network.email.address", eml_adr)
-                if email_section.body:
-                    request.result.add_section(email_section)
+                    emlp_domain_section.add_line(eml_adr)
+                    emlp_domain_section.add_tag("network.email.address", eml_adr)
+                if emlp_domain_section.body:
+                    email_section.add_subsection(emlp_domain_section)
 
-            # Bring all headers together...
-            extra_header = header.pop("header", {})
-            header.pop("received", None)
-            header.update(extra_header)
+        # Bring all headers together...
+        extra_header = header.pop("header", {})
+        header.pop("received", None)
+        header.update(extra_header)
 
-            # Convert to common format
-            if "date" in header:
-                header["date"] = [self.json_serial(header["date"])]
+        # Convert to common format
+        if "date" in header:
+            header["date"] = [self.json_serial(header["date"])]
 
-            # Replace with aggregated date(s) if any available
-            if header_agg.get("Date"):
-                # Replace
-                if "date" not in header:
-                    header["date"] = list(header_agg["Date"])
-                # Append
+        # Replace with aggregated date(s) if any available
+        if header_agg.get("Date"):
+            # Replace
+            if "date" not in header:
+                header["date"] = list(header_agg["Date"])
+            # Append
+            else:
+                header["date"] += list(header_agg["Date"])
+            (kv_section.add_tag("network.email.date", str(date).strip()) for date in header_agg["Date"])
+
+        # Filter out useless headers from results
+        self.log.debug(header.keys())
+        [header.pop(h) for h in self.header_filter if h in header.keys()]
+        kv_section.set_body(json.dumps(header, default=self.json_serial, sort_keys=True))
+
+        # Merge X-MS-Exchange-Organization-Persisted-Urls headers into one block
+        if header.get("x-ms-exchange-organization-persisted-urls-chunkcount"):
+            missing_persisted_urls_chunks = 0
+            persisted_urls_block = ""
+            block_count = int(header["x-ms-exchange-organization-persisted-urls-chunkcount"][0])
+            for i in range(block_count):
+                if f"x-ms-exchange-organization-persisted-urls-{i}" in header:
+                    persisted_urls_block = "".join(
+                        [persisted_urls_block, header[f"x-ms-exchange-organization-persisted-urls-{i}"][0]]
+                    )
                 else:
-                    header["date"] += list(header_agg["Date"])
-                (kv_section.add_tag("network.email.date", str(date).strip()) for date in header_agg["Date"])
+                    missing_persisted_urls_chunks += 1
+            persisted_urls_block = persisted_urls_block.strip().encode()
 
-            # Filter out useless headers from results
-            self.log.debug(header.keys())
-            [header.pop(h) for h in self.header_filter if h in header.keys()]
-            kv_section.set_body(json.dumps(header, default=self.json_serial, sort_keys=True))
+            # Look for network IOCs in this block and tag them
+            for x in find_domains(persisted_urls_block):
+                if tag_is_valid(DOMAIN_VALIDATOR, x.value.decode()):
+                    kv_section.add_tag("network.static.domain", x.value)
 
-            # Merge X-MS-Exchange-Organization-Persisted-Urls headers into one block
-            if header.get("x-ms-exchange-organization-persisted-urls-chunkcount"):
-                missing_persisted_urls_chunks = 0
-                persisted_urls_block = ""
-                block_count = int(header["x-ms-exchange-organization-persisted-urls-chunkcount"][0])
-                for i in range(block_count):
-                    if f"x-ms-exchange-organization-persisted-urls-{i}" in header:
-                        persisted_urls_block = "".join(
-                            [persisted_urls_block, header[f"x-ms-exchange-organization-persisted-urls-{i}"][0]]
-                        )
-                    else:
-                        missing_persisted_urls_chunks += 1
-                persisted_urls_block = persisted_urls_block.strip().encode()
+            for x in find_ips(persisted_urls_block):
+                if tag_is_valid(IP_VALIDATOR, x.value.decode()):
+                    kv_section.add_tag("network.static.ip", x.value)
 
-                # Look for network IOCs in this block and tag them
-                for x in find_domains(persisted_urls_block):
-                    if tag_is_valid(DOMAIN_VALIDATOR, x.value.decode()):
-                        kv_section.add_tag("network.static.domain", x.value)
+            for x in find_urls(persisted_urls_block):
+                if tag_is_valid(URI_VALIDATOR, x.value.decode()):
+                    kv_section.add_tag("network.static.uri", x.value)
 
-                for x in find_ips(persisted_urls_block):
-                    if tag_is_valid(IP_VALIDATOR, x.value.decode()):
-                        kv_section.add_tag("network.static.ip", x.value)
+            if missing_persisted_urls_chunks != 0:
+                missing_persisted_urls_chunks_section = ResultSection("Missing Persisted URLs chunks")
+                block_found = block_count - missing_persisted_urls_chunks
+                missing_persisted_urls_chunks_section.add_line(
+                    f"Persisted URLs block found: {block_found}/{block_count} ({block_found/block_count*100:.0f}%)"
+                )
+                request.result.add_section(missing_persisted_urls_chunks_section)
 
-                for x in find_urls(persisted_urls_block):
-                    if tag_is_valid(URI_VALIDATOR, x.value.decode()):
-                        kv_section.add_tag("network.static.uri", x.value)
+        attachments_added = []
+        if "attachment" in parsed_eml:
+            attachments = parsed_eml["attachment"]
+            for attachment in attachments:
+                fd, path = tempfile.mkstemp(dir=self.working_directory)
 
-                if missing_persisted_urls_chunks != 0:
-                    missing_persisted_urls_chunks_section = ResultSection("Missing Persisted URLs chunks")
-                    block_found = block_count - missing_persisted_urls_chunks
-                    missing_persisted_urls_chunks_section.add_line(
-                        f"Persisted URLs block found: {block_found}/{block_count} ({block_found/block_count*100:.0f}%)"
+                with open(path, "wb") as f:
+                    f.write(base64.b64decode(attachment["raw"]))
+                    os.close(fd)
+                try:
+                    if request.add_extracted(
+                        path, attachment["filename"], "Attachment ", safelist_interface=self.api_interface
+                    ):
+                        attachments_added.append(attachment["filename"])
+                except MaxExtractedExceeded:
+                    self.log.warning(
+                        "Extract limit reached on attachments: " f"{len(attachment) - len(attachments_added)} not added"
                     )
-                    request.result.add_section(missing_persisted_urls_chunks_section)
-
-            attachments_added = []
-            if "attachment" in parsed_eml:
-                attachments = parsed_eml["attachment"]
-                for attachment in attachments:
-                    fd, path = tempfile.mkstemp(dir=self.working_directory)
-
-                    with open(path, "wb") as f:
-                        f.write(base64.b64decode(attachment["raw"]))
-                        os.close(fd)
-                    try:
-                        if request.add_extracted(
-                            path, attachment["filename"], "Attachment ", safelist_interface=self.api_interface
-                        ):
-                            attachments_added.append(attachment["filename"])
-                    except MaxExtractedExceeded:
-                        self.log.warning(
-                            "Extract limit reached on attachments: "
-                            f"{len(attachment) - len(attachments_added)} not added"
-                        )
-                        break
-                if attachments_added:
-                    ResultSection(
-                        "Extracted Attachments:", body="\n".join([x for x in attachments_added]), parent=request.result
-                    )
-
-            if request.get_param("save_emlparser_output"):
-                fd, temp_path = tempfile.mkstemp(dir=self.working_directory)
-                attachments = parsed_eml.get("attachment", [])
-                # Remove raw attachments, all attachments up to MaxExtractedExceeded already extracted
-                for attachment in attachments:
-                    _ = attachment.pop("raw", None)
-                with os.fdopen(fd, "w") as myfile:
-                    myfile.write(json.dumps(parsed_eml, default=self.json_serial))
-                request.add_supplementary(
-                    temp_path, "parsing.json", "These are the raw results of running GOVCERT-LU's eml_parser"
+                    break
+            if attachments_added:
+                ResultSection(
+                    "Extracted Attachments:", body="\n".join([x for x in attachments_added]), parent=request.result
                 )
 
-        else:
-            self.log.warning("emlParser could not parse EML; no useful information in result's headers")
+        if request.get_param("save_emlparser_output"):
+            fd, temp_path = tempfile.mkstemp(dir=self.working_directory)
+            attachments = parsed_eml.get("attachment", [])
+            # Remove raw attachments, all attachments up to MaxExtractedExceeded already extracted
+            for attachment in attachments:
+                _ = attachment.pop("raw", None)
+            with os.fdopen(fd, "w") as myfile:
+                myfile.write(json.dumps(parsed_eml, default=self.json_serial))
+            request.add_supplementary(
+                temp_path, "parsing.json", "These are the raw results of running GOVCERT-LU's eml_parser"
+            )
 
     def build_email_header_validation_section(
         self,

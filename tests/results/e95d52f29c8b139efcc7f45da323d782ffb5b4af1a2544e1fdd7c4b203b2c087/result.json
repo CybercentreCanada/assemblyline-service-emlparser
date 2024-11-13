@@ -277,7 +277,7 @@
       },
       {
         "auto_collapse": false,
-        "body": "aka.ms\neurofins.de",
+        "body": "Eurofins.de\neurofins.de\nw2.KZN8H.connect-starz.com",
         "body_config": {},
         "body_format": "TEXT",
         "classification": "TLP:C",
@@ -288,8 +288,9 @@
           "network": {
             "static": {
               "domain": [
-                "aka.ms",
-                "eurofins.de"
+                "Eurofins.de",
+                "eurofins.de",
+                "w2.KZN8H.connect-starz.com"
               ]
             }
           }
@@ -299,7 +300,28 @@
       },
       {
         "auto_collapse": false,
-        "body": "thomasgronewold@eurofins.de",
+        "body": "aka.ms",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 1,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "static": {
+              "domain": [
+                "aka.ms"
+              ]
+            }
+          }
+        },
+        "title_text": "Domains Found by eml_parser:",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "ThomasGronewold@eurofins.de",
         "body_config": {},
         "body_format": "TEXT",
         "classification": "TLP:C",
@@ -310,7 +332,7 @@
           "network": {
             "email": {
               "address": [
-                "thomasgronewold@eurofins.de"
+                "ThomasGronewold@eurofins.de"
               ]
             }
           }
@@ -321,7 +343,12 @@
     ]
   },
   "files": {
-    "extracted": [],
+    "extracted": [
+      {
+        "name": "body_1",
+        "sha256": "9f9fd9485591cbf68ab11c3052fbeb67e7df621ff04d4da20ecf60be6b32969b"
+      }
+    ],
     "supplementary": []
   },
   "results": {
@@ -331,12 +358,12 @@
         {
           "heur_id": null,
           "signatures": [],
-          "value": "ananda.chairunnisa@dynapackasia.co.id"
+          "value": "ThomasGronewold@eurofins.de"
         },
         {
           "heur_id": null,
           "signatures": [],
-          "value": "thomasgronewold@eurofins.de"
+          "value": "ananda.chairunnisa@dynapackasia.co.id"
         },
         {
           "heur_id": null,
@@ -366,6 +393,11 @@
         }
       ],
       "network.static.domain": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "Eurofins.de"
+        },
         {
           "heur_id": null,
           "signatures": [],
@@ -420,6 +452,11 @@
           "heur_id": null,
           "signatures": [],
           "value": "protection.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "w2.KZN8H.connect-starz.com"
         },
         {
           "heur_id": null,
