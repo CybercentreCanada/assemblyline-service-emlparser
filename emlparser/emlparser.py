@@ -984,14 +984,14 @@ class EmlParser(ServiceBase):
                 email_section.add_tag("network.email.address", eml_adr)
 
             if all_iocs["email"]:
-                emlp_domain_section = ResultSection("Email Addresses Found by eml_parser:")
+                emlp_email_section = ResultSection("Email Addresses Found by eml_parser:")
                 for eml_adr in sorted(all_iocs["email"]):
                     if not re.match(EMAIL_REGEX, eml_adr):
                         continue
-                    emlp_domain_section.add_line(eml_adr)
-                    emlp_domain_section.add_tag("network.email.address", eml_adr)
-                if emlp_domain_section.body:
-                    email_section.add_subsection(emlp_domain_section)
+                    emlp_email_section.add_line(eml_adr)
+                    emlp_email_section.add_tag("network.email.address", eml_adr)
+                if emlp_email_section.body:
+                    email_section.add_subsection(emlp_email_section)
 
         # Bring all headers together...
         extra_header = header.pop("header", {})
