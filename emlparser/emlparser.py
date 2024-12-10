@@ -549,7 +549,7 @@ class EmlParser(ServiceBase):
         if generator_metadata_content == "Microsoft Word 15":
             paragraphs = parsed_html.body.find_all("p")
             # Likely an email that was exported with original email headers
-            if any(header in paragraphs[0] for header in valid_headers):
+            if paragraphs and any(header in paragraphs[0] for header in valid_headers):
                 for p in paragraphs:
                     if any(valid_header in p.text for valid_header in valid_headers):
                         h_key, h_value = p.text.replace("\xa0", "").replace("\r\n", " ").split(":", 1)
