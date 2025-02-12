@@ -1,7 +1,7 @@
 assemblyline
 assemblyline-v4-service
 extract-msg==0.48.0
-mail-parser
+mail-parser==3.15.0
 bs4
 lxml
 eml-parser
