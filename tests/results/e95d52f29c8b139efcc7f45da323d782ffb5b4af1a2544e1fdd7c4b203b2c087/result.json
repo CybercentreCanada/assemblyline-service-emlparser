@@ -277,7 +277,7 @@
       },
       {
         "auto_collapse": false,
-        "body": "Eurofins.de\neurofins.de",
+        "body": "Eurofins.de\naka.ms\neurofins.de\nw2.kzn8h.connect-starz.com",
         "body_config": {},
         "body_format": "TEXT",
         "classification": "TLP:C",
@@ -289,33 +289,14 @@
             "static": {
               "domain": [
                 "Eurofins.de",
-                "eurofins.de"
+                "aka.ms",
+                "eurofins.de",
+                "w2.kzn8h.connect-starz.com"
               ]
             }
           }
         },
         "title_text": "Domains Found:",
-        "zeroize_on_tag_safe": false
-      },
-      {
-        "auto_collapse": false,
-        "body": "aka.ms",
-        "body_config": {},
-        "body_format": "TEXT",
-        "classification": "TLP:C",
-        "depth": 1,
-        "heuristic": null,
-        "promote_to": null,
-        "tags": {
-          "network": {
-            "static": {
-              "domain": [
-                "aka.ms"
-              ]
-            }
-          }
-        },
-        "title_text": "Domains Found by eml_parser:",
         "zeroize_on_tag_safe": false
       },
       {
@@ -451,6 +432,11 @@
           "heur_id": null,
           "signatures": [],
           "value": "protection.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "w2.kzn8h.connect-starz.com"
         },
         {
           "heur_id": null,

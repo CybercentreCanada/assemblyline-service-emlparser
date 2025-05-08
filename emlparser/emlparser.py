@@ -908,6 +908,8 @@ class EmlParser(ServiceBase):
                     uri_section.add_tag("network.static.ip", parsed_url.hostname)
                 else:
                     uri_section.add_tag("network.static.domain", parsed_url.hostname)
+                    # In case the domain wasn't found with find_domains(), we will report it still
+                    md_iocs["domain"].add(parsed_url.hostname)
 
             if all_iocs["uri"]:
                 emlp_uri_section = ResultSection("URIs Found by eml_parser:")
