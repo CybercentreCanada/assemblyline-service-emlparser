@@ -16,13 +16,13 @@
             "text/plain; charset=\"UTF-8\""
           ],
           "date": [
-            "['Tue, 06 Dec 2022 09:49:11 +0100']"
+            "['2022-12-06T09:49:11+01:00']"
           ],
           "from": [
             "Amani Daniel <agricon@agriconconsult.com>"
           ],
           "message-id": [
-            "20117356208c9-5475-4068-81al-8721h3s18sxf4562148@agriconconsult.com"
+            " <20117356208c9-5475-4068-81al-8721h3s18sxf4562148@agriconconsult.com>"
           ],
           "received": [
             "from [45.183.92.135] (helo=[127.0.0.1])\tby motenas.co.uk with esmtpsa  (TLS1) tls TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA\t(Exim 4.93)\t(envelope-from <agricon@agriconconsult.com>)\tid 1p2TdX-0007DN-96\tfor eolfipcscyj@; Tue, 06 Dec 2022 09:49:12 +0100"

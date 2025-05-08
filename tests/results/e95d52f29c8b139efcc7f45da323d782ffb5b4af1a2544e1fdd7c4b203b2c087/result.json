@@ -16,7 +16,7 @@
             "multipart/alternative; boundary=\"_000_24002022025613B3606E0684EF7E3381FCdynapackasiacoid_\""
           ],
           "date": [
-            "['Thu, 24 Feb 2022 13:56:01 +0000']"
+            "['2022-02-24T13:56:01+00:00']"
           ],
           "dkim-signature": [
             "v=1; a=rsa-sha256; c=relaxed/relaxed; d=dynapackasia.co.id;\ts=07DE57D8-67A2-11E8-B6CC-0F04D89C5DAF; t=1645710961;\tbh=fDe9DNLKGeUhJlYYTXwlTgfpmlKTQoRM7NdVM7pOlX8=;\th=From:To:MIME-Version:Date:Message-Id;\tb=acp5TJBhdH2hxEpiqJDTu80ejJcFpmSlUOkSguNLeW0EXA5mpW5B55gUnp68/Bz5o\t rYENuXKrZFNK0gA2j1NmCsXjU2Y1n7vOwnUG3CGi4Eg4L3bTDm1EEZBahhLVFf3lTD\t vcqhhyDhWTBKVHtruqjQk8JvY4KzVM39DliJAXoP1/V3tEG06VKbyv+U9e6uGE0N+8\t DYhO3J6MW+tLWgg6GRhD+JwpavIeHNJL9ThuFFZOsV0o9JjVgtzKdBaWhM3Zkrh+2o\t Qnha0k3tQJZWBFGRbpZwq+Eq1mQOoN6eQdJ9kp+AWLXSUAdlQgrDHDj2FIQZwJMrWc\t S+eeklGiIx8JA=="
@@ -25,7 +25,7 @@
             "\"Eurofins.de_IT_2/24/20221:55 PM\" <ananda.chairunnisa@dynapackasia.co.id>"
           ],
           "message-id": [
-            "24002022025613B3606E0684-EF7E3381FC@dynapackasia.co.id"
+            "<24002022025613B3606E0684-EF7E3381FC@dynapackasia.co.id>"
           ],
           "mime-version": [
             "1.0"
@@ -277,7 +277,7 @@
       },
       {
         "auto_collapse": false,
-        "body": "Eurofins.de\neurofins.de\nw2.KZN8H.connect-starz.com",
+        "body": "Eurofins.de\neurofins.de",
         "body_config": {},
         "body_format": "TEXT",
         "classification": "TLP:C",
@@ -289,8 +289,7 @@
             "static": {
               "domain": [
                 "Eurofins.de",
-                "eurofins.de",
-                "w2.KZN8H.connect-starz.com"
+                "eurofins.de"
               ]
             }
           }
@@ -452,11 +451,6 @@
           "heur_id": null,
           "signatures": [],
           "value": "protection.outlook.com"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "w2.KZN8H.connect-starz.com"
         },
         {
           "heur_id": null,
