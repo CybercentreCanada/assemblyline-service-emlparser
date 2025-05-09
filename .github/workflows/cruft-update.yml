@@ -4,8 +4,6 @@ permissions:
   contents: write
   pull-requests: write
 on:
-  workflow_dispatch:
-    branches: [ actions_test ]
   schedule:
     - cron: "0 2 * * *" # Every day at 2am
 jobs:
