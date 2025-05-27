@@ -648,6 +648,10 @@ class EmlParser(ServiceBase):
     def handle_eml(self, request: ServiceRequest, content_str, header_agg={}) -> None:
         parser = eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         try:
+            if content_str[:3] == b"\xef\xbb\xbf":
+                content_str = content_str[3:]
+            if content_str[0] == content_str[-1] and content_str[0] in [ord("'"), ord(b'"')]:
+                content_str = content_str[1:-1]
             parsed_eml = parser.decode_email_bytes(content_str)
         except Exception as e:
             exception_handled = False
