@@ -899,7 +899,11 @@ class EmlParser(ServiceBase):
         # If we've found URIs, add them to a section
         if all_iocs["uri"] or md_iocs["uri"]:
             md_uris_lowercase = [x.lower() for x in md_iocs["uri"]]
-            all_iocs["uri"] = [x for x in all_iocs["uri"] if x.lower() not in md_uris_lowercase]
+            all_iocs["uri"] = [
+                x
+                for x in all_iocs["uri"]
+                if x.lower() not in md_uris_lowercase and not any(x.lower() in y for y in md_uris_lowercase)
+            ]
             uri_section = ResultSection("URIs Found:", parent=request.result)
             for uri in sorted(md_iocs["uri"]):
                 try:
@@ -954,7 +958,11 @@ class EmlParser(ServiceBase):
         # If we've found domains, add them to a section
         if all_iocs["domain"] or md_iocs["domain"]:
             md_domains_lowercase = [x.lower() for x in md_iocs["domain"]]
-            all_iocs["domain"] = [x for x in all_iocs["domain"] if x.lower() not in md_domains_lowercase]
+            all_iocs["domain"] = [
+                x
+                for x in all_iocs["domain"]
+                if x.lower() not in md_domains_lowercase and not any(x.lower() in y for y in md_domains_lowercase)
+            ]
             domain_section = ResultSection("Domains Found:", parent=request.result)
             for domain in sorted(md_iocs["domain"]):
                 if domain_is_an_email_username(domain, md_iocs["email"]):
@@ -989,7 +997,11 @@ class EmlParser(ServiceBase):
         # If we've found email addresses, add them to a section
         if all_iocs["email"] or md_iocs["email"]:
             md_emails_lowercase = [x.lower() for x in md_iocs["email"]]
-            all_iocs["email"] = [x for x in all_iocs["email"] if x.lower() not in md_emails_lowercase]
+            all_iocs["email"] = [
+                x
+                for x in all_iocs["email"]
+                if x.lower() not in md_emails_lowercase and not any(x.lower() in y for y in md_emails_lowercase)
+            ]
             email_section = ResultSection("Email Addresses Found:", parent=request.result)
             for eml_adr in sorted(md_iocs["email"]):
                 email_section.add_line(eml_adr)
