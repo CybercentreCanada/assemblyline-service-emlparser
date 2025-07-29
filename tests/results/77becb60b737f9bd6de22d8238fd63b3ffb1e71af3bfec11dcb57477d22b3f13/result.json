@@ -1,0 +1,160 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 0,
+    "sections": [
+      {
+        "auto_collapse": false,
+        "body": {
+          "authentication-results": [
+            "spf=pass (sender IP is 129.159.93.171) smtp.mailfrom=Mail.ssctv.net; dkim=none (message not signed) header.d=none;dmarc=bestguesspass action=none header.from=Mail.ssctv.net;compauth=pass reason=109"
+          ],
+          "date": [
+            "['2025-07-20T12:00:00-01:00']"
+          ],
+          "from": [
+            "Adam <AAAdam@Mail.ssctv.net>"
+          ],
+          "received-spf": [
+            "Pass (protection.outlook.com: domain of Mail.ssctv.net designates 129.159.93.171 as permitted sender) receiver=protection.outlook.com; client-ip=129.159.93.171; helo=smtp.wave.syn-alias.com; pr=C"
+          ],
+          "rutfrruwhcbujrigbkdaxdxtkuvmuwlrubvnnvytbqrtdmxkzxqcbaixrfmexmfyqbzcwxcdbysaqa...": [
+            "WjntVLDLmgxdggNRwtVDnmdfRAvaGkDAZSnxzmBUAuHRWuVwXxhUXWauFmVrhQHGyeETCgpUSZRqEPtyhhMXHtKYUEvpzeVqSTuHikStZcKjvAxtVyATxfAYgJcrXcPCLDQjyDNFDvxnWGBSjqERZj"
+          ],
+          "subject": [
+            "PROPOSAL"
+          ],
+          "to": [
+            "you <you>"
+          ]
+        },
+        "body_config": {},
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "email": {
+              "address": [
+                "aaadam@mail.ssctv.net"
+              ],
+              "date": [
+                "2025-07-20 12:00:00-01:00"
+              ],
+              "subject": [
+                "PROPOSAL"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Headers",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "rutfrruwhcbujrigbkdaxdxtkuvmuwlrubvnnvytbqrtdmxkzxqcbaixrfmexmfyqbzcwxcdbysaqaxnxvdpxgfwvveppttkvmctxjpynqvdqwjaftddypbazammdqkytzfpbchmrxjquczpwstwnzudmqhtggpdjgdyjbzyrdwnpzpwrwzinzdplutpekwrfytmdpgtgbwmgsgmdqeusaxwzxwgxajjymjybdnchghelvjajwznbawbhjjenmajglaummqpimatdwbbybcyhthtaxqczizkdjjpteqpqjvlibvxkyydmhwfsbujwvasnnxdurecjirfqlmjjjcsaivtzqdupxphaiacghcdweadaqebbetmrafwtdqxmxatjeyckztphqzjmgdlfrxuzgltrnkndgtaawgebkshyjnxnjtsjehrhaubwegpffypat",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 1,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Truncated header keys",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": null,
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Email Headers Validation",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": [
+          {
+            "action": "pass",
+            "additional": "receiver=protection.outlook.com; client-ip=129.159.93.171; helo=smtp.wave.syn-alias.com; pr=C",
+            "domain": "protection.outlook.com",
+            "info": "domain of Mail.ssctv.net designates 129.159.93.171 as permitted sender"
+          }
+        ],
+        "body_config": {
+          "column_order": [
+            "action",
+            "domain",
+            "info",
+            "additional"
+          ]
+        },
+        "body_format": "TABLE",
+        "classification": "TLP:C",
+        "depth": 1,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "static": {
+              "domain": [
+                "protection.outlook.com"
+              ]
+            }
+          }
+        },
+        "title_text": "SPF Validation",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [],
+    "tags": {
+      "network.email.address": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "aaadam@mail.ssctv.net"
+        }
+      ],
+      "network.email.date": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2025-07-20 12:00:00-01:00"
+        }
+      ],
+      "network.email.subject": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "PROPOSAL"
+        }
+      ],
+      "network.static.domain": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "protection.outlook.com"
+        }
+      ]
+    },
+    "temp_submission_data": {
+      "email_body": [
+        "PROPOSAL"
+      ]
+    }
+  }
+}

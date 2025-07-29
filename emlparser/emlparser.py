@@ -1039,7 +1039,17 @@ class EmlParser(ServiceBase):
         # Filter out useless headers from results
         self.log.debug(header.keys())
         [header.pop(h) for h in self.header_filter if h in header.keys()]
-        kv_section.set_body(json.dumps(header, default=self.json_serial, sort_keys=True))
+        kv_headers = {}
+        truncated_header_keys = []
+        for k, v in header.items():
+            if len(k) > 81:
+                kv_headers[f"{k[:78]}..."] = v
+                truncated_header_keys.append(k)
+            else:
+                kv_headers[k] = v
+        kv_section.set_body(json.dumps(kv_headers, default=self.json_serial, sort_keys=True))
+        if truncated_header_keys:
+            kv_section.add_subsection(ResultSection("Truncated header keys", body="\n".join(truncated_header_keys)))
 
         # Merge X-MS-Exchange-Organization-Persisted-Urls headers into one block
         if header.get("x-ms-exchange-organization-persisted-urls-chunkcount"):
