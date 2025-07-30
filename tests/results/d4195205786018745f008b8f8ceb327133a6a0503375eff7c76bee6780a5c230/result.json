@@ -534,7 +534,7 @@
       },
       {
         "auto_collapse": false,
-        "body": "1zouh.img.a.d.sendibm1.com\n1zouh.r.a.d.sendibm1.com\n20window.open\n2520window.open\n2527.com\n2527le.com\n2527w.gr\n27le.com\n2F1zouh.r.a.d.sendibm1.com\n2Fb24k3.r.a.d.sendibm1.com\n2Finvestigacion.us.es\n40liftmaster.com\nb24k3.img.a.d.sendibm1.com\nb24k3.r.a.d.sendibm1.com\nchamberlain.com\ndata.gouv.fr\nfonts.googleapis.com\ninvestigacion.us.es\nnam02.safelinks.protection.outlook.com\nouverture.data.gouv.fr\nwww.w3.org",
+        "body": "1zouh.img.a.d.sendibm1.com\n1zouh.r.a.d.sendibm1.com\n20window.open\n2520window.open\n2527.com\n2527le.com\n2527w.gr\n27le.com\nb24k3.img.a.d.sendibm1.com\nb24k3.r.a.d.sendibm1.com\nchamberlain.com\ndata.gouv.fr\nfonts.googleapis.com\ninvestigacion.us.es\nliftmaster.com\nnam02.safelinks.protection.outlook.com\nouverture.data.gouv.fr\nwww.w3.org",
         "body_config": {},
         "body_format": "TEXT",
         "classification": "TLP:C",
@@ -553,16 +553,13 @@
                 "2527le.com",
                 "2527w.gr",
                 "27le.com",
-                "2F1zouh.r.a.d.sendibm1.com",
-                "2Fb24k3.r.a.d.sendibm1.com",
-                "2Finvestigacion.us.es",
-                "40liftmaster.com",
                 "b24k3.img.a.d.sendibm1.com",
                 "b24k3.r.a.d.sendibm1.com",
                 "chamberlain.com",
                 "data.gouv.fr",
                 "fonts.googleapis.com",
                 "investigacion.us.es",
+                "liftmaster.com",
                 "nam02.safelinks.protection.outlook.com",
                 "ouverture.data.gouv.fr",
                 "www.w3.org"
@@ -700,26 +697,6 @@
         {
           "heur_id": null,
           "signatures": [],
-          "value": "2F1zouh.r.a.d.sendibm1.com"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "2Fb24k3.r.a.d.sendibm1.com"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "2Finvestigacion.us.es"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "40liftmaster.com"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
           "value": "b24k3.img.a.d.sendibm1.com"
         },
         {
@@ -771,6 +748,11 @@
           "heur_id": null,
           "signatures": [],
           "value": "investigacion.us.es"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "liftmaster.com"
         },
         {
           "heur_id": null,
