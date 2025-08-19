@@ -409,7 +409,7 @@ class EmlParser(ServiceBase):
 
                     # Find all comments
                     enable_brackets = True
-                    for i in BeautifulSoup(document).find_all(string=lambda t: isinstance(t, Comment)):
+                    for i in BeautifulSoup(document, features="lxml").find_all(string=lambda t: isinstance(t, Comment)):
                         if "*SC*" in i:
                             # Ignore comments with these lines
                             continue
@@ -434,7 +434,7 @@ class EmlParser(ServiceBase):
                     request.add_extracted(refanged_fp, os.path.basename(refanged_fp), "refanged HTML email body")
 
                     # Extract any scripts for further analysis
-                    for script in BeautifulSoup(document).select("script"):
+                    for script in BeautifulSoup(document, features="lxml").select("script"):
                         if script.text:
                             js_sha256 = sha256(script.text.encode()).hexdigest()
                             js_fp = os.path.join(self.working_directory, f"{attachment_name}_{js_sha256}.js")
@@ -526,7 +526,7 @@ class EmlParser(ServiceBase):
         # Assume this is an email saved in HTML format
         content_str = request.file_contents
         try:
-            parsed_html = BeautifulSoup(content_str, "lxml")
+            parsed_html = BeautifulSoup(content_str, features="lxml")
         except Exception:
             # This is not even a valid HTML, not worth trying to parse it.
             return
@@ -800,7 +800,7 @@ class EmlParser(ServiceBase):
         md_iocs = all_iocs.copy()
         body_words = set(extract_passwords(header["subject"]))
         for body_counter, body in enumerate(parsed_eml["body"]):
-            body_text = BeautifulSoup(body["content"]).text
+            body_text = BeautifulSoup(body["content"], features="lxml").text
             body_words.update(extract_passwords(body_text))
             # Always extract html so other modules can analyze it
             if request.get_param("extract_body_text") or "html" in body.get("content_type", "unknown"):

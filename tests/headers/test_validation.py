@@ -30,7 +30,7 @@ _pass_received_spf = """pass (google.com: domain of return@redacted.ca designate
 
 
 @dataclass
-class TestMxRdata:
+class MxRdataTestCls:
     exchange: str
 
 
@@ -42,6 +42,7 @@ def _build_email_headers(
     return_path: str = _any_email_address,
     received: List[str] = None,
     received_spf: List[str] = None,
+    authentication_results: List[str] = None,
     dns_resolver: DnsResolver = None,
 ) -> EmailHeaders:
     return EmailHeaders(
@@ -52,7 +53,8 @@ def _build_email_headers(
         return_path=return_path,
         received=received or [],
         received_spf=received_spf or [],
-        dns_resolver=dns_resolver or DnsResolver()
+        authentication_results=authentication_results,
+        dns_resolver=dns_resolver or DnsResolver(),
     )
 
 
@@ -221,7 +223,7 @@ class TestMxHeaderValidation(TestCase):
         dns_resolver.query.assert_called_once_with("test.com", "MX")
 
     def test_given_valid_sender_and_non_matching_mx_records_calling_validate_then_results_contains_not_matching_mx_domain(self):
-        query_response = [TestMxRdata(exchange="test.com.")]
+        query_response = [MxRdataTestCls(exchange="test.com.")]
         dns_resolver = DnsResolver()
         dns_resolver.query = MagicMock(return_value=query_response)
         headers = _build_email_headers(received=[_any_received], sender="sender@test.com")
@@ -234,7 +236,7 @@ class TestMxHeaderValidation(TestCase):
         dns_resolver.query.assert_called_once_with("test.com", "MX")
 
     def test_given_valid_from_and_mx_records_calling_validate_then_results_contains_valid_mx_domain(self):
-        query_response = [TestMxRdata(exchange="exchangelabs.com.")]
+        query_response = [MxRdataTestCls(exchange="exchangelabs.com.")]
         dns_resolver = DnsResolver()
         dns_resolver.query = MagicMock(return_value=query_response)
         headers = _build_email_headers(received=[_any_received], sender="", _from="from@example.com")

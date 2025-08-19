@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 from typing import Optional, List
 
-from emlparser.headers.parser import ReceivedSpf, Received, EmailHeaders, Sender, DnsResolver
+from emlparser.headers.parser import AuthenticationResults, DnsResolver, EmailHeaders, Received, ReceivedSpf, Sender
 
 
 class TestReceivedSpfParser(TestCase):
@@ -22,6 +22,47 @@ class TestReceivedSpfParser(TestCase):
         self.assertEqual(results.domain, "test.domain.com")
         self.assertEqual(results.info, "more information about the reason of action")
         self.assertEqual(results.additional, "additional=kv; data=1.1.1.1;")
+
+
+class TestAuthenticationResultsParser(TestCase):
+    def test_given_invalid_authres_when_parse_then_return_none(self):
+        results = AuthenticationResults.parse("invalid auth header")
+        self.assertIsNone(results)
+        results = AuthenticationResults.parse("")
+        self.assertIsNone(results)
+        results = AuthenticationResults.parse(None)
+        self.assertIsNone(results)
+        results = AuthenticationResults.parse(";")
+        self.assertIsNone(results)
+
+    def test_given_valid_auth_header_when_parsing_then_return_extract_parts(self):
+        auth_header = (
+            "spf=softfail (sender IP is 107.174.142.86)\r\n"
+            " smtp.mailfrom=egchauffeurs.com; dkim=none (message not signed)\r\n"
+            " header.d=none;dmarc=fail action=none\r\n"
+            " header.from=egchauffeurs.com;compauth=fail reason=001"
+        )
+
+        results = AuthenticationResults.parse(auth_header)
+        self.assertEqual(len(results.statements), 4)
+        # spf
+        self.assertEqual(results.statements[0].identifier, "spf")
+        self.assertEqual(results.statements[0].result, "softfail (sender IP is 107.174.142.86)")
+        self.assertEqual(results.statements[0].supporting_data, [("smtp.mailfrom", "egchauffeurs.com")])
+        # dkim
+        self.assertEqual(results.statements[1].identifier, "dkim")
+        self.assertEqual(results.statements[1].result, "none (message not signed)")
+        self.assertEqual(results.statements[1].supporting_data, [("header.d", "none")])
+        # dmarc
+        self.assertEqual(results.statements[2].identifier, "dmarc")
+        self.assertEqual(results.statements[2].result, "fail")
+        self.assertEqual(
+            results.statements[2].supporting_data, [("action", "none"), ("header.from", "egchauffeurs.com")]
+        )
+        # compauth
+        self.assertEqual(results.statements[3].identifier, "compauth")
+        self.assertEqual(results.statements[3].result, "fail")
+        self.assertEqual(results.statements[3].supporting_data, [("reason", "001")])
 
 
 class TestReceivedParser(TestCase):
@@ -178,6 +219,7 @@ class TestEmailHeaders(TestCase):
         return_path: Optional[str] = None,
         received: Optional[List[str]] = None,
         received_spf: Optional[List[str]] = None,
+        authentication_results: Optional[List[str]] = None,
         dns_resolver: Optional[DnsResolver] = None,
     ):
         return EmailHeaders(
@@ -188,5 +230,6 @@ class TestEmailHeaders(TestCase):
             return_path=return_path,
             received=received,
             received_spf=received_spf,
-            dns_resolver=dns_resolver or DnsResolver()
+            authentication_results=authentication_results,
+            dns_resolver=dns_resolver or DnsResolver(),
         )
