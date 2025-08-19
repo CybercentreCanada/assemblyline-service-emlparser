@@ -4,7 +4,7 @@
     "score": 0,
     "sections": [
       {
-        "auto_collapse": false,
+        "auto_collapse": true,
         "body": {
           "arc-authentication-results": [
             "i=4; mx.microsoft.com 1; spf=temperror (sender ip is 2a47:111:f403:261a::200) smtp.rcpttodomain=chamberlain.com smtp.mailfrom=xo8399ltzz.mn.wallabys.fr; dmarc=temperror action=none header.from=55u92516te.mn.wallabys.fr; dkim=fail (no key for signature) header.d=szsxkqkeqt.mailing.fifa.com; arc=fail (39)",
@@ -344,6 +344,111 @@
         "promote_to": null,
         "tags": {},
         "title_text": "From and Return-Path headers differ",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": null,
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 1,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Authentication Results",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": true,
+        "body": [
+          [
+            "Result",
+            "temperror (sender IP is 52.101.126.112)"
+          ],
+          [
+            "smtp.mailfrom",
+            "xo8399ltzz.mn.wallabys.fr"
+          ]
+        ],
+        "body_config": {},
+        "body_format": "ORDERED_KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "spf result",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": [
+          [
+            "Result",
+            "fail (no key for signature)"
+          ],
+          [
+            "header.d",
+            "szsxkqkeqt.mailing.fifa.com"
+          ]
+        ],
+        "body_config": {},
+        "body_format": "ORDERED_KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "dkim result",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": true,
+        "body": [
+          [
+            "Result",
+            "temperror"
+          ],
+          [
+            "action",
+            "none"
+          ],
+          [
+            "header.from",
+            "55u92516te.mn.wallabys.fr"
+          ]
+        ],
+        "body_config": {},
+        "body_format": "ORDERED_KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "dmarc result",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": true,
+        "body": [
+          [
+            "Result",
+            "none"
+          ],
+          [
+            "reason",
+            "408"
+          ]
+        ],
+        "body_config": {},
+        "body_format": "ORDERED_KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "compauth result",
         "zeroize_on_tag_safe": false
       },
       {

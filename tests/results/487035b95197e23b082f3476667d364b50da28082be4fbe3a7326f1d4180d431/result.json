@@ -4,7 +4,7 @@
     "score": 0,
     "sections": [
       {
-        "auto_collapse": false,
+        "auto_collapse": true,
         "body": {
           "content-type": [
             "multipart/report; boundary=\"8f5bafa4-5334-4c85-9e6e-026098737c13\""

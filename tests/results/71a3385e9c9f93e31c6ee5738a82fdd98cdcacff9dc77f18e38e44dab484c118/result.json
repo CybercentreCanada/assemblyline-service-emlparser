@@ -4,7 +4,7 @@
     "score": 1000,
     "sections": [
       {
-        "auto_collapse": false,
+        "auto_collapse": true,
         "body": {
           "Date": "Fri, 21 Apr 2023 22:20:05 +0000",
           "From": "Unknown",

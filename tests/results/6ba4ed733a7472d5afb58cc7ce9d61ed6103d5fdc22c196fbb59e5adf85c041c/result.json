@@ -4,7 +4,7 @@
     "score": 0,
     "sections": [
       {
-        "auto_collapse": false,
+        "auto_collapse": true,
         "body": {
           "authentication-results": [
             "[recipient's mail server]; dkim=pass header.d=servconsa.pe header.s=default header.b=i5PN6W7l; dmarc=none; spf=pass ([recipient's mail server]: domain of mcornejo@servconsa.pe designates 192.185.68.24 as permitted sender) smtp.mailfrom=mcornejo@servconsa.pe"
@@ -123,6 +123,84 @@
           }
         },
         "title_text": "Email Headers",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": null,
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Email Headers Validation",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": null,
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 1,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Authentication Results",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": true,
+        "body": [
+          [
+            "Result",
+            "pass"
+          ],
+          [
+            "header.d",
+            "servconsa.pe"
+          ],
+          [
+            "header.s",
+            "default"
+          ],
+          [
+            "header.b",
+            "i5PN6W7l"
+          ]
+        ],
+        "body_config": {},
+        "body_format": "ORDERED_KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "dkim result",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": true,
+        "body": [
+          [
+            "Result",
+            "pass ([recipient's mail server]: domain of mcornejo@servconsa.pe designates 192.185.68.24 as permitted sender)"
+          ],
+          [
+            "smtp.mailfrom",
+            "mcornejo@servconsa.pe"
+          ]
+        ],
+        "body_config": {},
+        "body_format": "ORDERED_KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "spf result",
         "zeroize_on_tag_safe": false
       },
       {

@@ -4,7 +4,7 @@
     "score": 0,
     "sections": [
       {
-        "auto_collapse": false,
+        "auto_collapse": true,
         "body": {
           "authentication-results": [
             "spf=pass (sender IP is 202.77.104.104) smtp.mailfrom=dynapackasia.co.id; dkim=pass (signature was verified) header.d=dynapackasia.co.id;dmarc=pass action=none header.from=dynapackasia.co.id;compauth=pass reason=100"
@@ -247,6 +247,111 @@
           }
         },
         "title_text": "SPF Validation",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": null,
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 1,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Authentication Results",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": true,
+        "body": [
+          [
+            "Result",
+            "pass (sender IP is 202.77.104.104)"
+          ],
+          [
+            "smtp.mailfrom",
+            "dynapackasia.co.id"
+          ]
+        ],
+        "body_config": {},
+        "body_format": "ORDERED_KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "spf result",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": true,
+        "body": [
+          [
+            "Result",
+            "pass (signature was verified)"
+          ],
+          [
+            "header.d",
+            "dynapackasia.co.id"
+          ]
+        ],
+        "body_config": {},
+        "body_format": "ORDERED_KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "dkim result",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": true,
+        "body": [
+          [
+            "Result",
+            "pass"
+          ],
+          [
+            "action",
+            "none"
+          ],
+          [
+            "header.from",
+            "dynapackasia.co.id"
+          ]
+        ],
+        "body_config": {},
+        "body_format": "ORDERED_KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "dmarc result",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": true,
+        "body": [
+          [
+            "Result",
+            "pass"
+          ],
+          [
+            "reason",
+            "100"
+          ]
+        ],
+        "body_config": {},
+        "body_format": "ORDERED_KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "compauth result",
         "zeroize_on_tag_safe": false
       },
       {

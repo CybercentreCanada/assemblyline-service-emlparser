@@ -3,7 +3,7 @@ import logging
 import re
 import sys
 from dataclasses import dataclass
-from typing import List, Optional, Union
+from typing import List, Optional, Tuple, Union
 
 import dns.rdata
 import dns.rdatatype
@@ -75,6 +75,46 @@ class Received:
         )
 
 
+@dataclass
+class AuthenticationStatement:
+    identifier: str
+    result: str
+    supporting_data: List[Tuple[str, str]]
+
+
+@dataclass
+class AuthenticationResults:
+    statements: List[AuthenticationStatement]
+
+    @staticmethod
+    def parse(raw_received: str) -> Optional["AuthenticationResults"]:
+        if not raw_received:
+            return None
+        stats = []
+        for chunk in _string_clean(raw_received).split(";"):
+            offset = 0
+            identifier = None
+            result = None
+            supporting_data = []
+            while match := re.search(r"\s*([^=]+)=([^=]+)\s[^=]+=", chunk[offset:]):
+                if identifier is None:
+                    identifier = match.group(1).strip()
+                    result = match.group(2).strip()
+                else:
+                    supporting_data.append((match.group(1).strip(), match.group(2).strip()))
+                offset += match.end(2)
+            if identifier and "=" in chunk[offset:]:
+                g1, g2 = chunk[offset:].split("=", 1)
+                supporting_data.append((g1.strip(), g2.strip()))
+            if identifier:
+                stats.append(
+                    AuthenticationStatement(identifier=identifier, result=result, supporting_data=supporting_data)
+                )
+        if not stats:
+            return None
+        return AuthenticationResults(statements=stats)
+
+
 class EmailHeaders:
     def __init__(
         self,
@@ -85,6 +125,7 @@ class EmailHeaders:
         return_path: Optional[str],
         received: Optional[List[str]],
         received_spf: Optional[List[str]],
+        authentication_results: Optional[List[str]],
         dns_resolver: DnsResolver = None,
     ):
         self.subject = _string_clean(subject)
@@ -103,6 +144,11 @@ class EmailHeaders:
             for raw in received or []:
                 if parsed := Received.parse(raw, dns_resolver):
                     self.received.append(parsed)
+
+        self.authentication_results: List[AuthenticationResults] = []
+        for raw in authentication_results or []:
+            if parsed := AuthenticationResults.parse(raw):
+                self.authentication_results.append(parsed)
 
 
 @dataclass

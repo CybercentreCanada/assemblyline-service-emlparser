@@ -27,6 +27,7 @@ from assemblyline_v4_service.common.result import (
     Result,
     ResultKeyValueSection,
     ResultMultiSection,
+    ResultOrderedKeyValueSection,
     ResultSection,
     ResultTableSection,
     TableRow,
@@ -213,7 +214,9 @@ class EmlParser(ServiceBase):
             self.handle_eml(request, content_str)
             return
 
-        headers_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
+        headers_section = ResultSection(
+            "Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result, auto_collapse=True
+        )
 
         headers = {}
         headers_key_lowercase = []
@@ -252,6 +255,7 @@ class EmlParser(ServiceBase):
             return_path=headers.get("Return-Path"),
             received=msg.header.get_all("Received"),
             received_spf=msg.header.get_all("Received-SPF"),
+            authentication_results=msg.header.get_all("Authentication-Results"),
         )
         if validation_section.subsections:
             request.result.add_section(validation_section)
@@ -836,7 +840,9 @@ class EmlParser(ServiceBase):
         # Words in the email body, used by Extract to guess passwords
         request.temp_submission_data["email_body"] = sorted(list(body_words))
 
-        kv_section = ResultSection("Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result)
+        kv_section = ResultSection(
+            "Email Headers", body_format=BODY_FORMAT.KEY_VALUE, parent=request.result, auto_collapse=True
+        )
 
         # Basic tags
         from_addr = header["from"].strip() if header.get("from", None) else None
@@ -857,6 +863,7 @@ class EmlParser(ServiceBase):
             return_path=parsed_headers.get("return-path"),
             received=parsed_headers.get_all("received"),
             received_spf=parsed_headers.get_all("received-spf"),
+            authentication_results=parsed_headers.get_all("authentication-results"),
         )
         if validation_section.subsections:
             request.result.add_section(validation_section)
@@ -1131,6 +1138,7 @@ class EmlParser(ServiceBase):
         return_path: Optional[str],
         received: Optional[List[str]],
         received_spf: Optional[List[str]],
+        authentication_results: Optional[List[str]],
     ) -> ResultSection:
         validation_section = ResultSection("Email Headers Validation")
 
@@ -1156,6 +1164,7 @@ class EmlParser(ServiceBase):
             return_path=return_path,
             received=received,
             received_spf=received_spf,
+            authentication_results=authentication_results,
             dns_resolver=dns_resolver,
         )
 
@@ -1220,6 +1229,22 @@ class EmlParser(ServiceBase):
 
         if general_sender_section.subsections:
             validation_section.add_subsection(general_sender_section)
+
+        auth_section = ResultSection("Authentication Results")
+        for authentication_result in parsed_headers.authentication_results:
+            for statement in authentication_result.statements:
+                sub_auth_section = ResultOrderedKeyValueSection(
+                    f"{statement.identifier} result",
+                    parent=auth_section,
+                    auto_collapse=not any(
+                        statement.result.startswith(result_fail) for result_fail in ["fail", "softfail"]
+                    ),
+                )
+                sub_auth_section.add_item("Result", statement.result)
+                for k, v in statement.supporting_data:
+                    sub_auth_section.add_item(k, v)
+        if auth_section.subsections:
+            validation_section.add_subsection(auth_section)
 
         return validation_section
 

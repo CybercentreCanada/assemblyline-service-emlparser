@@ -4,7 +4,7 @@
     "score": 0,
     "sections": [
       {
-        "auto_collapse": false,
+        "auto_collapse": true,
         "body": {
           "cc": [
             "\"C, C\" <C.C@CC.com>, \"CCCC, CCCCCCC (CCCCC CCCC, CC  CCCCCCCCCCCC.)\" <CC@CC.com>"
