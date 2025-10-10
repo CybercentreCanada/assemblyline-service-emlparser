@@ -1066,11 +1066,11 @@ class EmlParser(ServiceBase):
             for i in range(block_count):
                 if f"x-ms-exchange-organization-persisted-urls-{i}" in header:
                     persisted_urls_block = "".join(
-                        [persisted_urls_block, header[f"x-ms-exchange-organization-persisted-urls-{i}"][0]]
+                        [persisted_urls_block, header[f"x-ms-exchange-organization-persisted-urls-{i}"][0].strip()]
                     )
                 else:
                     missing_persisted_urls_chunks += 1
-            persisted_urls_block = persisted_urls_block.strip().encode()
+            persisted_urls_block = persisted_urls_block.encode()
 
             # Look for network IOCs in this block and tag them
             for x in find_domains(persisted_urls_block):
