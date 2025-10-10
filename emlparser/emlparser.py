@@ -1066,7 +1066,7 @@ class EmlParser(ServiceBase):
             for i in range(block_count):
                 if f"x-ms-exchange-organization-persisted-urls-{i}" in header:
                     persisted_urls_block = "".join(
-                        [persisted_urls_block, header[f"x-ms-exchange-organization-persisted-urls-{i}"][0].strip()]
+                        [persisted_urls_block, header[f"x-ms-exchange-organization-persisted-urls-{i}"][0].lstrip("\t")]
                     )
                 else:
                     missing_persisted_urls_chunks += 1
