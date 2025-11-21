@@ -357,6 +357,10 @@ class EmlParser(ServiceBase):
             except ValueError:
                 pass
 
+        if "X-MS-Exchange-Organization-OriginalEnvelopeRecipients" in headers:
+            for recipient in headers["X-MS-Exchange-Organization-OriginalEnvelopeRecipients"].split(";"):
+                headers_section.add_tag("network.email.address", recipient)
+
         attachments_added = []
         attachments = msg.attachments
         if not attachments and hasattr(msg, "rawAttachments"):
@@ -1092,6 +1096,10 @@ class EmlParser(ServiceBase):
                     f"Persisted URLs block found: {block_found}/{block_count} ({block_found/block_count*100:.0f}%)"
                 )
                 request.result.add_section(missing_persisted_urls_chunks_section)
+
+        if header.get("x-ms-exchange-organization-originalenveloperecipients"):
+            for recipient in header["x-ms-exchange-organization-originalenveloperecipients"]:
+                kv_section.add_tag("network.email.address", recipient)
 
         attachments_added = []
         if "attachment" in parsed_eml:
