@@ -1,0 +1,845 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 0,
+    "sections": [
+      {
+        "auto_collapse": true,
+        "body": {
+          "accept-language": [
+            "en-US"
+          ],
+          "cc": [
+            "Ali Usman <Ali_Usman@aprilasia.com>"
+          ],
+          "content-language": [
+            "en-US"
+          ],
+          "content-type": [
+            "multipart/related; boundary=\"_009_1b2cf8f568bc44a6ada9690ad0f2817baprilasiacom_\"; type=\"multipart/alternative\""
+          ],
+          "date": [
+            "['2026-02-04T10:27:17+00:00']"
+          ],
+          "from": [
+            "Syukriyandi <syukriyandi@aprilasia.com>"
+          ],
+          "in-reply-to": [
+            "<DB9PR04MB1006770F62A03C6EFAF202DEDF798A@DB9PR04MB10067.eurprd04.prod.outlook.com>"
+          ],
+          "message-id": [
+            "<1b2cf8f568bc44a6ada9690ad0f2817b@aprilasia.com>"
+          ],
+          "mime-version": [
+            "1.0"
+          ],
+          "received": [
+            "from KERVMEXC52.GLOBALNET.LCL (172.16.3.101) by KERVMEXC52.GLOBALNET.LCL (172.16.3.101) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.35 via Mailbox Transport; Wed, 4 Feb 2026 17:27:17 +0700",
+            "from KERVMEXC53.GLOBALNET.LCL (172.16.3.164) by KERVMEXC52.globalnet.lcl (172.16.3.101) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.35; Wed, 4 Feb 2026 17:27:17 +0700",
+            "from KERVMEXC53.GLOBALNET.LCL ([fe80::8ba6:1ad0:3529:ebf]) by KERVMEXC53.globalnet.lcl ([fe80::8ba6:1ad0:3529:ebf%7]) with mapi id 15.02.2562.035; Wed, 4 Feb 2026 17:27:17 +0700"
+          ],
+          "received_domain": [
+            "kervmexc52.globalnet.lcl",
+            "kervmexc53.globalnet.lcl"
+          ],
+          "received_ip": [
+            "172.16.3.101",
+            "172.16.3.164",
+            "fe80::8ba6:1ad0:3529:ebf"
+          ],
+          "references": [
+            "<DB9PR04MB1006770F62A03C6EFAF202DEDF798A@DB9PR04MB10067.eurprd04.prod.outlook.com>"
+          ],
+          "subject": [
+            "FW: Invitation Webinar - Mengelola Risiko melalui Perawatan Crane Berkala"
+          ],
+          "thread-index": [
+            "AdyVQSSKwAs2zP7PRLOn2ppdBXB/ugAf5Sqg"
+          ],
+          "thread-topic": [
+            "Invitation Webinar - Mengelola Risiko melalui Perawatan Crane Berkala"
+          ],
+          "to": [
+            "Nanda Tria Nugraha Siagian <NandaTria_Nugraha@aprilasia.com>, Indra Rusli <Indra_Rusli@globalnetlcl.com>, Firnando <Firnando@aprilasia.com>"
+          ],
+          "x-ms-exchange-organization-authas": [
+            "Internal"
+          ],
+          "x-ms-exchange-organization-authmechanism": [
+            "04"
+          ],
+          "x-ms-exchange-organization-authsource": [
+            "KERVMEXC53.globalnet.lcl"
+          ],
+          "x-ms-exchange-organization-compliancelabelid": [
+            "59ca2bf0-2ccc-4f9b-9777-a6ad7001f2fe"
+          ],
+          "x-ms-exchange-organization-network-message-id": [
+            "8778d383-ef75-42ad-5ba4-08de63d7f8a4"
+          ],
+          "x-ms-exchange-organization-originalclientipaddress": [
+            "172.16.8.169"
+          ],
+          "x-ms-exchange-organization-originalserveripaddress": [
+            "172.16.3.164"
+          ],
+          "x-ms-exchange-organization-recordreviewcfmtype": [
+            "0"
+          ],
+          "x-ms-exchange-organization-scl": [
+            "-1"
+          ],
+          "x-ms-has-attach": [
+            "yes"
+          ],
+          "x-originating-ip": [
+            "[172.16.8.169]"
+          ]
+        },
+        "body_config": {},
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "email": {
+              "address": [
+                "syukriyandi@aprilasia.com",
+                "nandatria_nugraha@aprilasia.com",
+                "indra_rusli@globalnetlcl.com",
+                "firnando@aprilasia.com",
+                "ali_usman@aprilasia.com"
+              ],
+              "date": [
+                "2026-02-04 10:27:17+00:00"
+              ],
+              "msg_id": [
+                "1b2cf8f568bc44a6ada9690ad0f2817b@aprilasia.com"
+              ],
+              "subject": [
+                "FW: Invitation Webinar - Mengelola Risiko melalui Perawatan Crane Berkala"
+              ]
+            },
+            "static": {
+              "domain": [
+                "kervmexc52.globalnet.lcl",
+                "kervmexc53.globalnet.lcl"
+              ],
+              "ip": [
+                "172.16.3.101",
+                "172.16.3.164"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Headers",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "http://schemas.microsoft.com/office/2004/12/omml\nhttp://www.w3.org/TR/REC-html40\nhttps://events.teams.microsoft.com/event/739bc38c-8d32-4ec6-bc53-509170e59d66@5ab0514a-59fa-4283-934f-c1c2c4a1f032\nhttps://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-129ca981b5555863&amp;q=1&amp;e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&amp;u=https%3A%2F%2Fwww.konecranes.com%2F\nhttps://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-129ca981b5555863&q=1&e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&u=https%3A%2F%2Fwww.konecranes.com%2F\nhttps://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-e3b994997af9f0f3&amp;q=1&amp;e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&amp;u=https%3A%2F%2Fevents.teams.microsoft.com%2Fevent%2F739bc38c-8d32-4ec6-bc53-509170e59d66%405ab0514a-59fa-4283-934f-c1c2c4a1f032\nhttps://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-e3b994997af9f0f3&q=1&e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&u=https%3A%2F%2Fevents.teams.microsoft.com%2Fevent%2F739bc38c-8d32-4ec6-bc53-509170e59d66%405ab0514a-59fa-4283-934f-c1c2c4a1f032\nhttps://twitter.com/konecranes\nhttps://www.instagram.com/konecranes/\nhttps://www.linkedin.com/company/konecranes/\nhttps://www.youtube.com/@konecranes",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "static": {
+              "domain": [
+                "schemas.microsoft.com",
+                "www.w3.org",
+                "events.teams.microsoft.com",
+                "protect2.fireeye.com",
+                "twitter.com",
+                "www.instagram.com",
+                "www.linkedin.com",
+                "www.youtube.com"
+              ],
+              "uri": [
+                "http://schemas.microsoft.com/office/2004/12/omml",
+                "http://www.w3.org/TR/REC-html40",
+                "https://events.teams.microsoft.com/event/739bc38c-8d32-4ec6-bc53-509170e59d66@5ab0514a-59fa-4283-934f-c1c2c4a1f032",
+                "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-129ca981b5555863&amp;q=1&amp;e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&amp;u=https%3A%2F%2Fwww.konecranes.com%2F",
+                "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-129ca981b5555863&q=1&e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&u=https%3A%2F%2Fwww.konecranes.com%2F",
+                "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-e3b994997af9f0f3&amp;q=1&amp;e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&amp;u=https%3A%2F%2Fevents.teams.microsoft.com%2Fevent%2F739bc38c-8d32-4ec6-bc53-509170e59d66%405ab0514a-59fa-4283-934f-c1c2c4a1f032",
+                "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-e3b994997af9f0f3&q=1&e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&u=https%3A%2F%2Fevents.teams.microsoft.com%2Fevent%2F739bc38c-8d32-4ec6-bc53-509170e59d66%405ab0514a-59fa-4283-934f-c1c2c4a1f032",
+                "https://twitter.com/konecranes",
+                "https://www.instagram.com/konecranes/",
+                "https://www.linkedin.com/company/konecranes/",
+                "https://www.youtube.com/@konecranes"
+              ]
+            }
+          }
+        },
+        "title_text": "URIs Found:",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "aprilasia.com\nevents.teams.microsoft.com\nkonecranes.com\nprotect2.fireeye.com\nschemas.microsoft.com\ntwitter.com\nwww.instagram.com\nwww.konecranes.com\nwww.linkedin.com\nwww.w3.org\nwww.youtube.com",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "static": {
+              "domain": [
+                "aprilasia.com",
+                "events.teams.microsoft.com",
+                "konecranes.com",
+                "protect2.fireeye.com",
+                "schemas.microsoft.com",
+                "twitter.com",
+                "www.instagram.com",
+                "www.konecranes.com",
+                "www.linkedin.com",
+                "www.w3.org",
+                "www.youtube.com"
+              ]
+            }
+          }
+        },
+        "title_text": "Domains Found:",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "brando.manullang@konecranes.com\nsyukriyandi@aprilasia.com",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "email": {
+              "address": [
+                "brando.manullang@konecranes.com",
+                "syukriyandi@aprilasia.com"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Addresses Found:",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "image007.jpg\nimage008.jpg\nimage009.png\nimage010.png\nimage011.png\nimage012.png",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Extracted Attachments:",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [
+      {
+        "name": "image007.jpg",
+        "sha256": "0c53a92b1fc4db1f30a8f49987dfad8d9c20dd0aefcd9c6720e809f74c7514f0"
+      },
+      {
+        "name": "image009.png",
+        "sha256": "3383c1ff50aad9ed4aae1870be4ab4997d3d9ec4342f7e5ba2a42b6f2cd81027"
+      },
+      {
+        "name": "image008.jpg",
+        "sha256": "3adfd3707d932e7a55f3def2f419a0971ef58063e2b85e8637220638b5e12519"
+      },
+      {
+        "name": "image012.png",
+        "sha256": "41df2438dcbce235c87af12e38c560165398d53aec072fafa5d5d354d1fff025"
+      },
+      {
+        "name": "image011.png",
+        "sha256": "796574105e57eb20351f66e725d78e99a8f37bacd2a1b484cbf2b07b1259e07c"
+      },
+      {
+        "name": "image010.png",
+        "sha256": "da1ee452d48b0d38c4088621b745a85a395d262e7fde05e8570dca4ad0ff55b9"
+      },
+      {
+        "name": "body_1",
+        "sha256": "f200ae7648aa6ca33af595fd91e9e8e9e6e06ce3ff62f426dc27dfb74b82484d"
+      }
+    ],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [],
+    "tags": {
+      "network.email.address": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "ali_usman@aprilasia.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "brando.manullang@konecranes.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "firnando@aprilasia.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "indra_rusli@globalnetlcl.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "nandatria_nugraha@aprilasia.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "syukriyandi@aprilasia.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "syukriyandi@aprilasia.com"
+        }
+      ],
+      "network.email.date": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2026-02-04 10:27:17+00:00"
+        }
+      ],
+      "network.email.msg_id": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "1b2cf8f568bc44a6ada9690ad0f2817b@aprilasia.com"
+        }
+      ],
+      "network.email.subject": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "FW: Invitation Webinar - Mengelola Risiko melalui Perawatan Crane Berkala"
+        }
+      ],
+      "network.static.domain": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "aprilasia.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "events.teams.microsoft.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "events.teams.microsoft.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "kervmexc52.globalnet.lcl"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "kervmexc53.globalnet.lcl"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "konecranes.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "protect2.fireeye.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "protect2.fireeye.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "schemas.microsoft.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "schemas.microsoft.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "twitter.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "twitter.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "www.instagram.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "www.instagram.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "www.konecranes.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "www.linkedin.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "www.linkedin.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "www.w3.org"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "www.w3.org"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "www.youtube.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "www.youtube.com"
+        }
+      ],
+      "network.static.ip": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "172.16.3.101"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "172.16.3.164"
+        }
+      ],
+      "network.static.uri": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "http://schemas.microsoft.com/office/2004/12/omml"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "http://www.w3.org/TR/REC-html40"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "https://events.teams.microsoft.com/event/739bc38c-8d32-4ec6-bc53-509170e59d66@5ab0514a-59fa-4283-934f-c1c2c4a1f032"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-129ca981b5555863&amp;q=1&amp;e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&amp;u=https%3A%2F%2Fwww.konecranes.com%2F"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-129ca981b5555863&q=1&e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&u=https%3A%2F%2Fwww.konecranes.com%2F"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-e3b994997af9f0f3&amp;q=1&amp;e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&amp;u=https%3A%2F%2Fevents.teams.microsoft.com%2Fevent%2F739bc38c-8d32-4ec6-bc53-509170e59d66%405ab0514a-59fa-4283-934f-c1c2c4a1f032"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-e3b994997af9f0f3&q=1&e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&u=https%3A%2F%2Fevents.teams.microsoft.com%2Fevent%2F739bc38c-8d32-4ec6-bc53-509170e59d66%405ab0514a-59fa-4283-934f-c1c2c4a1f032"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "https://twitter.com/konecranes"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "https://www.instagram.com/konecranes/"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "https://www.linkedin.com/company/konecranes/"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "https://www.youtube.com/@konecranes"
+        }
+      ]
+    },
+    "temp_submission_data": {
+      "email_body": [
+        "+62",
+        "-",
+        "00",
+        "04",
+        "10",
+        "10.00",
+        "11",
+        "11.30",
+        "12",
+        "12520",
+        "12520,",
+        "20",
+        "2026",
+        "30",
+        "38",
+        "4032",
+        "4283",
+        "4443",
+        "4ec6",
+        "509170e59d66",
+        "59fa",
+        "5ab0514a",
+        "62",
+        "739bc38c",
+        "8",
+        "878",
+        "88",
+        "8:38",
+        "8d32",
+        "934f",
+        "<brando.manullang@konecranes.com>",
+        "<syukriyandi@aprilasia.com>",
+        "Acara",
+        "Anda",
+        "Arkadia",
+        "As",
+        "Berkala",
+        "Best",
+        "Brando",
+        "Crane",
+        "Daftarkan",
+        "Dear",
+        "E",
+        "E-Mail",
+        "Executive",
+        "Executive,",
+        "FW",
+        "FW:",
+        "FYR",
+        "Februari",
+        "February",
+        "From",
+        "From:",
+        "G",
+        "Group",
+        "Handling",
+        "Hari",
+        "Hari/Tanggal:",
+        "If",
+        "Indonesia",
+        "Ingin",
+        "Invitation",
+        "It",
+        "Jakarta",
+        "Jalan",
+        "Jend",
+        "Jend.",
+        "Kamis",
+        "Kamis,",
+        "Kav",
+        "Kav.88",
+        "Konecranes",
+        "Lantai",
+        "Let",
+        "Let.",
+        "Mail",
+        "Manullang",
+        "Marketing",
+        "Material",
+        "Melalui",
+        "Mengelola",
+        "Mobile",
+        "Moves",
+        "Mr",
+        "Mr.",
+        "No",
+        "PT",
+        "Perawatan",
+        "Performa",
+        "Please",
+        "Risiko",
+        "Selatan",
+        "Sent",
+        "Sent:",
+        "Simatupang",
+        "Subject",
+        "Subject:",
+        "Syukriyandi",
+        "TB",
+        "TB.",
+        "Tanggal",
+        "Terima",
+        "Thank",
+        "This",
+        "To",
+        "To:",
+        "Tower",
+        "WARNING",
+        "WARNING:",
+        "WIB",
+        "Waktu",
+        "Waktu:",
+        "Webinar",
+        "a",
+        "action",
+        "akan",
+        "akibat",
+        "all",
+        "and",
+        "and/or",
+        "any",
+        "apa",
+        "aprilasia",
+        "are",
+        "area",
+        "assume",
+        "attachment",
+        "attachment(s),",
+        "attachments",
+        "attachments.",
+        "bagaimana",
+        "bagi",
+        "bc53",
+        "be",
+        "believe",
+        "berbagi",
+        "berdampak",
+        "berkala",
+        "berkala,",
+        "berkelanjutan",
+        "berkelanjutan.",
+        "berperan",
+        "brando",
+        "brando.manullang@konecranes.com",
+        "by",
+        "c1c2c4a1f032",
+        "caution",
+        "certificate",
+        "com",
+        "company",
+        "confidential",
+        "confidential,",
+        "consequences",
+        "contains",
+        "content",
+        "copy",
+        "crane",
+        "crane?",
+        "dalam",
+        "dan",
+        "dapat",
+        "delete",
+        "di",
+        "dijaga",
+        "diri",
+        "disclose",
+        "disclose,",
+        "distribute",
+        "distribute,",
+        "ditujukan",
+        "e",
+        "e-certificate.",
+        "e-mail",
+        "e-mail,",
+        "email",
+        "error",
+        "error.",
+        "event",
+        "events",
+        "exercise",
+        "for",
+        "forwarded",
+        "from",
+        "gratis",
+        "have",
+        "https",
+        "https://events.teams.microsoft.com/event/739bc38c-8d32-4ec6-bc53-509170e59d66@5ab0514a-59fa-4283-934f-c1c2c4a1f032",
+        "immediately",
+        "in",
+        "including",
+        "information",
+        "information.",
+        "ingin",
+        "ini",
+        "ini,",
+        "inspeksi",
+        "intended",
+        "intended.",
+        "is",
+        "it",
+        "its",
+        "jumpa",
+        "kami",
+        "kasih",
+        "keandalan",
+        "kerja",
+        "kerja.",
+        "keselamatan",
+        "konecranes",
+        "konecranes.com",
+        "kurangnya",
+        "legally",
+        "liability",
+        "link",
+        "link:",
+        "links",
+        "mail",
+        "manullang",
+        "masa",
+        "matters",
+        "matters.\u2122",
+        "maupun",
+        "measure",
+        "measure,",
+        "melalui",
+        "membantu",
+        "mencegah",
+        "mendaftar",
+        "mendapatkan",
+        "mengenai",
+        "menjaga",
+        "message",
+        "microsoft",
+        "must",
+        "not",
+        "notify",
+        "of",
+        "only",
+        "operasional",
+        "operasional.",
+        "operasionalnya",
+        "operasionalnya.",
+        "or",
+        "organisation",
+        "organisation.",
+        "originally",
+        "originated",
+        "our",
+        "outside",
+        "pada",
+        "part",
+        "parties",
+        "parties.",
+        "pemahaman",
+        "pendekatan",
+        "pengawasan",
+        "pengelolaan",
+        "pengelolaan,",
+        "penting",
+        "perawatan",
+        "perawatan,",
+        "performa",
+        "perlu",
+        "please",
+        "print",
+        "privileged",
+        "read",
+        "read,",
+        "reason",
+        "received",
+        "recipient",
+        "recipient(s)",
+        "recipients",
+        "regards",
+        "regards,",
+        "rekan",
+        "rekan-rekan",
+        "restricted",
+        "risiko",
+        "s",
+        "saja",
+        "sampai",
+        "secara",
+        "security",
+        "sender",
+        "sepanjang",
+        "sering",
+        "serta",
+        "system",
+        "system.",
+        "syukriyandi",
+        "tahu",
+        "taken",
+        "teams",
+        "tepat",
+        "terjadi",
+        "terlewat",
+        "terlibat",
+        "that",
+        "the",
+        "thereof",
+        "this",
+        "to",
+        "traces",
+        "unauthorized",
+        "use",
+        "use,",
+        "was",
+        "webinar",
+        "webinar.",
+        "what",
+        "whom",
+        "will",
+        "with",
+        "within",
+        "yang",
+        "you",
+        "you.",
+        "your",
+        "\u2013"
+      ]
+    }
+  }
+}

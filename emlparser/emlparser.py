@@ -447,7 +447,7 @@ class EmlParser(ServiceBase):
                             request.add_extracted(js_fp, os.path.basename(js_fp), "Extracted JS from HTML body")
             except MaxExtractedExceeded:
                 self.log.warning(
-                    "Extract limit reached on attachments: " f"{len(attachments) - len(attachments_added)} not added"
+                    f"Extract limit reached on attachments: {len(attachments) - len(attachments_added)} not added"
                 )
                 break
 
@@ -1021,7 +1021,7 @@ class EmlParser(ServiceBase):
             if all_iocs["email"]:
                 emlp_email_section = ResultSection("Email Addresses Found by eml_parser:")
                 for eml_adr in sorted(all_iocs["email"]):
-                    if not re.match(EMAIL_REGEX, eml_adr):
+                    if not re.match(EMAIL_REGEX, eml_adr) or not tag_is_valid(EMAIL_VALIDATOR, eml_adr):
                         continue
                     emlp_email_section.add_line(eml_adr)
                     emlp_email_section.add_tag("network.email.address", eml_adr)
@@ -1093,7 +1093,7 @@ class EmlParser(ServiceBase):
                 missing_persisted_urls_chunks_section = ResultSection("Missing Persisted URLs chunks")
                 block_found = block_count - missing_persisted_urls_chunks
                 missing_persisted_urls_chunks_section.add_line(
-                    f"Persisted URLs block found: {block_found}/{block_count} ({block_found/block_count*100:.0f}%)"
+                    f"Persisted URLs block found: {block_found}/{block_count} ({block_found / block_count * 100:.0f}%)"
                 )
                 request.result.add_section(missing_persisted_urls_chunks_section)
 
@@ -1117,7 +1117,7 @@ class EmlParser(ServiceBase):
                         attachments_added.append(attachment["filename"])
                 except MaxExtractedExceeded:
                     self.log.warning(
-                        "Extract limit reached on attachments: " f"{len(attachment) - len(attachments_added)} not added"
+                        f"Extract limit reached on attachments: {len(attachment) - len(attachments_added)} not added"
                     )
                     break
             if attachments_added:
