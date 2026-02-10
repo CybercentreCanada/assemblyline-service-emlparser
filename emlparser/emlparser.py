@@ -314,28 +314,28 @@ class EmlParser(ServiceBase):
                 continue
             attributes_section.set_item(attribute, self.json_serial(value))
 
+        # Sanitize input before tagging
+        def sanitize(tag, value):
+            if tag == "network.email.msg_id":
+                # Remove any whitespace and remove <> surround MSG ID
+                value = value.strip().strip("<>")
+            elif tag == "network.email.address":
+                match = re.search(EMAIL_RE, value.encode())
+                if match:
+                    value = match.group(0)
+            return value
+
         # Try to tag interesting fields
         def tag_field(tag, header_name, msg_name):
-            # Sanitize input before tagging
-            def sanitize(value):
-                if tag == "network.email.msg_id":
-                    # Remove any whitespace and remove <> surround MSG ID
-                    value = value.strip().strip("<>")
-                elif tag == "network.email.address":
-                    match = re.search(EMAIL_RE, value.encode())
-                    if match:
-                        value = match.group(0)
-                return value
-
             if header_name and header_name in headers and headers[header_name]:
-                value = sanitize(headers[header_name])
+                value = sanitize(tag, headers[header_name])
                 if value:
                     headers_section.add_tag(tag, value)
                     return
             # Either we are interested in the attribute, or the header was not present,
             # or the value of the header was not valid
             if msg_name and hasattr(msg, msg_name) and getattr(msg, msg_name):
-                value = sanitize(getattr(msg, msg_name))
+                value = sanitize(tag, getattr(msg, msg_name))
                 if value:
                     attributes_section.add_tag(tag, value)
 
@@ -344,7 +344,7 @@ class EmlParser(ServiceBase):
         tag_field("network.email.address", "In-Reply-To", "inReplyTo")
         tag_field("network.email.address", "Return-Path", None)
         for recipient in msg.recipients:
-            headers_section.add_tag("network.email.address", recipient.email)
+            headers_section.add_tag("network.email.address", sanitize("network.email.address", recipient.email))
         tag_field("network.email.date", "Date", "date")
         tag_field("network.email.subject", "Subject", "subject")
         tag_field("network.email.msg_id", "Message-Id", "messageId")
@@ -852,11 +852,9 @@ class EmlParser(ServiceBase):
         from_addr = header["from"].strip() if header.get("from", None) else None
         if from_addr and re.match(EMAIL_REGEX, from_addr):
             kv_section.add_tag("network.email.address", from_addr)
-        [
-            kv_section.add_tag("network.email.address", to.strip())
-            for to in header["to"]
-            if re.match(EMAIL_REGEX, to.strip())
-        ]
+            for to in header["to"]:
+                if re.match(EMAIL_REGEX, to.strip()):
+                    kv_section.add_tag("network.email.address", to.strip())
 
         parsed_headers = email.message_from_bytes(content_str)
         validation_section = self.build_email_header_validation_section(
@@ -881,11 +879,9 @@ class EmlParser(ServiceBase):
 
         # Add CCs to body and tags
         if "cc" in header:
-            [
-                kv_section.add_tag("network.email.address", cc.strip())
-                for cc in header["cc"]
-                if re.match(EMAIL_REGEX, cc.strip())
-            ]
+            for cc in header["cc"]:
+                if re.match(EMAIL_REGEX, cc.strip()):
+                    kv_section.add_tag("network.email.address", cc.strip())
         # Add Message ID to body and tags
         if "message-id" in header["header"]:
             kv_section.add_tag("network.email.msg_id", header["header"]["message-id"][0].strip().strip("<>"))

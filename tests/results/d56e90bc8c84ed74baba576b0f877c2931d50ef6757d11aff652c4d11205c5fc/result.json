@@ -1,0 +1,507 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 0,
+    "sections": [
+      {
+        "auto_collapse": true,
+        "body": {
+          "Accept-Language": "de-AT, en-US",
+          "Authentication-Results": "spf=pass (sender IP is 193.200.113.80)\r\n smtp.mailfrom=tbvg.at; dkim=pass (signature was verified)\r\n header.d=traiskirchen.gv.at;dmarc=pass action=none\r\n header.from=tbvg.at;compauth=pass reason=100",
+          "Authentication-Results-Original": "secure-shield.at; auth=pass\r\n smtp.auth=93.82.194.74@traiskirchen.gv.at",
+          "Content-Language": "de-DE",
+          "Content-Type": "multipart/mixed;\r\n\tboundary=\"_012_bf5c345eae08409291f3bb9302098b0btbvgat_\"",
+          "DKIM-Signature": "v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;\r\n\td=traiskirchen.gv.at; s=default; h=MIME-Version:Content-Type:In-Reply-To:\r\n\tReferences:Message-ID:Date:Subject:To:From:reply-to:sender:cc:bcc:\r\n\tcontent-transfer-encoding; bh=JPpLIeXvWoUyUtjWpKnBEoNSV3shGHbrpDgnCftekmY=; \r\n\tb=kJvmqRADqcy58giWYL1aKQRtvbUQoP4wArYfBFqeSdws0nIJXOqc/yIR1hVO1giKef3CDwrkEX3\r\n\t3Sxv9JFjJAyT/B/J496vxoXOCoR2i9egEoOVZUEaozyFghViMH1mzIWugh10viM+3znmgbt/FKP2R\r\n\t3Z+ug2fFygjorXdwKCBrSF+a4XRslNb2Pq2fzRgXMdzAlcyPEO9kOnevi7uZGxFOXtTW4bDPBGAFZ\r\n\tKFuvgfzF4GwwGywiEuE5LlZpNgbSpnBOURPQt4NIOdZA+rNMieqnZPdJZdJt2BwF0bYcW2Oh6RKO4\r\n\t74NNOj5bRQYJQjdWnsm23/AemjJsoQG16SAQ==;",
+          "Date": "Tue, 10 Feb 2026 09:53:22 +0000",
+          "From": "Renate JURANITSCH <r.juranitsch@tbvg.at>",
+          "In-Reply-To": "<DU2PPFEB42354DE0514D8E8070900F6CF5B9265A@DU2PPFEB42354DE.EURP192.PROD.OUTLOOK.COM>",
+          "MIME-Version": "1.0",
+          "Message-ID": "<bf5c345eae08409291f3bb9302098b0b@tbvg.at>",
+          "Received": "from DBAP192MB0938.EURP192.PROD.OUTLOOK.COM (2603:10a6:10:1c3::5) by\r\n DU2PPFEB42354DE.EURP192.PROD.OUTLOOK.COM with HTTPS; Tue, 10 Feb 2026\r\n 09:53:39 +0000\nfrom DU2PR04CA0219.eurprd04.prod.outlook.com (2603:10a6:10:2b1::14)\r\n by DBAP192MB0938.EURP192.PROD.OUTLOOK.COM (2603:10a6:10:1c3::5) with\r\n Microsoft SMTP Server (version=TLS1_2,\r\n cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9587.19; Tue, 10 Feb\r\n 2026 09:53:33 +0000\nfrom DB1PEPF000509EE.eurprd03.prod.outlook.com\r\n (2603:10a6:10:2b1:cafe::be) by DU2PR04CA0219.outlook.office365.com\r\n (2603:10a6:10:2b1::14) with Microsoft SMTP Server (version=TLS1_3,\r\n cipher=TLS_AES_256_GCM_SHA384) id 15.20.9587.19 via Frontend Transport; Tue,\r\n 10 Feb 2026 09:53:33 +0000\nfrom node3.secure-shield.at (193.200.113.80) by\r\n DB1PEPF000509EE.mail.protection.outlook.com (10.167.242.72) with Microsoft\r\n SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9587.10\r\n via Frontend Transport; Tue, 10 Feb 2026 09:53:33 +0000\nfrom mail.traiskirchen.gv.at ([93.82.194.74])\r\n\tby node3.secure-shield.at with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256\r\n\t(Exim 4.94.2)\r\n\t(envelope-from <r.juranitsch@tbvg.at>)\r\n\tid 1vpkQt-00F15A-BX\r\n\tfor huber@profi-max.at; Tue, 10 Feb 2026 10:53:32 +0100\nfrom ex03.ad.traiskirchen.gv.at (10.1.1.13) by\r\n ex03.ad.traiskirchen.gv.at (10.1.1.13) with Microsoft SMTP Server\r\n (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id\r\n 15.2.2562.35; Tue, 10 Feb 2026 10:53:22 +0100\nfrom ex03.ad.traiskirchen.gv.at ([fe80::de75:a616:98e4:6c69]) by\r\n ex03.ad.traiskirchen.gv.at ([fe80::de75:a616:98e4:6c69%2]) with mapi id\r\n 15.02.2562.035; Tue, 10 Feb 2026 10:53:22 +0100",
+          "Received-SPF": "Pass (protection.outlook.com: domain of tbvg.at designates\r\n 193.200.113.80 as permitted sender) receiver=protection.outlook.com;\r\n client-ip=193.200.113.80; helo=node3.secure-shield.at; pr=C",
+          "References": "<DU2PPFEB42354DE0514D8E8070900F6CF5B9265A@DU2PPFEB42354DE.EURP192.PROD.OUTLOOK.COM>",
+          "Return-Path": "r.juranitsch@tbvg.at",
+          "Subject": "AW: 1. Mahnung - Hauptplatz 17/Stiege A3/ Top 1 und Top 2, 2514\r\n Traiskirchen, AR-39636- 1",
+          "Thread-Index": "AQHcmc9PPD/2+VJyykKiILkcvwsrD7V7qcwQ",
+          "Thread-Topic": "1. Mahnung - Hauptplatz 17/Stiege A3/ Top 1 und Top 2, 2514\r\n Traiskirchen, AR-39636- 1",
+          "To": "Petra Huber <huber@profi-max.at>",
+          "X-Complaints-To": "abuse@node1.secure-shield.at",
+          "X-EOPAttributedMessage": "0",
+          "X-EOPTenantAttributedMessage": "a6f5d8be-b9f9-4385-8141-940d20e74384:0",
+          "X-Filter-ID": "9kzQTOBWQUFZTohSKvQbgI7ZDo5ubYELi59AwcWUnuUi44dTaH5jkdPpNea6aG2DvXVNoHhzzguG\r\n 6TPhm6NSkiu2SmbhJN1U9FKs8X3+Nt3oH24w+dqghK7DgLXW0Q3cowjsxrhrM15cMgJzzQJsmufH\r\n zJ6mVE7ewsipSVIfs4amyhSEJ2AsAquBdnfwfSGIk31k9aIIh+zJRA1xOJoRUKPGxjczx15onleF\r\n Kw2Xyyv9eLP/kj/+gZtrt+yMNiLpBXA15PDqPoEduSsmenygN/7dcffGs85rOTaUB+ebTK4LrYl1\r\n GN/cN5qfwNeRwLRun6jizzru+EYn8909+TIA/ND75Gm/2biaodNLCvn8UpUfzRslXI17GS1R1G9q\r\n ZmhJJlVzfYeu2veejK2lOCRG58zgmlIwjjseIVAGwaWbkDIqCv2hNINVDeLOy1a3fDSXdWaNhWOG\r\n Ha8/hD53T6DTfjdWILJKye+wKR3Fm+bs47r97zE5+x88e1P8wMM53z8ypzi4JDWEiJuf4ysgNjLZ\r\n YAnSwkVUnQzrGREkqx9Ij7iUK/BaC5A2EmKTShu3XQY6ulcxfjgPaxyVnP1Aft/+GaxlS6+B2s5m\r\n vDv0wBb3rl9oh9VoIekQHpwUfpYnEThmsVQ6xAkm3Tzc7R3QY0XIxV9LFKE2zDtP3JRsYbD+M/6d\r\n eNYWbmHprn0JtLcOoXa1W8PBQpL4Js8UD6EaFGkvIi9AgQnBERQ4RNS5cy7VrjEJldWZnE6Qmmuv\r\n bKQStj7BvgS3aUhHLsiY8W4QJNRkynz5XZWh3izal+zWkBFo6shqE5fh2rghFf4aQWdWOCRzZLsH\r\n vi1qn1dfllLHlxzDkgjcIqjzD3b4PGwbBE8D4WgOVcZv254a1SspgLrZBCX/P+6I+6cJ4SOUOPsG\r\n nMJofeuO5TcDeKjrEmYPn2IVWRtXS2JlnhMHK3sl/F93TmqYIYVDhWE1uOEhRYxlDGxP0xYzpPqG\r\n BvR0ks1/IouSjktZMpOFA+nkOydGV6+nDIW/ZN1d5nzRpWSWI8h6J729IE/Gdzp7HLAPHmvkD/14\r\n eSXmLqxB7XoIiOhvIkPU2MiXMS+4ayUpOtEhdxekWDmK9g==",
+          "X-Forefront-Antispam-Report": "\r\n CIP:193.200.113.80;CTRY:AT;LANG:de;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:node3.secure-shield.at;PTR:node3.secure-shield.at;CAT:NONE;SFS:(13230040)(4073199012)(6049299003)(19092799006)(5073199012)(5063199012)(22003199012)(7053199007)(8096899003)(4053099003)(4013099003)(13003099007);DIR:INB;",
+          "X-MS-Exchange-CrossTenant-AuthAs": "Anonymous",
+          "X-MS-Exchange-CrossTenant-AuthSource": "\r\n DB1PEPF000509EE.eurprd03.prod.outlook.com",
+          "X-MS-Exchange-CrossTenant-FromEntityHeader": "Internet",
+          "X-MS-Exchange-CrossTenant-Id": "a6f5d8be-b9f9-4385-8141-940d20e74384",
+          "X-MS-Exchange-CrossTenant-Network-Message-Id": "c32466da-574f-40f5-7634-08de688a40c1",
+          "X-MS-Exchange-CrossTenant-OriginalArrivalTime": "10 Feb 2026 09:53:33.3693\r\n (UTC)",
+          "X-MS-Exchange-ExternalInOutlookResult": "NotEnabled",
+          "X-MS-Exchange-Organization-AuthAs": "Anonymous",
+          "X-MS-Exchange-Organization-AuthSource": "\r\n DB1PEPF000509EE.eurprd03.prod.outlook.com",
+          "X-MS-Exchange-Organization-ExpirationInterval": "1:00:00:00.0000000",
+          "X-MS-Exchange-Organization-ExpirationIntervalReason": "OriginalSubmit",
+          "X-MS-Exchange-Organization-ExpirationStartTime": "10 Feb 2026 09:53:33.4385\r\n (UTC)",
+          "X-MS-Exchange-Organization-ExpirationStartTimeReason": "OriginalSubmit",
+          "X-MS-Exchange-Organization-MessageDirectionality": "Incoming",
+          "X-MS-Exchange-Organization-Network-Message-Id": "\r\n c32466da-574f-40f5-7634-08de688a40c1",
+          "X-MS-Exchange-Organization-SCL": "1",
+          "X-MS-Exchange-Processed-By-BccFoldering": "15.20.9611.001",
+          "X-MS-Exchange-Transport-CrossTenantHeadersStamped": "DBAP192MB0938",
+          "X-MS-Exchange-Transport-EndToEndLatency": "00:00:05.6562555",
+          "X-MS-Has-Attach": "yes",
+          "X-MS-Office365-Filtering-Correlation-Id": "c32466da-574f-40f5-7634-08de688a40c1",
+          "X-MS-PublicTrafficType": "Email",
+          "X-MS-TrafficTypeDiagnostic": "\r\n DB1PEPF000509EE:EE_|DBAP192MB0938:EE_|DU2PPFEB42354DE:EE_",
+          "X-Microsoft-Antispam": "\r\n BCL:0;ARA:13230040|4073199012|6049299003|19092799006|5073199012|5063199012|22003199012|7053199007|8096899003|4053099003|4013099003|13003099007;",
+          "X-Microsoft-Antispam-Mailbox-Delivery": "\r\n\tucf:0;jmr:0;auth:0;dest:I;ENG:(910005)(944506478)(944626604)(4710137)(4712097)(4999163)(920097)(930201)(20251009114)(140003);",
+          "X-Microsoft-Antispam-Message-Info": "\r\n\t=?us-ascii?Q?Q7DRpatkN+ZVTFnRol8YMOVdVPVvsMfm7+4sr9UR8yDTYCj+Kg8HsrHve9Ub?=\r\n =?us-ascii?Q?rb/23wB96b5d5K3E7CmoCPWGX83N7/T8Hib9G29ZUWDLB1AXwz8ZmB2sC/9u?=\r\n =?us-ascii?Q?fzupRXStn4gNHejV+85z/sQxaZ0bxHzgl0CGEtNJsIEEchTVHC+btOWni1ta?=\r\n =?us-ascii?Q?DHTlSGYddPQQP3WEyUHE1CdwzE/GCW9cFo/P6JZPUN3PUvpbcGtE1KlN8Abf?=\r\n =?us-ascii?Q?GN0/DFn7CVH5Z3haun/KqIkYrq6plHsep2mGGWiBP5FdgNqFPFRZbouCM9TM?=\r\n =?us-ascii?Q?RGy4IaJG44ERCIgUiAdNn5YNOvglPtapZRiVnpDxo+MNLgIxEyP8ja8zdtlS?=\r\n =?us-ascii?Q?bj2NLklA4hPDuEwP9MX4gvNFuAsQqStO/atuGk3vb/lQkBSYbcIzGM/QOS37?=\r\n =?us-ascii?Q?iyhGtgxou5mCIyNUma35ug1dgxR8u2LmQqos6g2jVxrdIRFKiXTf2DgAod/y?=\r\n =?us-ascii?Q?gCkxXhXq+C3MGeTDBvoxf/DjZa5kZBuu1SEc5rlj7ryxFlJ7UsE3vgFaYPPx?=\r\n =?us-ascii?Q?3pyVEt1ODZ3mxl0K0h8oJzfauJqrAb4PyryAoApbt4FgrSrOqF/neJidj5sk?=\r\n =?us-ascii?Q?WN91RofeCDTjOxol860H+wl3NlW2Vb/NjCqQVV6GBlgd8Z8tHAA4JlUmp67s?=\r\n =?us-ascii?Q?+zXIGXqrBOTDbtN+IdDFbkzSwoa8QVX/x8GRf3+9ibNOuKPx85pqPtALO9qi?=\r\n =?us-ascii?Q?FC4GttZgDGyWABSZmXyk/PZqwzYmwZEJlTm3ron9rQLKp+Lh/HrmMKrzG7VR?=\r\n =?us-ascii?Q?PzfdK5CseqCo8G3/M59FT0Uur940ku30RNZZxMrXCgEFMLzuAH87RjvjfWL/?=\r\n =?us-ascii?Q?dczWxZQRplHw24cZ9muYVS9AZftKl0D64ng5hkonJKQB6dufuyx8+NYUCpzm?=\r\n =?us-ascii?Q?/jf2G+KYKO+U9YrotAIW70JOpS30cnaOwXYAwmKhjEUhZBRpG9mjFXugNmGB?=\r\n =?us-ascii?Q?2a4DiUsHxi2Kyjg+SIEOoyMKce3BapNCXmoOZpKUgK0nppETO+GmdmCeHLT8?=\r\n =?us-ascii?Q?wQZPwNUYCuxwRdHICcr4jx/YJAWYoIMqD0ba+/V9/17kGNRwOTrbzWNix935?=\r\n =?us-ascii?Q?a7yYbIRSNFgurE+ydvdKKs83c+X2M914xmXlFnMDQqV+SG9HmkKbKkS6PbXn?=\r\n =?us-ascii?Q?N7phUCKdGM5L8ebIL9FsLNZO9kyt1pe8t8kkHwEFJKSwgpYTOa+vCNcvyiPB?=\r\n =?us-ascii?Q?FFNbM1clxgkUjnN3puyM/uPLFLp0twIg0yruRVOaWiCIIyJmaqHYEN/oC1I3?=\r\n =?us-ascii?Q?mlPRIZqyzx2D/2VG+iKFUKqwJwwxb3pDOI5Q/2tgkSjFyJQm/pNwOfYSNWww?=\r\n =?us-ascii?Q?mKspvhODv6nxHcebMfIkdUoxqEx2Nnxic758Hii5i+k26FG6VZ2yJSKnMISE?=\r\n =?us-ascii?Q?m/rNhBbn7AXegAJeEzgwTfQuNjZ9xKocQOajjtA5o1nD5Jf4y78VFDwGdQ4p?=\r\n =?us-ascii?Q?sxfmWziWvZR/29hwIQ3iUWjWx23mDR4zkLFWES2zc6nOSrcLf+sQPQTzO7kK?=\r\n =?us-ascii?Q?Fh8IPhAxbsPDOZRsM/lCzhDyEdW7OSgzplJ8KkXHyD6eV9yjMMhMAW2B0vuL?=\r\n =?us-ascii?Q?VRjLxxljGx1sZFOnLeLDqdQ32fUvUwmBXThRJlrt6ocvqI1jEeuDrRPu/43i?=\r\n =?us-ascii?Q?GyTw7DbLyNvzUsQ0L9BgC2FSZLSlsX2qpM59oHPKJMvoqnOeaTO1a+1IVsAP?=\r\n =?us-ascii?Q?Yx2NlBlNWJzA04M1AAoQDGr61RlDvWeFfgltV+q1gUejDF0rAlAHPFSZjdtQ?=\r\n =?us-ascii?Q?c3ae+RJ12Dl+wy+pnYslNhmO46u2dMk6t5NEjSIsXdI/Qgjn84OSknZD6OFq?=\r\n =?us-ascii?Q?edDWKRzzY7mp4lytZAElgKwoLBUiILo4vWUB4eFHubuJwOaDH0Ey39mRBhon?=\r\n =?us-ascii?Q?yteZRMxr2tEoeD08PpVSuYWwUyOniGH9kaO9KClD+fWyFwFSO80nTZq75GRh?=\r\n =?us-ascii?Q?JwN3LidFC4xl1Rbt87NnxmxWt/ojubPa0aCMycs51/dK8alRhM6FCTwV18NH?=\r\n =?us-ascii?Q?DGjqgMn9hzAuouW0pzS+CK1wFoCEIv/nOoW5hcFIH0GP/YLCbLZdjlOKY9cm?=\r\n =?us-ascii?Q?BKXk7GnjTzRpXvHtRCUssju9YlbN2P21sh646PT414bO13qnC91MoewdLpSt?=\r\n =?us-ascii?Q?G++0V2un/4rlvR9cvabexJKxQ0krF7zCFh8gZBGZxq6JkxdoOR8dKIqDV/pk?=\r\n =?us-ascii?Q?fru9H273SECLerTBPaFuaNwcOQond6ApL0ha4c356bSHo0D+6kCm1gSsGgOl?=\r\n =?us-ascii?Q?McgKs+JxtegJ2voz6pVegahlKtLzqhYHw6lk0Gl+9hxuP42k3QX1FLIjR6iQ?=\r\n =?us-ascii?Q?6t6gbs+1L5UOXKXebWZb0G1BdH5HAJskVBNQhXy6WR1rBd5bpcywzNIHNJ5m?=\r\n =?us-ascii?Q?IldnuVQp3O2JPr0BIwHykBrtUXsFR+XG8NT/42mQlyWk2JNeYtj810+H3bQs?=\r\n =?us-ascii?Q?NUa73gL/fwY=3D?=",
+          "X-Originating-IP": "93.82.194.74",
+          "X-Recommended-Action": "accept",
+          "X-Report-Abuse-To": "spam@node1.secure-shield.at",
+          "X-SecureShield-Domain": "traiskirchen.gv.at",
+          "X-SecureShield-Outgoing-Class": "ham",
+          "X-SecureShield-Outgoing-Evidence": "Combined (0.02)",
+          "X-SecureShield-Username": "93.82.194.74",
+          "x-originating-ip": "[83.65.68.6]"
+        },
+        "body_config": {},
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "email": {
+              "address": [
+                "r.juranitsch@tbvg.at",
+                "huber@profi-max.at",
+                "DU2PPFEB42354DE0514D8E8070900F6CF5B9265A@DU2PPFEB42354DE.EURP192.PROD.OUTLOOK.COM"
+              ],
+              "date": [
+                "Tue, 10 Feb 2026 09:53:22 +0000"
+              ],
+              "subject": [
+                "AW: 1. Mahnung - Hauptplatz 17/Stiege A3/ Top 1 und Top 2, 2514\r\n Traiskirchen, AR-39636- 1"
+              ]
+            },
+            "static": {
+              "domain": [
+                "DBAP192MB0938.EURP192.PROD.OUTLOOK.COM",
+                "DU2PPFEB42354DE.EURP192.PROD.OUTLOOK.COM",
+                "DU2PR04CA0219.eurprd04.prod.outlook.com",
+                "DB1PEPF000509EE.eurprd03.prod.outlook.com",
+                "DU2PR04CA0219.outlook.office365.com",
+                "node3.secure-shield.at",
+                "DB1PEPF000509EE.mail.protection.outlook.com",
+                "mail.traiskirchen.gv.at",
+                "ex03.ad.traiskirchen.gv.at"
+              ],
+              "ip": [
+                "2603:10a6:10:1c3::",
+                "2603:10a6:10:2b1::",
+                "2603:10a6:10:2b1:cafe::",
+                "193.200.113.80",
+                "10.167.242.72",
+                "93.82.194.74",
+                "10.1.1.13",
+                "fe80::"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Headers",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": null,
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Email Headers Validation",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": [
+          {
+            "action": "pass",
+            "additional": "receiver=protection.outlook.com; client-ip=193.200.113.80; helo=node3.secure-shield.at; pr=C",
+            "domain": "protection.outlook.com",
+            "info": "domain of tbvg.at designates 193.200.113.80 as permitted sender"
+          }
+        ],
+        "body_config": {
+          "column_order": [
+            "action",
+            "domain",
+            "info",
+            "additional"
+          ]
+        },
+        "body_format": "TABLE",
+        "classification": "TLP:C",
+        "depth": 1,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "static": {
+              "domain": [
+                "protection.outlook.com"
+              ]
+            }
+          }
+        },
+        "title_text": "SPF Validation",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": null,
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 1,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Authentication Results",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": true,
+        "body": [
+          [
+            "Result",
+            "pass (sender IP is 193.200.113.80)"
+          ],
+          [
+            "smtp.mailfrom",
+            "tbvg.at"
+          ]
+        ],
+        "body_config": {},
+        "body_format": "ORDERED_KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "spf result",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": true,
+        "body": [
+          [
+            "Result",
+            "pass (signature was verified)"
+          ],
+          [
+            "header.d",
+            "traiskirchen.gv.at"
+          ]
+        ],
+        "body_config": {},
+        "body_format": "ORDERED_KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "dkim result",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": true,
+        "body": [
+          [
+            "Result",
+            "pass"
+          ],
+          [
+            "action",
+            "none"
+          ],
+          [
+            "header.from",
+            "tbvg.at"
+          ]
+        ],
+        "body_config": {},
+        "body_format": "ORDERED_KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "dmarc result",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": true,
+        "body": [
+          [
+            "Result",
+            "pass"
+          ],
+          [
+            "reason",
+            "100"
+          ]
+        ],
+        "body_config": {},
+        "body_format": "ORDERED_KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 2,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "compauth result",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": {
+          "areStringsUnicode": "True",
+          "attachmentsDelayed": "False",
+          "attachmentsReady": "True",
+          "classType": "'IPM.Note\\x00'",
+          "classified": "False",
+          "crlf": "'\\n'",
+          "defaultFolderName": "'2026-02-10_0953 AW 1. Mahnung - Hauptplatz 17Stiege A3 Top 1 und Top 2, 2514 Traiskirchen, AR-39636- 1'",
+          "detectedBodies": "<BodyTypes.HTML: 4>",
+          "headerInit": "True",
+          "importance": "<Importance.MEDIUM: 1>",
+          "inReplyTo": "'<DU2PPFEB42354DE0514D8E8070900F6CF5B9265A@DU2PPFEB42354DE.EURP192.PROD.OUTLOOK.COM>\\x00'",
+          "insecureFeatures": "<InsecureFeatures.NONE: 0>",
+          "isRead": "False",
+          "isSent": "True",
+          "messageId": "'<bf5c345eae08409291f3bb9302098b0b@tbvg.at>'",
+          "parsedDate": "(2026, 2, 10, 9, 53, 22, 0, 1, -1)",
+          "prefixLen": "0",
+          "prefixList": "[]",
+          "priority": "<Priority.NORMAL: 0>",
+          "receivedTime": "2026-02-10T09:53:40.001275+00:00",
+          "recipientSeparator": "';'",
+          "responseRequested": "False",
+          "sender": "'Renate JURANITSCH <r.juranitsch@tbvg.at>'",
+          "sensitivity": "<Sensitivity.NORMAL: 0>",
+          "stringEncoding": "'utf-16-le'"
+        },
+        "body_config": {},
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "network": {
+            "email": {
+              "msg_id": [
+                "bf5c345eae08409291f3bb9302098b0b@tbvg.at"
+              ]
+            }
+          }
+        },
+        "title_text": "Email Attributes",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": "~WRD0000.jpg\u0000\nimage001.png\u0000\nimage002.png\u0000\nimage003.png\u0000\nimage004.png\u0000\nimage005.jpg\u0000\n20260210104319.pdf\u0000\n20260210104325.pdf\u0000",
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Extracted Attachments:",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [
+      {
+        "name": "20260210104319.pdf\u0000",
+        "sha256": "188d9fd73c564346bc9e174621b1a8cc9ae138ed759d3ba53fd8de54549c78cf"
+      },
+      {
+        "name": "20260210104325.pdf\u0000",
+        "sha256": "1cd7b9c9ca2fb08989343a9a5e4b6b8c13073a80ceb9a833eefabe4f213fdc74"
+      },
+      {
+        "name": "image002.png\u0000",
+        "sha256": "4883ee2e1cc254fa36900cde011ee2adc598afbb97fee4dc168c8be2e4f9012d"
+      },
+      {
+        "name": "image003.png\u0000",
+        "sha256": "52f5b6d38684e9c452c4e13a3a258baa743c070cf3c93cfeada539e6e548c5b4"
+      },
+      {
+        "name": "image004.png\u0000",
+        "sha256": "7026beb2f693d39b7cb21401bb5867325f495ea61f940db1795d407783dbbd08"
+      },
+      {
+        "name": "image001.png\u0000",
+        "sha256": "9cca9ffd9cbfd5c1aab1b50d328084cbec40b4afbaa7cd61d110d47ee2ccc666"
+      },
+      {
+        "name": "image005.jpg\u0000",
+        "sha256": "b5464d72b0c50627cb75ad787f8d280510f5b18b8c87bc621a4bda0c5f251b25"
+      },
+      {
+        "name": "~WRD0000.jpg\u0000",
+        "sha256": "cb0628092ddea96bb040221b5c793dbbb792a67d0621bdfba170c07374d85801"
+      }
+    ],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [],
+    "tags": {
+      "network.email.address": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DU2PPFEB42354DE0514D8E8070900F6CF5B9265A@DU2PPFEB42354DE.EURP192.PROD.OUTLOOK.COM"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "huber@profi-max.at"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "r.juranitsch@tbvg.at"
+        }
+      ],
+      "network.email.date": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "Tue, 10 Feb 2026 09:53:22 +0000"
+        }
+      ],
+      "network.email.msg_id": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "bf5c345eae08409291f3bb9302098b0b@tbvg.at"
+        }
+      ],
+      "network.email.subject": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "AW: 1. Mahnung - Hauptplatz 17/Stiege A3/ Top 1 und Top 2, 2514\r\n Traiskirchen, AR-39636- 1"
+        }
+      ],
+      "network.static.domain": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DB1PEPF000509EE.eurprd03.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DB1PEPF000509EE.mail.protection.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DBAP192MB0938.EURP192.PROD.OUTLOOK.COM"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DU2PPFEB42354DE.EURP192.PROD.OUTLOOK.COM"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DU2PR04CA0219.eurprd04.prod.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "DU2PR04CA0219.outlook.office365.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "ex03.ad.traiskirchen.gv.at"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "mail.traiskirchen.gv.at"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "node3.secure-shield.at"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "protection.outlook.com"
+        }
+      ],
+      "network.static.ip": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "10.1.1.13"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "10.167.242.72"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "193.200.113.80"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10a6:10:1c3::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10a6:10:2b1::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "2603:10a6:10:2b1:cafe::"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "93.82.194.74"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "fe80::"
+        }
+      ]
+    },
+    "temp_submission_data": {}
+  }
+}
