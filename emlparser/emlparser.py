@@ -76,6 +76,18 @@ def clean_uri_from_body(uri):
     return uri
 
 
+def clean_email_from_body(email):
+    if email.startswith("//") and tag_is_valid(URI_VALIDATOR, f"https:{email}"):
+        return
+    # Check if the email starts with smtp. followed by letters, then an equal sign, and if so, remove the prefix.
+    # smtp.helo=postmaster@site.com
+    # smtp.mailfrom=bounce@site.com
+    # smtp.pra=here@there.com
+    if email.startswith("smtp.") and re.match(r"smtp\.[a-zA-Z]+=", email):
+        return email.split("=", 1)[1]
+    return email
+
+
 def domain_is_an_email_username(domain, all_emails):
     # This should not be needed, but some domains are wrongly extracted from email usernames.
     # Example: username.french@domain.com eml_parser could extract username.fr as a domain.
@@ -820,6 +832,9 @@ class EmlParser(ServiceBase):
                     continue
                 if ioc_type == "uri":
                     new_ioc = set(map(clean_uri_from_body, new_ioc))
+                elif ioc_type == "email":
+                    new_ioc = set(map(clean_email_from_body, new_ioc))
+                new_ioc.discard(None)
                 all_iocs[ioc_type] = all_iocs[ioc_type].union(new_ioc)
 
                 # Process MultiDecoder extracted IOCs
