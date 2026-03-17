@@ -916,7 +916,11 @@ class EmlParser(ServiceBase):
         if "received_domain" in header:
             header["received_domain"] = sorted(header["received_domain"])
             for dom in header["received_domain"]:
-                kv_section.add_tag("network.static.domain", dom.strip())
+                dom = dom.strip()
+                if tag_is_valid(DOMAIN_VALIDATOR, dom):
+                    kv_section.add_tag("network.static.domain", dom)
+                elif tag_is_valid(IP_VALIDATOR, dom):
+                    kv_section.add_tag("network.static.ip", dom)
 
         # If we've found URIs, add them to a section
         if all_iocs["uri"] or md_iocs["uri"]:

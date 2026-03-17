@@ -123,10 +123,6 @@
               ]
             },
             "static": {
-              "domain": [
-                "kervmexc52.globalnet.lcl",
-                "kervmexc53.globalnet.lcl"
-              ],
               "ip": [
                 "172.16.3.101",
                 "172.16.3.164"
@@ -355,16 +351,6 @@
           "heur_id": null,
           "signatures": [],
           "value": "events.teams.microsoft.com"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "kervmexc52.globalnet.lcl"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "kervmexc53.globalnet.lcl"
         },
         {
           "heur_id": null,

@@ -13,7 +13,7 @@ if [[ -n "$FULL_SAMPLES_LOCATION" ]]; then
     ENV_SAMPLES="-e FULL_SAMPLES_LOCATION=/opt/samples"
 fi
 docker run \
-    -t\
+    -t \
     --rm \
     -e FULL_SELF_LOCATION=/opt/al_service \
     $ENV_SAMPLES \
