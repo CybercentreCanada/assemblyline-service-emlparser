@@ -1,6 +1,6 @@
+from typing import List, Optional
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
-from typing import Optional, List
 
 from emlparser.headers.parser import AuthenticationResults, DnsResolver, EmailHeaders, Received, ReceivedSpf, Sender
 
@@ -14,7 +14,10 @@ class TestReceivedSpfParser(TestCase):
         self.assertIsNone(results)
 
     def test_given_valid_received_spf_when_parsing_then_return_extract_parts(self):
-        received_spf = """    	ActionResult   (test.domain.com: more information about the reason of action) additional=kv; data=1.1.1.1;"""
+        received_spf = (
+            """    	ActionResult   (test.domain.com: more information about the reason of action) """
+            """additional=kv; data=1.1.1.1;"""
+        )
 
         results = ReceivedSpf.parse(received_spf)
 
@@ -186,10 +189,12 @@ class TestEmailHeaders(TestCase):
         mocked_sender_parse.assert_any_call(return_path)
 
     @patch("emlparser.headers.parser.ReceivedSpf.parse")
-    def test_given_received_spf_when_parsing_then_received_spf_parser_called_n_times_with_received_spf_data(self, mocked_sender_parse):
+    def test_given_received_spf_when_parsing_then_received_spf_parser_called_n_times_with_received_spf_data(
+        self, mocked_sender_parse
+    ):
         received_spf = [
             "any received_spf data",
-            "another different received_spf data"
+            "another different received_spf data",
         ]
 
         self._build_email_headers(received_spf=received_spf)
@@ -198,10 +203,12 @@ class TestEmailHeaders(TestCase):
         mocked_sender_parse.assert_any_call(received_spf[1])
 
     @patch("emlparser.headers.parser.Received.parse")
-    def test_given_received_when_parsing_then_received_parser_called_n_times_with_received_data(self, mocked_sender_parse):
+    def test_given_received_when_parsing_then_received_parser_called_n_times_with_received_data(
+        self, mocked_sender_parse
+    ):
         received = [
             "any received data",
-            "another different received data"
+            "another different received data",
         ]
         dns_resolver = DnsResolver()
 

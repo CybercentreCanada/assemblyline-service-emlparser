@@ -1,7 +1,5 @@
 import base64
-import email
 import email.header
-import email.parser
 import json
 import os
 import re
@@ -665,7 +663,9 @@ class EmlParser(ServiceBase):
 
         self.handle_eml(request, content_str, header_agg)
 
-    def handle_eml(self, request: ServiceRequest, content_str, header_agg={}) -> None:
+    def handle_eml(self, request: ServiceRequest, content_str, header_agg=None) -> None:
+        if header_agg is None:
+            header_agg = {}
         parser = eml_parser.EmlParser(include_raw_body=True, include_attachment_data=True)
         try:
             if content_str[:3] == b"\xef\xbb\xbf":
@@ -774,7 +774,7 @@ class EmlParser(ServiceBase):
             if (
                 not exception_handled
                 and isinstance(e, TypeError)
-                and str(e) == "expected string or buffer"
+                and (str(e) == "expected string or buffer" or str(e).startswith("a bytes-like object is required"))
                 and "workaround_bug_27257" in tb
             ):
                 for address_field in [b"\nTo:", b"\nCC:", b"\nFrom:"]:
