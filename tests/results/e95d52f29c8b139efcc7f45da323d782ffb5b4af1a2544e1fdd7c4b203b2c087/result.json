@@ -6,6 +6,18 @@
       {
         "auto_collapse": true,
         "body": {
+          "authentication": {
+            "dkim": [
+              "pass"
+            ],
+            "dmarc": [
+              "pass"
+            ],
+            "spf": [
+              "pass",
+              "pass"
+            ]
+          },
           "authentication-results": [
             "spf=pass (sender IP is 202.77.104.104) smtp.mailfrom=dynapackasia.co.id; dkim=pass (signature was verified) header.d=dynapackasia.co.id;dmarc=pass action=none header.from=dynapackasia.co.id;compauth=pass reason=100"
           ],

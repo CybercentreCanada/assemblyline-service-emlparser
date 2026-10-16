@@ -6,6 +6,17 @@
       {
         "auto_collapse": true,
         "body": {
+          "authentication": {
+            "dkim": [
+              "pass"
+            ],
+            "dmarc": [
+              "none"
+            ],
+            "spf": [
+              "pass"
+            ]
+          },
           "authentication-results": [
             "[recipient's mail server]; dkim=pass header.d=servconsa.pe header.s=default header.b=i5PN6W7l; dmarc=none; spf=pass ([recipient's mail server]: domain of mcornejo@servconsa.pe designates 192.185.68.24 as permitted sender) smtp.mailfrom=mcornejo@servconsa.pe"
           ],

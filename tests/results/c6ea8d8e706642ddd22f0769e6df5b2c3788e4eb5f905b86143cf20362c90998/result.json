@@ -7,17 +7,17 @@
         "auto_collapse": true,
         "body": {
           "content-type": [
-            "multipart/alternative; boundary=\"_000_0000000000000000000000000000000000000000000000000000000_\""
+            "text/plain"
           ],
           "date": [
             "['2024-02-10T00:00:00+00:00']"
           ],
           "defect": [
-            "",
-            ""
+            "StartBoundaryNotFoundDefect",
+            "MultipartInvariantViolationDefect"
           ],
           "from": [
-            "SomeStuff <someguy@someplace.com>"
+            "Some\r\n\r\n\r\nStuff\n <someguy@someplace.com>"
           ],
           "subject": [
             "ABC"
