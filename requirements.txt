@@ -8,4 +8,4 @@ lxml<6.0.0
 eml-parser
 multidecoder>=1.0.0,<2
 chardet
-dnspython==2.6.1
+dnspython==2.9.0
