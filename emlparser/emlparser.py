@@ -590,8 +590,13 @@ class EmlParser(ServiceBase):
     def handle_html(self, request: ServiceRequest) -> None:
         # Assume this is an email saved in HTML format
         content_str = request.file_contents
+        # libxml2 2.14+ (bundled with lxml 6) converts lone \r to \n in text per the HTML5
+        # spec, while older versions kept them as-is. The header extraction below treats \r
+        # as a space and only \n as a line break, so normalize lone \r before parsing to
+        # keep that distinction on every lxml version.
+        html_content = re.sub(rb"\r(?!\n)", b" ", content_str)
         try:
-            parsed_html = BeautifulSoup(content_str, features="lxml")
+            parsed_html = BeautifulSoup(html_content, features="lxml")
         except Exception:
             # This is not even a valid HTML, not worth trying to parse it.
             return
@@ -867,7 +872,15 @@ class EmlParser(ServiceBase):
         md_iocs = all_iocs.copy()
         body_words = set(extract_passwords(header["subject"]))
         for body_counter, body in enumerate(parsed_eml["body"]):
-            body_text = BeautifulSoup(body["content"], features="lxml").text
+            # Bodies rebuilt from emails saved as HTML have no content_type, so also sniff
+            # the content to decide if the markup should be stripped
+            if "html" in body.get("content_type", "unknown") or body["content"].lstrip().startswith("<"):
+                body_text = BeautifulSoup(body["content"], features="lxml").text
+            else:
+                # Don't run plain-text bodies through an HTML parser: anything looking like
+                # a bogus tag (e.g. an URL written as </\/#.example.com/...>) gets dropped
+                # from the text, losing password candidates.
+                body_text = body["content"]
             body_words.update(extract_passwords(body_text))
             # Always extract html so other modules can analyze it
             if request.get_param("extract_body_text") or "html" in body.get("content_type", "unknown"):
