@@ -207,10 +207,10 @@
           "network": {
             "email": {
               "address": [
-                "info@atimorganti.it",
                 "S.vanderMeij@elsto.eu",
                 "descours_et_cabaud@invitations.mailinblack.com",
-                "factuur@elsto.eu"
+                "factuur@elsto.eu",
+                "info@atimorganti.it"
               ],
               "msg_id": [
                 "DU2PR01MB84321444B98E963C3289D757F9EB9@DU2PR01MB8432.eurprd01.prod.exchangelabs.com"
@@ -218,21 +218,21 @@
             },
             "static": {
               "domain": [
-                "atimorganti.it",
-                "www.elsto.eu",
-                "elsto.eu",
-                "www.stokvis.eu",
-                "invitations.mailinblack.com",
                 "app.mailinblack.com",
-                "www.mailinblack.com"
+                "atimorganti.it",
+                "elsto.eu",
+                "invitations.mailinblack.com",
+                "www.elsto.eu",
+                "www.mailinblack.com",
+                "www.stokvis.eu"
               ],
               "uri": [
                 "http://www.elsto.eu/",
-                "https://www.stokvis.eu/leveringsvoorwaarden-fme",
-                "https://www.stokvis.eu/disclaimer",
                 "https://app.mailinblack.com/mibc-fr-06/admin/api/v2.0/unauthenticated/logo/26da2138605348769dc54bfb460bf0f3/logo_import.jpg",
                 "https://app.mailinblack.com/mibc-fr-06/invitation?lang=en&id=8a3d9783-eae8-4d88-b576-bcb291202d77&utm_source=DA-en&utm_medium=email&utm_campaign=no-robot&utm_content=saas",
-                "https://www.mailinblack.com/en/product/mailinblack-spam-protection/?utm_source=DA&utm_medium=emailda&utm_campaign=new-banner-step1&utm_content=saas"
+                "https://www.mailinblack.com/en/product/mailinblack-spam-protection/?utm_source=DA&utm_medium=emailda&utm_campaign=new-banner-step1&utm_content=saas",
+                "https://www.stokvis.eu/disclaimer",
+                "https://www.stokvis.eu/leveringsvoorwaarden-fme"
               ]
             }
           }

@@ -1,5 +1,6 @@
 assemblyline
 assemblyline-v4-service
+assemblyline-service-utilities
 extract-msg==0.48.0
 mail-parser
 beautifulsoup4

@@ -135,7 +135,7 @@
       },
       {
         "auto_collapse": false,
-        "body": "http://schemas.microsoft.com/office/2004/12/omml\nhttp://www.w3.org/TR/REC-html40\nhttps://events.teams.microsoft.com/event/739bc38c-8d32-4ec6-bc53-509170e59d66@5ab0514a-59fa-4283-934f-c1c2c4a1f032\nhttps://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-129ca981b5555863&amp;q=1&amp;e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&amp;u=https%3A%2F%2Fwww.konecranes.com%2F\nhttps://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-129ca981b5555863&q=1&e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&u=https%3A%2F%2Fwww.konecranes.com%2F\nhttps://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-e3b994997af9f0f3&amp;q=1&amp;e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&amp;u=https%3A%2F%2Fevents.teams.microsoft.com%2Fevent%2F739bc38c-8d32-4ec6-bc53-509170e59d66%405ab0514a-59fa-4283-934f-c1c2c4a1f032\nhttps://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-e3b994997af9f0f3&q=1&e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&u=https%3A%2F%2Fevents.teams.microsoft.com%2Fevent%2F739bc38c-8d32-4ec6-bc53-509170e59d66%405ab0514a-59fa-4283-934f-c1c2c4a1f032\nhttps://twitter.com/konecranes\nhttps://www.instagram.com/konecranes/\nhttps://www.linkedin.com/company/konecranes/\nhttps://www.youtube.com/@konecranes",
+        "body": "http://schemas.microsoft.com/office/2004/12/omml\nhttp://www.w3.org/TR/REC-html40\nhttps://events.teams.microsoft.com/event/739bc38c-8d32-4ec6-bc53-509170e59d66@5ab0514a-59fa-4283-934f-c1c2c4a1f032\nhttps://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-129ca981b5555863&q=1&e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&u=https%3A%2F%2Fwww.konecranes.com%2F\nhttps://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-e3b994997af9f0f3&q=1&e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&u=https%3A%2F%2Fevents.teams.microsoft.com%2Fevent%2F739bc38c-8d32-4ec6-bc53-509170e59d66%405ab0514a-59fa-4283-934f-c1c2c4a1f032\nhttps://twitter.com/konecranes\nhttps://www.instagram.com/konecranes/\nhttps://www.konecranes.com/\nhttps://www.linkedin.com/company/konecranes/\nhttps://www.youtube.com/@konecranes",
         "body_config": {},
         "body_format": "TEXT",
         "classification": "TLP:C",
@@ -152,6 +152,7 @@
                 "protect2.fireeye.com",
                 "twitter.com",
                 "www.instagram.com",
+                "www.konecranes.com",
                 "www.linkedin.com",
                 "www.youtube.com"
               ],
@@ -159,12 +160,11 @@
                 "http://schemas.microsoft.com/office/2004/12/omml",
                 "http://www.w3.org/TR/REC-html40",
                 "https://events.teams.microsoft.com/event/739bc38c-8d32-4ec6-bc53-509170e59d66@5ab0514a-59fa-4283-934f-c1c2c4a1f032",
-                "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-129ca981b5555863&amp;q=1&amp;e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&amp;u=https%3A%2F%2Fwww.konecranes.com%2F",
                 "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-129ca981b5555863&q=1&e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&u=https%3A%2F%2Fwww.konecranes.com%2F",
-                "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-e3b994997af9f0f3&amp;q=1&amp;e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&amp;u=https%3A%2F%2Fevents.teams.microsoft.com%2Fevent%2F739bc38c-8d32-4ec6-bc53-509170e59d66%405ab0514a-59fa-4283-934f-c1c2c4a1f032",
                 "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-e3b994997af9f0f3&q=1&e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&u=https%3A%2F%2Fevents.teams.microsoft.com%2Fevent%2F739bc38c-8d32-4ec6-bc53-509170e59d66%405ab0514a-59fa-4283-934f-c1c2c4a1f032",
                 "https://twitter.com/konecranes",
                 "https://www.instagram.com/konecranes/",
+                "https://www.konecranes.com/",
                 "https://www.linkedin.com/company/konecranes/",
                 "https://www.youtube.com/@konecranes"
               ]
@@ -405,6 +405,11 @@
         {
           "heur_id": null,
           "signatures": [],
+          "value": "www.konecranes.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
           "value": "www.linkedin.com"
         },
         {
@@ -464,17 +469,7 @@
         {
           "heur_id": null,
           "signatures": [],
-          "value": "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-129ca981b5555863&amp;q=1&amp;e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&amp;u=https%3A%2F%2Fwww.konecranes.com%2F"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
           "value": "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-129ca981b5555863&q=1&e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&u=https%3A%2F%2Fwww.konecranes.com%2F"
-        },
-        {
-          "heur_id": null,
-          "signatures": [],
-          "value": "https://protect2.fireeye.com/v1/url?k=31323334-501cfaeb-313521f5-454455535732-e3b994997af9f0f3&amp;q=1&amp;e=70fcaf84-60ad-4bf3-abde-39b0f572bc51&amp;u=https%3A%2F%2Fevents.teams.microsoft.com%2Fevent%2F739bc38c-8d32-4ec6-bc53-509170e59d66%405ab0514a-59fa-4283-934f-c1c2c4a1f032"
         },
         {
           "heur_id": null,
@@ -490,6 +485,11 @@
           "heur_id": null,
           "signatures": [],
           "value": "https://www.instagram.com/konecranes/"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "https://www.konecranes.com/"
         },
         {
           "heur_id": null,

@@ -394,7 +394,7 @@
       },
       {
         "auto_collapse": false,
-        "body": "Eurofins.de\naka.ms\neurofins.de\nw2.kzn8h.connect-starz.com",
+        "body": "Eurofins.de\naka.ms\neurofins.de\nw2.KZN8H.connect-starz.com\nw2.kzn8h.connect-starz.com",
         "body_config": {},
         "body_format": "TEXT",
         "classification": "TLP:C",
@@ -408,6 +408,7 @@
                 "Eurofins.de",
                 "aka.ms",
                 "eurofins.de",
+                "w2.KZN8H.connect-starz.com",
                 "w2.kzn8h.connect-starz.com"
               ]
             }
@@ -549,6 +550,11 @@
           "heur_id": null,
           "signatures": [],
           "value": "protection.outlook.com"
+        },
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "w2.KZN8H.connect-starz.com"
         },
         {
           "heur_id": null,

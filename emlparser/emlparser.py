@@ -1,5 +1,6 @@
 import base64
 import email.header
+import html
 import json
 import os
 import re
@@ -17,6 +18,7 @@ import extract_msg
 from assemblyline.common import forge
 from assemblyline.common.str_utils import safe_str
 from assemblyline.odm import DOMAIN_REGEX, EMAIL_REGEX, FULL_URI, IP, IP_ONLY_REGEX, IP_REGEX, URI, Domain, Email
+from assemblyline_service_utilities.common.extractor.decode_wrapper import get_tree_tags
 from assemblyline_v4_service.common.base import ServiceBase
 from assemblyline_v4_service.common.request import ServiceRequest
 from assemblyline_v4_service.common.result import (
@@ -37,6 +39,8 @@ from assemblyline_v4_service.common.utils import extract_passwords
 from bs4 import BeautifulSoup, Comment
 from mailparser.utils import msgconvert
 from multidecoder.decoders.network import EMAIL_RE, find_domains, find_emails, find_ips, find_urls
+from multidecoder.multidecoder import Multidecoder
+from multidecoder.registry import get_analyzers
 from olefile.olefile import OleFileError
 
 from emlparser.headers.parser import DnsResolver, EmailHeaders
@@ -56,6 +60,18 @@ DOMAIN_VALIDATOR = Domain()
 URI_VALIDATOR = URI()
 EMAIL_VALIDATOR = Email()
 
+MD_TAG_TYPES = {
+    "uri": ("network.static.uri", URI_VALIDATOR),
+    "email": ("network.email.address", EMAIL_VALIDATOR),
+    "domain": ("network.static.domain", DOMAIN_VALIDATOR),
+    "ip": ("network.static.ip", IP_VALIDATOR),
+}
+MEDIA_DATA_URI_RE = re.compile(rb"data:(?:image|font|video|audio)/[\w+.-]+;base64,[A-Za-z0-9+/=]{1024,}")
+MULTIDECODER = Multidecoder(decoders=get_analyzers(include={"base64", "codec", "network"}))
+MULTIDECODER_NO_BASE64 = Multidecoder(decoders=get_analyzers(include={"codec", "network"}))
+MAX_BASE64_SCAN_SIZE = 5_000_000
+SAFELINKS_DATA_TAIL_RE = re.compile(r"[?&](?:amp;)?data=0\d$")
+
 
 def tag_is_valid(validator, value) -> bool:
     try:
@@ -63,6 +79,42 @@ def tag_is_valid(validator, value) -> bool:
     except ValueError:
         return False
     return True
+
+
+def scan_body_iocs(content: bytes) -> dict:
+    """Extract validated network IOCs from an email body using Multidecoder.
+
+    HTML entities are unescaped first so URLs spanning &amp;-separated parameters are
+    extracted in their real form instead of with literal "&amp;" inside them.
+    Large base64 media blobs (inline images, fonts, ...) will not contain meaningful IOCs
+    once decoded but cost a lot of Multidecoder scan time, so they are stripped before scanning.
+
+    Returns:
+        A dictionary with one key per MD_TAG_TYPES IOC type, each mapped to the set of validated
+        IOC strings found for that type.
+    """
+    try:
+        content = html.unescape(content.decode()).encode()
+    except UnicodeDecodeError:
+        # Not unicode text (e.g. an RTF body in a legacy codepage), scan it as-is
+        pass
+    scan_content = MEDIA_DATA_URI_RE.sub(b"", content)
+    # The base64 decoder is included so IOCs hidden in encoded blobs (atob() payloads,
+    # non-media data: URIs) are found, but skipped on huge bodies to limit scan time.
+    md = MULTIDECODER if len(scan_content) <= MAX_BASE64_SCAN_SIZE else MULTIDECODER_NO_BASE64
+    tags = get_tree_tags(md.scan(scan_content))
+    iocs = {ioc_type: set() for ioc_type in MD_TAG_TYPES}
+    for ioc_type, (tag_type, validator) in MD_TAG_TYPES.items():
+        for value in tags.get(tag_type, []):
+            value = value.decode()
+            if ioc_type == "uri":
+                # When Multidecoder recovers the url= target of a Microsoft Safe Links rewrite, the match runs
+                # into the following telemetry parameter and stops at the "|" its value always starts with
+                # ("data=05|..."), leaving a bare "data=0X" tail on an otherwise-valid URL.
+                value = SAFELINKS_DATA_TAIL_RE.sub("", value)
+            if tag_is_valid(validator, value):
+                iocs[ioc_type].add(value)
+    return iocs
 
 
 def clean_uri_from_body(uri):
@@ -480,10 +532,10 @@ class EmlParser(ServiceBase):
 
         if body:
             # Extract IOCs from body
-            [attributes_section.add_tag("network.static.ip", x.value) for x in find_ips(body)]
-            [attributes_section.add_tag("network.static.domain", x.value) for x in find_domains(body)]
-            [attributes_section.add_tag("network.static.uri", x.value) for x in find_urls(body)]
-            [attributes_section.add_tag("network.email.address", x.value) for x in find_emails(body)]
+            body_iocs = scan_body_iocs(body)
+            for ioc_type, (tag_type, _) in MD_TAG_TYPES.items():
+                for value in sorted(body_iocs[ioc_type]):
+                    attributes_section.add_tag(tag_type, value)
             if request.get_param("extract_body_text"):
                 with tempfile.NamedTemporaryFile(dir=self.working_directory, mode="wb", delete=False) as tmp_f:
                     tmp_f.write(body)
@@ -837,24 +889,12 @@ class EmlParser(ServiceBase):
                 new_ioc.discard(None)
                 all_iocs[ioc_type] = all_iocs[ioc_type].union(new_ioc)
 
-                # Process MultiDecoder extracted IOCs
-                new_ioc = []
-                encoded_body_content = body["content"].encode()
-                if ioc_type == "domain":
-                    for x in find_domains(encoded_body_content):
-                        if tag_is_valid(DOMAIN_VALIDATOR, x.value.decode()):
-                            new_ioc.append(x.value.decode())
-
-                if ioc_type == "email":
-                    for x in find_emails(encoded_body_content):
-                        if tag_is_valid(EMAIL_VALIDATOR, x.value.decode()):
-                            new_ioc.append(x.value.decode())
-
-                if ioc_type == "uri":
-                    for x in find_urls(encoded_body_content):
-                        if tag_is_valid(URI_VALIDATOR, x.value.decode()):
-                            new_ioc.append(x.value.decode())
-                md_iocs[ioc_type] = md_iocs[ioc_type].union(new_ioc)
+            # Process MultiDecoder extracted IOCs
+            # IPs are also extracted but not merged, as the result sections below only report
+            # the NETWORK_IOC_TYPES.
+            body_iocs = scan_body_iocs(body["content"].encode())
+            for ioc_type in NETWORK_IOC_TYPES:
+                md_iocs[ioc_type] = md_iocs[ioc_type].union(body_iocs[ioc_type])
 
         # Words in the email body, used by Extract to guess passwords
         request.temp_submission_data["email_body"] = sorted(list(body_words))
