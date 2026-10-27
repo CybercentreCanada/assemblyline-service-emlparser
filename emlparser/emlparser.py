@@ -53,14 +53,13 @@ from emlparser.headers.validation import (
     SpfHeaderValidation,
 )
 
-NETWORK_IOC_TYPES = ["uri", "email", "domain"]
 IDENTIFY = forge.get_identify(use_cache=os.environ.get("PRIVILEGED", "false").lower() == "true")
 IP_VALIDATOR = IP()
 DOMAIN_VALIDATOR = Domain()
 URI_VALIDATOR = URI()
 EMAIL_VALIDATOR = Email()
 
-MD_TAG_TYPES = {
+TAG_TYPES = {
     "uri": ("network.static.uri", URI_VALIDATOR),
     "email": ("network.email.address", EMAIL_VALIDATOR),
     "domain": ("network.static.domain", DOMAIN_VALIDATOR),
@@ -90,7 +89,7 @@ def scan_body_iocs(content: bytes) -> dict:
     once decoded but cost a lot of Multidecoder scan time, so they are stripped before scanning.
 
     Returns:
-        A dictionary with one key per MD_TAG_TYPES IOC type, each mapped to the set of validated
+        A dictionary with one key per TAG_TYPES IOC type, each mapped to the set of validated
         IOC strings found for that type.
     """
     try:
@@ -103,8 +102,8 @@ def scan_body_iocs(content: bytes) -> dict:
     # non-media data: URIs) are found, but skipped on huge bodies to limit scan time.
     md = MULTIDECODER if len(scan_content) <= MAX_BASE64_SCAN_SIZE else MULTIDECODER_NO_BASE64
     tags = get_tree_tags(md.scan(scan_content))
-    iocs = {ioc_type: set() for ioc_type in MD_TAG_TYPES}
-    for ioc_type, (tag_type, validator) in MD_TAG_TYPES.items():
+    iocs = {ioc_type: set() for ioc_type in TAG_TYPES}
+    for ioc_type, (tag_type, validator) in TAG_TYPES.items():
         for value in tags.get(tag_type, []):
             value = value.decode()
             if ioc_type == "uri":
@@ -533,7 +532,7 @@ class EmlParser(ServiceBase):
         if body:
             # Extract IOCs from body
             body_iocs = scan_body_iocs(body)
-            for ioc_type, (tag_type, _) in MD_TAG_TYPES.items():
+            for ioc_type, (tag_type, _) in TAG_TYPES.items():
                 for value in sorted(body_iocs[ioc_type]):
                     attributes_section.add_tag(tag_type, value)
             if request.get_param("extract_body_text"):
@@ -864,7 +863,7 @@ class EmlParser(ServiceBase):
             return
 
         all_iocs = {}
-        [all_iocs.setdefault(t, set()) for t in NETWORK_IOC_TYPES]
+        [all_iocs.setdefault(t, set()) for t in TAG_TYPES]
         md_iocs = all_iocs.copy()
         body_words = set(extract_passwords(header["subject"]))
         for body_counter, body in enumerate(parsed_eml["body"]):
@@ -877,7 +876,7 @@ class EmlParser(ServiceBase):
                     f.write(body["content"])
                     os.close(fd)
                 request.add_extracted(path, "body_" + str(body_counter), "Body text")
-            for ioc_type in NETWORK_IOC_TYPES:
+            for ioc_type in TAG_TYPES:
                 # Process eml_parser extracted IOCs
                 new_ioc = set(body.get(ioc_type, []))
                 if not new_ioc:
@@ -890,10 +889,8 @@ class EmlParser(ServiceBase):
                 all_iocs[ioc_type] = all_iocs[ioc_type].union(new_ioc)
 
             # Process MultiDecoder extracted IOCs
-            # IPs are also extracted but not merged, as the result sections below only report
-            # the NETWORK_IOC_TYPES.
             body_iocs = scan_body_iocs(body["content"].encode())
-            for ioc_type in NETWORK_IOC_TYPES:
+            for ioc_type in TAG_TYPES:
                 md_iocs[ioc_type] = md_iocs[ioc_type].union(body_iocs[ioc_type])
 
         # Words in the email body, used by Extract to guess passwords
