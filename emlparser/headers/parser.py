@@ -20,7 +20,7 @@ class DnsResolver:
 
     def query(self, qname: str, rdtype: dns.rdatatype.RdataType) -> Optional[dns.resolver.Answer]:
         try:
-            return dns.resolver.query(qname, rdtype)
+            return dns.resolver.resolve(qname, rdtype)
         except Exception:
             return None
 
