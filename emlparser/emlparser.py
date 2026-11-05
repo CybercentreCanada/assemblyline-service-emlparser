@@ -405,7 +405,8 @@ class EmlParser(ServiceBase):
         tag_field("network.email.address", "In-Reply-To", "inReplyTo")
         tag_field("network.email.address", "Return-Path", None)
         for recipient in msg.recipients:
-            headers_section.add_tag("network.email.address", sanitize("network.email.address", recipient.email))
+            if recipient.email:
+                headers_section.add_tag("network.email.address", sanitize("network.email.address", recipient.email))
         tag_field("network.email.date", "Date", "date")
         tag_field("network.email.subject", "Subject", "subject")
         tag_field("network.email.msg_id", "Message-Id", "messageId")
