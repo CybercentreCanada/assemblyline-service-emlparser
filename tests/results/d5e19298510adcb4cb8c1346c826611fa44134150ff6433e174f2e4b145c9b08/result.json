@@ -16,7 +16,7 @@
             "Some subject"
           ],
           "to": [
-            "To1, To1 - CEO Company1 <to1@c.com>, To2 - Accentu\u00e9 Company1 <to2@c.com>"
+            "To1, To1 - CEO :Company1 <to1@c.com>; To2, To2 - Accentu\ufffd\ufffd :Company1 <to2@c.com>"
           ]
         },
         "body_config": {},

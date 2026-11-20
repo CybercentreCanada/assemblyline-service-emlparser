@@ -16,7 +16,7 @@
             "This is the subject"
           ],
           "to": [
-            "\"Some other person\""
+            "Some other person@"
           ]
         },
         "body_config": {},
